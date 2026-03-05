@@ -1,11 +1,12 @@
-import { createFileRoute, Outlet, Link, useRouter, useMatches, useNavigate } from "@tanstack/react-router";
-import { useState, useRef, useEffect, useCallback } from "react";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { createFileRoute, Outlet, Link, useRouter, useMatches } from "@tanstack/react-router";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { signOut } from "~/lib/auth-client";
 import { AudioProvider, AudioBar } from "~/components/audio";
 import { useAudioStore } from "~/stores/useAudioStore";
-import { searchQueryOptions } from "~/hooks/useSearch";
+import { CommandPalette } from "~/components/CommandPalette";
 import type { Chapter } from "@mahfuz/shared/types";
+import { TOTAL_PAGES } from "@mahfuz/shared/constants";
 
 export const Route = createFileRoute("/_app")({
   component: AppLayout,
@@ -14,8 +15,8 @@ export const Route = createFileRoute("/_app")({
 const NAV_ITEMS = [
   { to: "/surah", label: "Sureler", icon: BookIcon },
   { to: "/juz", label: "Cüzler", icon: LayersIcon },
+  { to: "/page", label: "Sayfalar", icon: FileTextIcon },
   { to: "/memorize", label: "Ezberleme", icon: BrainIcon },
-  { to: "/search", label: "Arama", icon: SearchIcon },
   { to: "/bookmarks", label: "Yer İmleri", icon: BookmarkIcon },
   { to: "/audio", label: "Dinleme", icon: HeadphonesIcon },
 ] as const;
@@ -23,19 +24,29 @@ const NAV_ITEMS = [
 const BOTTOM_ITEMS = [
   { to: "/surah", label: "Sureler", icon: BookIcon },
   { to: "/memorize", label: "Ezber", icon: BrainIcon },
-  { to: "/search", label: "Ara", icon: SearchIcon },
   { to: "/bookmarks", label: "İmler", icon: BookmarkIcon },
   { to: "/settings", label: "Ayarlar", icon: SettingsIcon },
 ] as const;
 
 function AppLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const { session } = Route.useRouteContext();
   const router = useRouter();
   const audioVisible = useAudioStore((s) => s.isVisible);
   const matches = useMatches();
   const queryClient = useQueryClient();
+
+  // Global Cmd+K / Ctrl+K shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setPaletteOpen((v) => !v);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Detect surah page and get chapter info from cache
   const surahMatch = matches.find((m) => m.routeId === "/_app/surah/$surahId");
@@ -46,6 +57,34 @@ function AppLayout() {
     ? queryClient.getQueryData<Chapter>(["chapter", surahId])
     : null;
 
+  // Detect page route
+  const pageMatch = matches.find((m) => m.routeId === "/_app/page/$pageNumber");
+  const currentPage = (pageMatch?.params as { pageNumber?: string })?.pageNumber
+    ? Number((pageMatch!.params as { pageNumber: string }).pageNumber)
+    : null;
+
+  // Detect juz detail route
+  const juzMatch = matches.find((m) => m.routeId === "/_app/juz/$juzId");
+
+  // Show inline search bar on detail pages
+  const isDetailPage = !!(surahMatch || pageMatch || juzMatch);
+
+  // Scroll-to-top
+  const mainRef = useRef<HTMLElement>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const el = mainRef.current;
+    if (!el) return;
+    const onScroll = () => setShowScrollTop(el.scrollTop > 400);
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const scrollToTop = useCallback(() => {
+    mainRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   const handleSignOut = async () => {
     await signOut();
     await router.invalidate();
@@ -54,164 +93,138 @@ function AppLayout() {
 
   return (
     <div className="flex h-screen flex-col bg-[var(--theme-bg)]">
-      <div className="flex min-h-0 flex-1">
-        {/* Mobile sidebar overlay */}
-        {sidebarOpen && (
-          <div
-            className="fixed inset-0 z-40 bg-black/25 backdrop-blur-sm lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
-
-        {/* Sidebar — macOS style */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-50 w-[260px] transform border-r border-[var(--theme-border)] bg-[var(--theme-bg)]/80 backdrop-blur-xl transition-transform duration-300 ease-out lg:static lg:translate-x-0 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="flex h-full flex-col">
-          {/* Sidebar header — macOS traffic light area height */}
-          <div className="flex items-center justify-between px-5 pb-2 pt-5">
-            <Link
-              to="/"
-              className="flex items-center gap-2"
-              onClick={() => setSidebarOpen(false)}
-            >
+      {/* Header */}
+      <header className="glass sticky top-0 z-30 border-b border-[var(--theme-border)] px-4 py-2.5 sm:px-6">
+        <div className="flex items-center justify-between">
+          {/* Left: Logo + Desktop nav + Chapter/page context */}
+          <div className="flex items-center gap-1">
+            {/* Logo */}
+            <Link to="/" className="mr-2 flex items-center gap-2 sm:mr-3">
               <span className="arabic-text text-lg leading-none text-primary-600">محفوظ</span>
-              <span className="text-[13px] font-semibold text-[var(--theme-text)]">
+              <span className="hidden text-[13px] font-semibold text-[var(--theme-text)] sm:inline">
                 Mahfuz
               </span>
             </Link>
-            <button
-              className="text-[var(--theme-text-tertiary)] hover:text-[var(--theme-text)] lg:hidden"
-              onClick={() => setSidebarOpen(false)}
-              aria-label="Menüyü kapat"
-            >
-              <XIcon />
-            </button>
+
+            {/* Desktop horizontal nav */}
+            <nav className="hidden items-center gap-0.5 lg:flex">
+              {NAV_ITEMS.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-[var(--theme-text-secondary)] transition-colors hover:bg-[var(--theme-hover-bg)] hover:text-[var(--theme-text)]"
+                  activeProps={{
+                    className:
+                      "flex items-center gap-1.5 rounded-lg px-2 py-1.5 bg-primary-600/10 text-primary-700 transition-colors",
+                  }}
+                  title={item.label}
+                >
+                  <item.icon />
+                  <span className="hidden text-[12px] font-medium xl:inline">
+                    {item.label}
+                  </span>
+                </Link>
+              ))}
+            </nav>
+
+            {/* Chapter prev/next (surah detail) */}
+            {chapter && (
+              <div className="flex items-center gap-1 border-l border-[var(--theme-border)] pl-2 ml-2">
+                {chapter.id > 1 && (
+                  <Link
+                    to="/surah/$surahId"
+                    params={{ surahId: String(chapter.id - 1) }}
+                    className="rounded-md p-1 text-[var(--theme-text-tertiary)] transition-colors hover:bg-[var(--theme-hover-bg)] hover:text-[var(--theme-text)]"
+                    aria-label="Önceki sure"
+                  >
+                    <ChevronLeftIcon />
+                  </Link>
+                )}
+                <div className="flex items-center gap-2">
+                  <span className="text-[12px] font-medium text-[var(--theme-text-tertiary)]">
+                    {chapter.id}
+                  </span>
+                  <span className="arabic-text text-base leading-none text-[var(--theme-text)]">
+                    {chapter.name_arabic}
+                  </span>
+                  <div className="hidden flex-col sm:flex">
+                    <span className="text-[13px] font-medium leading-tight text-[var(--theme-text-secondary)]">
+                      {chapter.translated_name.name}
+                    </span>
+                    <span className="text-[11px] leading-tight text-[var(--theme-text-tertiary)]">
+                      {chapter.name_simple}
+                    </span>
+                  </div>
+                </div>
+                {chapter.id < 114 && (
+                  <Link
+                    to="/surah/$surahId"
+                    params={{ surahId: String(chapter.id + 1) }}
+                    className="rounded-md p-1 text-[var(--theme-text-tertiary)] transition-colors hover:bg-[var(--theme-hover-bg)] hover:text-[var(--theme-text)]"
+                    aria-label="Sonraki sure"
+                  >
+                    <ChevronRightIcon />
+                  </Link>
+                )}
+              </div>
+            )}
+
+            {/* Page prev/next (page detail) */}
+            {currentPage && !chapter && (
+              <div className="flex items-center gap-1 border-l border-[var(--theme-border)] pl-2 ml-2">
+                {currentPage > 1 && (
+                  <Link
+                    to="/page/$pageNumber"
+                    params={{ pageNumber: String(currentPage - 1) }}
+                    className="rounded-md p-1 text-[var(--theme-text-tertiary)] transition-colors hover:bg-[var(--theme-hover-bg)] hover:text-[var(--theme-text)]"
+                    aria-label="Önceki sayfa"
+                  >
+                    <ChevronLeftIcon />
+                  </Link>
+                )}
+                <span className="text-[13px] font-medium text-[var(--theme-text-secondary)]">
+                  Sayfa {currentPage}
+                </span>
+                {currentPage < TOTAL_PAGES && (
+                  <Link
+                    to="/page/$pageNumber"
+                    params={{ pageNumber: String(currentPage + 1) }}
+                    className="rounded-md p-1 text-[var(--theme-text-tertiary)] transition-colors hover:bg-[var(--theme-hover-bg)] hover:text-[var(--theme-text)]"
+                    aria-label="Sonraki sayfa"
+                  >
+                    <ChevronRightIcon />
+                  </Link>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Nav items — macOS sidebar style */}
-          <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 pt-3">
-            {NAV_ITEMS.map((item) => (
-              <NavItem
-                key={item.to}
-                to={item.to}
-                label={item.label}
-                icon={item.icon}
-                onClick={() => setSidebarOpen(false)}
-              />
-            ))}
-          </nav>
+          {/* Right: Search + Settings + User */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setPaletteOpen(true)}
+              className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-[var(--theme-text-secondary)] transition-colors hover:bg-[var(--theme-hover-bg)] hover:text-[var(--theme-text)]"
+              aria-label="Ara (⌘K)"
+            >
+              <SearchIcon />
+              <kbd className="hidden rounded bg-[var(--theme-hover-bg)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--theme-text-quaternary)] sm:inline-block">
+                ⌘K
+              </kbd>
+            </button>
 
-          {/* User section — bottom of sidebar (only when logged in) */}
-          {session && (
-            <div className="border-t border-[var(--theme-border)] px-3 py-3">
-              <div className="flex items-center gap-2.5">
-                {session.user.image ? (
-                  <img
-                    src={session.user.image}
-                    alt={session.user.name}
-                    className="h-7 w-7 rounded-full object-cover"
-                  />
-                ) : (
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary-100 text-[11px] font-semibold text-primary-700">
-                    {session.user.name?.charAt(0)?.toUpperCase() || "?"}
-                  </span>
-                )}
-                <span className="flex-1 truncate text-[13px] font-medium text-[var(--theme-text)]">
-                  {session.user.name}
-                </span>
-                <button
-                  onClick={handleSignOut}
-                  className="rounded-lg p-1 text-[var(--theme-text-tertiary)] transition-colors hover:bg-[var(--theme-hover-bg)] hover:text-[var(--theme-text)]"
-                  aria-label="Çıkış yap"
-                >
-                  <LogOutIcon />
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </aside>
+            <Link
+              to="/settings"
+              className="rounded-lg p-1.5 text-[var(--theme-text-secondary)] transition-colors hover:bg-[var(--theme-hover-bg)] hover:text-[var(--theme-text)]"
+              aria-label="Ayarlar"
+            >
+              <SettingsIcon />
+            </Link>
 
-      {/* Main content area */}
-      <div className="flex min-w-0 flex-1 flex-col">
-        {/* Header — Apple toolbar */}
-        <header className="glass sticky top-0 z-30 border-b border-[var(--theme-border)] px-4 py-2.5 sm:px-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <button
-                className="rounded-lg p-1 text-[var(--theme-text-secondary)] transition-colors hover:bg-[var(--theme-hover-bg)] hover:text-[var(--theme-text)] lg:hidden"
-                onClick={() => setSidebarOpen(true)}
-                aria-label="Menüyü aç"
-              >
-                <MenuIcon />
-              </button>
-              {chapter ? (
-                <div className="flex items-center gap-1.5">
-                  {chapter.id > 1 && (
-                    <Link
-                      to="/surah/$surahId"
-                      params={{ surahId: String(chapter.id - 1) }}
-                      className="rounded-md p-1 text-[var(--theme-text-tertiary)] transition-colors hover:bg-[var(--theme-hover-bg)] hover:text-[var(--theme-text)]"
-                      aria-label="Önceki sure"
-                    >
-                      <ChevronLeftIcon />
-                    </Link>
-                  )}
-                  <div className="flex items-center gap-2">
-                    <span className="text-[12px] font-medium text-[var(--theme-text-tertiary)]">
-                      {chapter.id}
-                    </span>
-                    <span className="arabic-text text-base leading-none text-[var(--theme-text)]">
-                      {chapter.name_arabic}
-                    </span>
-                    <div className="flex flex-col">
-                      <span className="text-[13px] font-medium leading-tight text-[var(--theme-text-secondary)]">
-                        {chapter.translated_name.name}
-                      </span>
-                      <span className="text-[11px] leading-tight text-[var(--theme-text-tertiary)]">
-                        {chapter.name_simple}
-                      </span>
-                    </div>
-                  </div>
-                  {chapter.id < 114 && (
-                    <Link
-                      to="/surah/$surahId"
-                      params={{ surahId: String(chapter.id + 1) }}
-                      className="rounded-md p-1 text-[var(--theme-text-tertiary)] transition-colors hover:bg-[var(--theme-hover-bg)] hover:text-[var(--theme-text)]"
-                      aria-label="Sonraki sure"
-                    >
-                      <ChevronRightIcon />
-                    </Link>
-                  )}
-                </div>
-              ) : (
-                <div className="hidden lg:block" />
-              )}
-            </div>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setSearchOpen(true)}
-                className="rounded-lg p-1.5 text-[var(--theme-text-secondary)] transition-colors hover:bg-[var(--theme-hover-bg)] hover:text-[var(--theme-text)]"
-                aria-label="Ara"
-              >
-                <SearchIcon />
-              </button>
-
-              <Link
-                to="/settings"
-                className="rounded-lg p-1.5 text-[var(--theme-text-secondary)] transition-colors hover:bg-[var(--theme-hover-bg)] hover:text-[var(--theme-text)]"
-                aria-label="Ayarlar"
-              >
-                <SettingsIcon />
-              </Link>
-
-              {session ? (
+            {session ? (
+              <div className="ml-1 flex items-center gap-1">
                 <Link
                   to="/profile"
-                  className="ml-1 flex items-center gap-2 rounded-full px-3 py-1 transition-colors hover:bg-[var(--theme-hover-bg)]"
+                  className="flex items-center gap-2 rounded-full px-2 py-1 transition-colors hover:bg-[var(--theme-hover-bg)]"
                 >
                   {session.user.image ? (
                     <img
@@ -225,31 +238,73 @@ function AppLayout() {
                     </span>
                   )}
                 </Link>
-              ) : (
-                <Link
-                  to="/auth/login"
-                  className="ml-1 rounded-full bg-primary-600 px-4 py-1 text-xs font-medium text-white transition-all hover:bg-primary-700 active:scale-[0.97]"
+                <button
+                  onClick={handleSignOut}
+                  className="rounded-lg p-1.5 text-[var(--theme-text-tertiary)] transition-colors hover:bg-[var(--theme-hover-bg)] hover:text-[var(--theme-text)]"
+                  aria-label="Çıkış yap"
                 >
-                  Giriş Yap
-                </Link>
-              )}
-            </div>
+                  <LogOutIcon />
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/auth/login"
+                className="ml-1 rounded-full bg-primary-600 px-4 py-1 text-xs font-medium text-white transition-all hover:bg-primary-700 active:scale-[0.97]"
+              >
+                Giriş Yap
+              </Link>
+            )}
           </div>
-        </header>
+        </div>
+      </header>
 
-        {/* Spotlight-style search overlay */}
-        {searchOpen && (
-          <SearchOverlay onClose={() => setSearchOpen(false)} />
+      {/* Inline search bar on detail pages */}
+      {isDetailPage && !paletteOpen && (
+        <div className="border-b border-[var(--theme-border)] bg-[var(--theme-bg)] px-4 py-2 sm:px-6">
+          <button
+            type="button"
+            onClick={() => setPaletteOpen(true)}
+            className="mx-auto flex w-full max-w-[680px] items-center gap-2.5 rounded-xl bg-[var(--theme-input-bg)] px-3.5 py-2 text-left transition-colors hover:bg-[var(--theme-bg-primary)] hover:shadow-[var(--shadow-elevated)]"
+          >
+            <svg
+              className="h-4 w-4 shrink-0 text-[var(--theme-text-tertiary)]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" />
+            </svg>
+            <span className="flex-1 text-[14px] text-[var(--theme-text-tertiary)]">
+              Sure, ayet veya sayfa ara...
+            </span>
+            <kbd className="hidden rounded-md bg-[var(--theme-hover-bg)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--theme-text-quaternary)] sm:inline-block">
+              ⌘K
+            </kbd>
+          </button>
+        </div>
+      )}
+      {paletteOpen && (
+        <CommandPalette onClose={() => setPaletteOpen(false)} />
+      )}
+
+      {/* Page content */}
+      <main ref={mainRef} className={`relative flex-1 overflow-y-auto ${audioVisible ? "pb-40" : "pb-24"} lg:pb-0`}>
+        <Outlet />
+        {showScrollTop && (
+          <button
+            onClick={scrollToTop}
+            className="fixed bottom-20 right-4 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-[var(--theme-bg-primary)] shadow-[var(--shadow-elevated)] transition-all hover:shadow-[var(--shadow-modal)] active:scale-95 lg:bottom-6 lg:right-6"
+            aria-label="Yukarı dön"
+          >
+            <svg className="h-5 w-5 text-[var(--theme-text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+            </svg>
+          </button>
         )}
+      </main>
 
-        {/* Page content */}
-        <main className={`flex-1 overflow-y-auto ${audioVisible ? "pb-40" : "pb-24"} lg:pb-0`}>
-          <Outlet />
-        </main>
-      </div>
-      </div>
-
-      {/* Audio engine + player bar — spans full width */}
+      {/* Audio engine + player bar */}
       <AudioProvider />
       <AudioBar />
 
@@ -276,172 +331,6 @@ function AppLayout() {
   );
 }
 
-function NavItem({
-  to,
-  label,
-  icon: Icon,
-  onClick,
-}: {
-  to: string;
-  label: string;
-  icon: React.FC;
-  onClick?: () => void;
-}) {
-  return (
-    <Link
-      to={to}
-      className="flex items-center gap-2.5 rounded-lg px-2.5 py-[7px] text-[13px] font-medium text-[var(--theme-text)] transition-colors hover:bg-[var(--theme-hover-bg)]"
-      activeProps={{
-        className:
-          "flex items-center gap-2.5 rounded-lg px-2.5 py-[7px] text-[13px] font-medium bg-primary-600/10 text-primary-700",
-      }}
-      onClick={onClick}
-    >
-      <Icon />
-      {label}
-    </Link>
-  );
-}
-
-// -- Search Overlay (Spotlight-style) --
-
-function SearchOverlay({ onClose }: { onClose: () => void }) {
-  const [query, setQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
-
-  // Auto-focus input
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
-
-  // Debounce search query
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedQuery(query.trim()), 300);
-    return () => clearTimeout(timer);
-  }, [query]);
-
-  // Close on Escape
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
-
-  // Close on click outside
-  const handleBackdropClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (e.target === e.currentTarget) onClose();
-    },
-    [onClose]
-  );
-
-  const { data, isLoading } = useQuery(searchQueryOptions(debouncedQuery));
-
-  const handleResultClick = (verseKey: string) => {
-    const surahId = verseKey.split(":")[0];
-    onClose();
-    navigate({ to: "/surah/$surahId", params: { surahId } });
-  };
-
-  return (
-    <div
-      className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm"
-      onClick={handleBackdropClick}
-    >
-      <div
-        ref={overlayRef}
-        className="mx-auto mt-14 w-[92%] max-w-[600px] animate-scale-in overflow-hidden rounded-2xl bg-[var(--theme-bg-primary)] shadow-[var(--shadow-modal)]"
-      >
-        {/* Search input */}
-        <div className="flex items-center gap-3 border-b border-[var(--theme-border)] px-4 py-3">
-          <SearchIcon />
-          <input
-            ref={inputRef}
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Kuran'da arayın..."
-            className="flex-1 bg-transparent text-[16px] text-[var(--theme-text)] placeholder-[var(--theme-text-tertiary)] outline-none"
-          />
-          {query && (
-            <button
-              onClick={() => setQuery("")}
-              className="rounded-full p-0.5 text-[var(--theme-text-tertiary)] hover:text-[var(--theme-text)]"
-            >
-              <XIcon />
-            </button>
-          )}
-          <button
-            onClick={onClose}
-            className="text-[13px] font-medium text-primary-600"
-          >
-            İptal
-          </button>
-        </div>
-
-        {/* Results */}
-        <div className="max-h-[60vh] overflow-y-auto">
-          {isLoading && debouncedQuery && (
-            <p className="px-4 py-6 text-center text-[13px] text-[var(--theme-text-tertiary)]">
-              Aranıyor...
-            </p>
-          )}
-
-          {data && data.results.length > 0 && (
-            <div>
-              <p className="px-4 pt-3 text-[11px] font-medium uppercase tracking-wider text-[var(--theme-text-quaternary)]">
-                {data.total_results} sonuç
-              </p>
-              {data.results.map((result) => (
-                <button
-                  key={result.verse_id}
-                  onClick={() => handleResultClick(result.verse_key)}
-                  className="block w-full px-4 py-3 text-left transition-colors hover:bg-[var(--theme-hover-bg)]"
-                >
-                  <span className="mb-1 inline-block text-[12px] font-medium text-primary-600">
-                    {result.verse_key}
-                  </span>
-                  <p
-                    className="arabic-text text-base leading-relaxed text-[var(--theme-text)]"
-                    dir="rtl"
-                  >
-                    {result.text}
-                  </p>
-                  {result.translations?.[0] && (
-                    <p
-                      className="mt-1 line-clamp-2 text-[13px] leading-relaxed text-[var(--theme-text-secondary)]"
-                      dangerouslySetInnerHTML={{
-                        __html: result.translations[0].text,
-                      }}
-                    />
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {data && data.results.length === 0 && debouncedQuery && (
-            <p className="px-4 py-6 text-center text-[13px] text-[var(--theme-text-tertiary)]">
-              Sonuç bulunamadı
-            </p>
-          )}
-
-          {!debouncedQuery && (
-            <p className="px-4 py-6 text-center text-[13px] text-[var(--theme-text-tertiary)]">
-              Sure veya ayet arayın
-            </p>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // -- Icons (simple inline SVG) --
 
 function ChevronLeftIcon() {
@@ -456,22 +345,6 @@ function ChevronRightIcon() {
   return (
     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-    </svg>
-  );
-}
-
-function MenuIcon() {
-  return (
-    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-    </svg>
-  );
-}
-
-function XIcon() {
-  return (
-    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
     </svg>
   );
 }
@@ -533,10 +406,10 @@ function SettingsIcon() {
   );
 }
 
-function UserIcon() {
+function FileTextIcon() {
   return (
     <svg className="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
     </svg>
   );
 }

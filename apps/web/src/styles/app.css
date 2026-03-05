@@ -244,6 +244,14 @@ body {
   );
   padding: 3px;
 }
+/* Mobile full-bleed: mushaf fills the screen edge-to-edge */
+@media (max-width: 639px) {
+  .mushaf-page {
+    max-width: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
 
 /* ── Outer cetvel — triple gold ruling ── */
 .mushaf-cetvel-outer {

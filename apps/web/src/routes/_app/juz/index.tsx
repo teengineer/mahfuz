@@ -23,6 +23,7 @@ function JuzList() {
       <h1 className="mb-6 text-[28px] font-semibold tracking-[-0.02em] text-[var(--theme-text)]">
         Cüzler
       </h1>
+
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
         {uniqueJuzs.map((juz) => {
           const surahIds = Object.keys(juz.verse_mapping);

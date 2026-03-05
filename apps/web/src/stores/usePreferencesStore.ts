@@ -159,6 +159,7 @@ interface PreferencesState {
   showWordTransliteration: boolean;
   wordTranslationSize: number;
   wordTransliterationSize: number;
+  wbwTransliterationFirst: boolean;
 
   // Per-mode font sizes
   normalArabicFontSize: number;
@@ -177,6 +178,7 @@ interface PreferencesState {
   setShowWordTransliteration: (value: boolean) => void;
   setWordTranslationSize: (size: number) => void;
   setWordTransliterationSize: (size: number) => void;
+  setWbwTransliterationFirst: (value: boolean) => void;
   setNormalArabicFontSize: (size: number) => void;
   setNormalTranslationFontSize: (size: number) => void;
   setWbwArabicFontSize: (size: number) => void;
@@ -196,6 +198,7 @@ export const usePreferencesStore = create<PreferencesState>()(
       showWordTransliteration: true,
       wordTranslationSize: 1,
       wordTransliterationSize: 1,
+      wbwTransliterationFirst: false,
 
       // Per-mode font sizes (all default to 1 = 100%)
       normalArabicFontSize: 1,
@@ -213,6 +216,7 @@ export const usePreferencesStore = create<PreferencesState>()(
       setShowWordTransliteration: (value) => set({ showWordTransliteration: value }),
       setWordTranslationSize: (size) => set({ wordTranslationSize: size }),
       setWordTransliterationSize: (size) => set({ wordTransliterationSize: size }),
+      setWbwTransliterationFirst: (value) => set({ wbwTransliterationFirst: value }),
       setNormalArabicFontSize: (size) => set({ normalArabicFontSize: size }),
       setNormalTranslationFontSize: (size) => set({ normalTranslationFontSize: size }),
       setWbwArabicFontSize: (size) => set({ wbwArabicFontSize: size }),

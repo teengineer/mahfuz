@@ -18,14 +18,47 @@ export function WordByWord({
   const showTransliteration = usePreferencesStore((s) => s.showWordTransliteration);
   const translationSize = usePreferencesStore((s) => s.wordTranslationSize);
   const transliterationSize = usePreferencesStore((s) => s.wordTransliterationSize);
+  const transliterationFirst = usePreferencesStore((s) => s.wbwTransliterationFirst);
 
   const wordItems = words.filter((w) => w.char_type_name === "word");
+
+  const colorStyle = (i: number, isActive: boolean, opacity?: number) =>
+    colorizeWords && colors.length > 0 && !isActive
+      ? { color: colors[i % colors.length], ...(opacity != null ? { opacity } : {}) }
+      : {};
 
   return (
     <div className="flex flex-wrap justify-end gap-x-5 gap-y-4">
       {wordItems.map((word, i) => {
         const isActive =
           activeWordPosition != null && word.position === activeWordPosition;
+
+        const translationEl = showTranslation && (
+          <span
+            key="tr"
+            className="font-sans text-[var(--theme-text-tertiary)]"
+            style={{
+              fontSize: `calc(11px * ${translationSize})`,
+              ...colorStyle(i, isActive),
+            }}
+          >
+            {word.translation?.text}
+          </span>
+        );
+
+        const transliterationEl = showTransliteration && (
+          <span
+            key="tl"
+            className="font-sans text-[var(--theme-text-quaternary)]"
+            style={{
+              fontSize: `calc(10px * ${transliterationSize})`,
+              ...colorStyle(i, isActive, 0.75),
+            }}
+          >
+            {word.transliteration?.text}
+          </span>
+        );
+
         return (
           <div
             key={word.id}
@@ -47,31 +80,10 @@ export function WordByWord({
             >
               {word.text_uthmani}
             </span>
-            {showTranslation && (
-              <span
-                className="font-sans text-[var(--theme-text-tertiary)]"
-                style={{
-                  fontSize: `calc(11px * ${translationSize})`,
-                  ...(colorizeWords && colors.length > 0 && !isActive
-                    ? { color: colors[i % colors.length] }
-                    : {}),
-                }}
-              >
-                {word.translation?.text}
-              </span>
-            )}
-            {showTransliteration && (
-              <span
-                className="font-sans text-[var(--theme-text-quaternary)]"
-                style={{
-                  fontSize: `calc(10px * ${transliterationSize})`,
-                  ...(colorizeWords && colors.length > 0 && !isActive
-                    ? { color: colors[i % colors.length], opacity: 0.75 }
-                    : {}),
-                }}
-              >
-                {word.transliteration?.text}
-              </span>
+            {transliterationFirst ? (
+              <>{transliterationEl}{translationEl}</>
+            ) : (
+              <>{translationEl}{transliterationEl}</>
             )}
           </div>
         );

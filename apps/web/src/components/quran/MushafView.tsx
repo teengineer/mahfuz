@@ -1,3 +1,4 @@
+import { useState, useRef, useCallback, useEffect } from "react";
 import type { Verse } from "@mahfuz/shared/types";
 import { Bismillah } from "./Bismillah";
 import { usePreferencesStore, getActiveColors } from "~/stores/usePreferencesStore";
@@ -10,79 +11,201 @@ interface MushafViewProps {
   showBismillah?: boolean;
 }
 
+const ZOOM_LEVEL = 2;
+const DBL_TAP_MS = 300;
+const DBL_TAP_PX = 30;
+
 export function MushafView({ verses, showBismillah = true }: MushafViewProps) {
   const colorizeWords = usePreferencesStore((s) => s.colorizeWords);
   const colorPaletteId = usePreferencesStore((s) => s.colorPaletteId);
   const colors = getActiveColors({ colorPaletteId });
 
+  /* ── Zoom / pan state (refs for perf, state only for touchAction toggle) ── */
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const scaleRef = useRef(1);
+  const tRef = useRef({ x: 0, y: 0 });
+  const [zoomed, setZoomed] = useState(false);
+
+  const lastTap = useRef({ time: 0, x: 0, y: 0 });
+  const pan = useRef<{ sx: number; sy: number; tx: number; ty: number } | null>(null);
+
+  // Reset zoom when page (verses) changes
+  useEffect(() => {
+    scaleRef.current = 1;
+    tRef.current = { x: 0, y: 0 };
+    setZoomed(false);
+    const el = innerRef.current;
+    if (el) {
+      el.style.transition = "none";
+      el.style.transform = "scale(1)";
+    }
+  }, [verses]);
+
+  function paint(animated: boolean) {
+    const el = innerRef.current;
+    if (!el) return;
+    el.style.transition = animated
+      ? "transform .3s cubic-bezier(.25,.1,.25,1)"
+      : "none";
+    el.style.transform = `translate(${tRef.current.x}px,${tRef.current.y}px) scale(${scaleRef.current})`;
+  }
+
+  function clampXY(tx: number, ty: number, s: number) {
+    const c = wrapRef.current;
+    if (!c || s <= 1) return { x: 0, y: 0 };
+    const { width: w, height: h } = c.getBoundingClientRect();
+    const mx = w * (s - 1) / 2;
+    const my = h * (s - 1) / 2;
+    return {
+      x: Math.max(-mx, Math.min(mx, tx)),
+      y: Math.max(-my, Math.min(my, ty)),
+    };
+  }
+
+  const onDown = useCallback((e: React.PointerEvent) => {
+    const now = Date.now();
+    const dt = now - lastTap.current.time;
+    const dx = Math.abs(e.clientX - lastTap.current.x);
+    const dy = Math.abs(e.clientY - lastTap.current.y);
+    lastTap.current = { time: now, x: e.clientX, y: e.clientY };
+
+    /* ── Double-tap → toggle zoom ── */
+    if (dt < DBL_TAP_MS && dx < DBL_TAP_PX && dy < DBL_TAP_PX) {
+      e.preventDefault();
+      lastTap.current.time = 0;
+
+      if (scaleRef.current > 1) {
+        scaleRef.current = 1;
+        tRef.current = { x: 0, y: 0 };
+        setZoomed(false);
+      } else {
+        const c = wrapRef.current;
+        if (!c) return;
+        const r = c.getBoundingClientRect();
+        const tapX = e.clientX - r.left;
+        const tapY = e.clientY - r.top;
+        tRef.current = clampXY(
+          (r.width / 2 - tapX) * (ZOOM_LEVEL - 1),
+          (r.height / 2 - tapY) * (ZOOM_LEVEL - 1),
+          ZOOM_LEVEL,
+        );
+        scaleRef.current = ZOOM_LEVEL;
+        setZoomed(true);
+      }
+      paint(true);
+      return;
+    }
+
+    /* ── Pan start (only when zoomed) ── */
+    if (scaleRef.current > 1) {
+      pan.current = {
+        sx: e.clientX,
+        sy: e.clientY,
+        tx: tRef.current.x,
+        ty: tRef.current.y,
+      };
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    }
+  }, []);
+
+  const onMove = useCallback((e: React.PointerEvent) => {
+    if (!pan.current) return;
+    tRef.current = clampXY(
+      pan.current.tx + e.clientX - pan.current.sx,
+      pan.current.ty + e.clientY - pan.current.sy,
+      scaleRef.current,
+    );
+    paint(false);
+  }, []);
+
+  const onUp = useCallback(() => {
+    pan.current = null;
+  }, []);
+
   return (
-    <div className="mushaf-page">
-      {/* Outer cetvel (gold ruling line) */}
-      <div className="mushaf-cetvel-outer">
-        {/* Lapis lazuli illumination band */}
-        <div className="mushaf-tezhip-band">
-          {/* Hatayi floral pattern overlay */}
-          <div className="mushaf-hatayi-pattern" />
+    <div
+      ref={wrapRef}
+      className="-mx-5 select-none sm:mx-0"
+      style={{
+        overflow: zoomed ? "hidden" : "visible",
+        touchAction: zoomed ? "none" : "pan-y",
+      }}
+      onPointerDown={onDown}
+      onPointerMove={onMove}
+      onPointerUp={onUp}
+      onPointerCancel={onUp}
+    >
+      <div ref={innerRef} style={{ transformOrigin: "center center" }}>
+        <div className="mushaf-page">
+          {/* Outer cetvel (gold ruling line) */}
+          <div className="mushaf-cetvel-outer">
+            {/* Lapis lazuli illumination band */}
+            <div className="mushaf-tezhip-band">
+              {/* Hatayi floral pattern overlay */}
+              <div className="mushaf-hatayi-pattern" />
 
-          {/* Corner ornaments — köşelik */}
-          <TezhipCorner position="top-left" />
-          <TezhipCorner position="top-right" />
-          <TezhipCorner position="bottom-left" />
-          <TezhipCorner position="bottom-right" />
+              {/* Corner ornaments — köşelik */}
+              <TezhipCorner position="top-left" />
+              <TezhipCorner position="top-right" />
+              <TezhipCorner position="bottom-left" />
+              <TezhipCorner position="bottom-right" />
 
-          {/* Edge medallions — ortabağ */}
-          <EdgeMedallion position="top" />
-          <EdgeMedallion position="bottom" />
-          <EdgeMedallion position="left" />
-          <EdgeMedallion position="right" />
+              {/* Edge medallions — ortabağ */}
+              <EdgeMedallion position="top" />
+              <EdgeMedallion position="bottom" />
+              <EdgeMedallion position="left" />
+              <EdgeMedallion position="right" />
 
-          {/* Inner cetvel (double gold line) */}
-          <div className="mushaf-cetvel-inner">
-            {/* Writing surface */}
-            <div className="mushaf-content">
-              <p
-                className="arabic-text text-center text-[1.65rem] leading-[2.8] text-[var(--mushaf-ink)]"
-                dir="rtl"
-              >
-                {verses.map((verse) => {
-                  const surahId = Number(verse.verse_key.split(":")[0]);
-                  const needsBismillah =
-                    showBismillah &&
-                    verse.verse_number === 1 &&
-                    !NO_BISMILLAH_SURAHS.has(surahId);
-                  const words =
-                    verse.words?.filter((w) => w.char_type_name === "word") ?? [];
-                  return (
-                    <span key={verse.id}>
-                      {needsBismillah && (
-                        <>
-                          <span className="block w-full py-2 text-[1.5rem]">
-                            بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
-                          </span>
-                        </>
-                      )}
-                      {colorizeWords && words.length > 0
-                        ? words.map((w, i) => (
-                            <span
-                              key={w.id}
-                              style={{ color: colors[i % colors.length] }}
-                            >
-                              {w.text_uthmani}{" "}
-                            </span>
-                          ))
-                        : (
+              {/* Inner cetvel (double gold line) */}
+              <div className="mushaf-cetvel-inner">
+                {/* Writing surface */}
+                <div className="mushaf-content">
+                  <p
+                    className="arabic-text text-center text-[1.65rem] leading-[2.8] text-[var(--mushaf-ink)]"
+                    dir="rtl"
+                  >
+                    {verses.map((verse) => {
+                      const surahId = Number(verse.verse_key.split(":")[0]);
+                      const needsBismillah =
+                        showBismillah &&
+                        verse.verse_number === 1 &&
+                        !NO_BISMILLAH_SURAHS.has(surahId);
+                      const words =
+                        verse.words?.filter((w) => w.char_type_name === "word") ?? [];
+                      return (
+                        <span key={verse.id}>
+                          {needsBismillah && (
                             <>
-                              {verse.text_uthmani}{" "}
+                              <span className="block w-full py-2 text-[1.5rem]">
+                                بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
+                              </span>
                             </>
                           )}
-                      <span className="mushaf-durak">
-                        {toArabicNumeral(verse.verse_number)}
-                      </span>
-                      {"  "}
-                    </span>
-                  );
-                })}
-              </p>
+                          {colorizeWords && words.length > 0
+                            ? words.map((w, i) => (
+                                <span
+                                  key={w.id}
+                                  style={{ color: colors[i % colors.length] }}
+                                >
+                                  {w.text_uthmani}{" "}
+                                </span>
+                              ))
+                            : (
+                                <>
+                                  {verse.text_uthmani}{" "}
+                                </>
+                              )}
+                          <span className="mushaf-durak">
+                            {toArabicNumeral(verse.verse_number)}
+                          </span>
+                          {"  "}
+                        </span>
+                      );
+                    })}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -128,60 +251,16 @@ function TezhipCorner({
       fill="none"
       style={{ transform: `rotate(${rotate}deg)` }}
     >
-      {/* Background gold fill for corner area */}
-      <path
-        d="M0 0 L28 0 C20 4, 12 12, 8 20 L8 28 C4 20, 0 10, 0 0z"
-        fill="var(--mushaf-gold)"
-        opacity="0.15"
-      />
-      {/* Primary rumi scroll — elegant spiral vine */}
-      <path
-        d="M4 4 C4 4, 6 20, 10 28 C14 36, 22 42, 32 46"
-        stroke="var(--mushaf-gold)"
-        strokeWidth="1.2"
-        fill="none"
-        opacity="0.8"
-      />
-      <path
-        d="M4 4 C4 4, 20 6, 28 10 C36 14, 42 22, 46 32"
-        stroke="var(--mushaf-gold)"
-        strokeWidth="1.2"
-        fill="none"
-        opacity="0.8"
-      />
-      {/* Secondary inner scroll */}
-      <path
-        d="M6 8 C8 16, 10 22, 16 30 C20 36, 26 40, 34 44"
-        stroke="var(--mushaf-gold-light)"
-        strokeWidth="0.6"
-        fill="none"
-        opacity="0.5"
-      />
-      <path
-        d="M8 6 C16 8, 22 10, 30 16 C36 20, 40 26, 44 34"
-        stroke="var(--mushaf-gold-light)"
-        strokeWidth="0.6"
-        fill="none"
-        opacity="0.5"
-      />
-      {/* Hatayi bud — central flower */}
+      <path d="M0 0 L28 0 C20 4, 12 12, 8 20 L8 28 C4 20, 0 10, 0 0z" fill="var(--mushaf-gold)" opacity="0.15" />
+      <path d="M4 4 C4 4, 6 20, 10 28 C14 36, 22 42, 32 46" stroke="var(--mushaf-gold)" strokeWidth="1.2" fill="none" opacity="0.8" />
+      <path d="M4 4 C4 4, 20 6, 28 10 C36 14, 42 22, 46 32" stroke="var(--mushaf-gold)" strokeWidth="1.2" fill="none" opacity="0.8" />
+      <path d="M6 8 C8 16, 10 22, 16 30 C20 36, 26 40, 34 44" stroke="var(--mushaf-gold-light)" strokeWidth="0.6" fill="none" opacity="0.5" />
+      <path d="M8 6 C16 8, 22 10, 30 16 C36 20, 40 26, 44 34" stroke="var(--mushaf-gold-light)" strokeWidth="0.6" fill="none" opacity="0.5" />
       <circle cx="10" cy="10" r="4" fill="var(--mushaf-gold)" opacity="0.2" />
       <circle cx="10" cy="10" r="2.5" fill="var(--mushaf-gold)" opacity="0.4" />
       <circle cx="10" cy="10" r="1" fill="var(--mushaf-gold-dark)" opacity="0.7" />
-      {/* Petal flourishes */}
-      <ellipse
-        cx="18" cy="10" rx="4" ry="1.5"
-        fill="var(--mushaf-gold)"
-        opacity="0.25"
-        transform="rotate(-8, 18, 10)"
-      />
-      <ellipse
-        cx="10" cy="18" rx="1.5" ry="4"
-        fill="var(--mushaf-gold)"
-        opacity="0.25"
-        transform="rotate(-8, 10, 18)"
-      />
-      {/* Small accent dots along curves */}
+      <ellipse cx="18" cy="10" rx="4" ry="1.5" fill="var(--mushaf-gold)" opacity="0.25" transform="rotate(-8, 18, 10)" />
+      <ellipse cx="10" cy="18" rx="1.5" ry="4" fill="var(--mushaf-gold)" opacity="0.25" transform="rotate(-8, 10, 18)" />
       <circle cx="18" cy="24" r="1" fill="var(--mushaf-gold)" opacity="0.35" />
       <circle cx="24" cy="18" r="1" fill="var(--mushaf-gold)" opacity="0.35" />
       <circle cx="26" cy="34" r="0.8" fill="var(--mushaf-gold)" opacity="0.25" />
@@ -218,7 +297,6 @@ function EdgeMedallion({
       fill="none"
     >
       {isHorizontal ? (
-        /* Horizontal pointed oval — like a shamsa */
         <>
           <ellipse cx="16" cy="10" rx="14" ry="8" fill="var(--mushaf-lapis)" stroke="var(--mushaf-gold)" strokeWidth="0.8" />
           <ellipse cx="16" cy="10" rx="10" ry="5.5" fill="none" stroke="var(--mushaf-gold)" strokeWidth="0.5" opacity="0.6" />
@@ -226,7 +304,6 @@ function EdgeMedallion({
           <circle cx="16" cy="10" r="1.2" fill="var(--mushaf-gold)" opacity="0.6" />
         </>
       ) : (
-        /* Vertical pointed oval */
         <>
           <ellipse cx="10" cy="16" rx="8" ry="14" fill="var(--mushaf-lapis)" stroke="var(--mushaf-gold)" strokeWidth="0.8" />
           <ellipse cx="10" cy="16" rx="5.5" ry="10" fill="none" stroke="var(--mushaf-gold)" strokeWidth="0.5" opacity="0.6" />
