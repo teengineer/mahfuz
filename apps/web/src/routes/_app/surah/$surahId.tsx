@@ -16,10 +16,12 @@ import { useAutoScrollToVerse } from "~/hooks/useAutoScrollToVerse";
 import type { Chapter } from "@mahfuz/shared/types";
 import type { VerseAudioData } from "@mahfuz/audio-engine";
 import { useReadingHistory } from "~/stores/useReadingHistory";
+import { TOPIC_INDEX } from "~/data/topic-index";
 
 export const Route = createFileRoute("/_app/surah/$surahId")({
   validateSearch: (search: Record<string, unknown>) => ({
     verse: search.verse ? Number(search.verse) : undefined,
+    topic: typeof search.topic === "number" ? search.topic : undefined,
   }),
   loader: ({ context, params }) => {
     const chapterId = Number(params.surahId);
@@ -82,7 +84,7 @@ const VIEW_MODE_OPTIONS: { value: ViewMode; label: string; icon: React.ReactNode
 
 function SurahView() {
   const { surahId } = Route.useParams();
-  const { verse: verseParam } = Route.useSearch();
+  const { verse: verseParam, topic: topicParam } = Route.useSearch();
   const chapterId = Number(surahId);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -254,6 +256,11 @@ function SurahView() {
 
   return (
     <div className="mx-auto max-w-[680px] px-5 py-8 sm:px-6 sm:py-10">
+      {/* Topic navigation bar (when coming from Fihrist) */}
+      {topicParam !== undefined && TOPIC_INDEX[topicParam] && (
+        <TopicNavBar topicIndex={topicParam} currentSurahId={chapterId} />
+      )}
+
       {/* Surah header — standard picker pattern */}
       <div className="relative mb-10 overflow-hidden rounded-3xl bg-[var(--theme-pill-bg)] px-6 py-10 text-center">
         <div className="relative z-10">
@@ -351,15 +358,8 @@ function SurahView() {
             </div>
           </div>
 
-          {/* Right group: page info + fullscreen + arrow */}
+          {/* Right group: fullscreen + arrow */}
           <div className="flex shrink-0 items-center gap-0.5">
-            <Link
-              to="/page/$pageNumber"
-              params={{ pageNumber: String(chapter.pages[0]) }}
-              className="hidden text-[12px] tabular-nums text-[var(--theme-text-tertiary)] transition-colors hover:text-primary-600 sm:inline"
-            >
-              Sayfa {chapter.pages[0]}–{chapter.pages[1]}
-            </Link>
             {viewMode === "mushaf" && (
               <button
                 type="button"
@@ -592,6 +592,62 @@ function SurahPicker({
             </p>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+// -- Topic Navigation Bar (when coming from Fihrist) --
+
+function TopicNavBar({ topicIndex, currentSurahId }: { topicIndex: number; currentSurahId: number }) {
+  const topic = TOPIC_INDEX[topicIndex];
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to active ref
+  useEffect(() => {
+    const el = scrollRef.current?.querySelector("[data-active]");
+    if (el) el.scrollIntoView({ inline: "center", block: "nearest" });
+  }, [currentSurahId]);
+
+  return (
+    <div className="mb-6 rounded-2xl bg-[var(--theme-bg-primary)] p-3">
+      {/* Header row */}
+      <div className="mb-2.5 flex items-center gap-2">
+        <span className="text-[18px] leading-none">{topic.icon}</span>
+        <span className="flex-1 text-[13px] font-semibold text-[var(--theme-text)]">{topic.topic}</span>
+        <Link
+          to="/browse/$tab"
+          params={{ tab: "index" }}
+          search={{ topic: topicIndex }}
+          className="text-[11px] font-medium text-primary-600 hover:text-primary-700"
+        >
+          Fihrist'e Dön
+        </Link>
+      </div>
+      {/* Scrollable refs */}
+      <div ref={scrollRef} className="flex gap-1.5 overflow-x-auto pb-0.5" style={{ scrollbarWidth: "none" }}>
+        {topic.refs.map((ref) => {
+          const [surah, verseRange] = ref.split(":");
+          const surahId = Number(surah);
+          const firstVerse = verseRange?.split("-")[0];
+          const isActive = surahId === currentSurahId;
+          return (
+            <Link
+              key={ref}
+              to="/surah/$surahId"
+              params={{ surahId: surah }}
+              search={{ topic: topicIndex, verse: firstVerse ? Number(firstVerse) : undefined }}
+              {...(isActive ? { "data-active": true } : {})}
+              className={`shrink-0 rounded-lg px-2.5 py-1 text-[12px] font-medium tabular-nums transition-colors ${
+                isActive
+                  ? "bg-primary-600 text-white"
+                  : "bg-[var(--theme-hover-bg)] text-[var(--theme-text-secondary)] hover:bg-primary-600/10 hover:text-primary-700"
+              }`}
+            >
+              {ref}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

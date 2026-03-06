@@ -14,9 +14,7 @@ export const Route = createFileRoute("/_app")({
 });
 
 const NAV_ITEMS = [
-  { to: "/surah", label: "Sureler", icon: BookIcon },
-  { to: "/juz", label: "Cüzler", icon: LayersIcon },
-  { to: "/page", label: "Sayfalar", icon: FileTextIcon },
+  { to: "/browse", label: "Mahfuz", icon: BookIcon },
   { to: "/memorize", label: "Ezberleme", icon: BrainIcon },
   { to: "/bookmarks", label: "Yer İmleri", icon: BookmarkIcon },
   { to: "/audio", label: "Dinleme", icon: HeadphonesIcon },
@@ -108,7 +106,7 @@ function AppLayout() {
           {/* Left: Logo + Chapter/page context */}
           <div className="flex min-w-0 items-center gap-1">
             {/* Logo */}
-            <Link to="/surah" className="mr-2 flex shrink-0 items-center gap-2 sm:mr-3">
+            <Link to="/browse" className="mr-2 flex shrink-0 items-center gap-2 sm:mr-3">
               <img src="/images/mahfuz-logo.svg" alt="Mahfuz" className="h-10 w-auto" />
             </Link>
 
