@@ -375,16 +375,17 @@ function MushafPageView() {
             <span className="w-8 shrink-0" />
           )}
 
-          {/* Center content */}
+          {/* Center: unified toolbar (icon-only tabs + A ع) */}
           <div className="flex min-w-0 flex-1 items-center justify-center">
-            <SegmentedControl options={VIEW_MODE_OPTIONS} value={viewMode} onChange={setViewMode} />
+            <div className="flex items-center rounded-xl bg-[var(--theme-pill-bg)] p-1">
+              <SegmentedControl options={VIEW_MODE_OPTIONS} value={viewMode} onChange={setViewMode} iconOnlyMobile transparent />
+              <div className="mx-0.5 h-4 w-px bg-[var(--theme-border)]" />
+              <ReadingToolbar segmentStyle />
+            </div>
           </div>
 
-          {/* Right group: page info + fullscreen + reading toolbar + arrow */}
+          {/* Right group: fullscreen + arrow */}
           <div className="flex shrink-0 items-center gap-0.5">
-            <span className="hidden text-[12px] tabular-nums text-[var(--theme-text-tertiary)] sm:inline">
-              Sayfa {pageNum}
-            </span>
             {viewMode === "mushaf" && (
               <button
                 type="button"
@@ -396,7 +397,6 @@ function MushafPageView() {
                 {fullscreenIcon}
               </button>
             )}
-            <ReadingToolbar />
             {pageNum < TOTAL_PAGES ? (
               <Link
                 to="/page/$pageNumber"

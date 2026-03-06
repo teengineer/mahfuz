@@ -201,34 +201,28 @@ function JuzView() {
             <span className="w-8 shrink-0" />
           )}
 
-          {/* Center content */}
+          {/* Center: unified toolbar (icon-only tabs + A ع) */}
           <div className="flex min-w-0 flex-1 items-center justify-center">
-            <SegmentedControl options={VIEW_MODE_OPTIONS} value={viewMode} onChange={setViewMode} />
+            <div className="flex items-center rounded-xl bg-[var(--theme-pill-bg)] p-1">
+              <SegmentedControl options={VIEW_MODE_OPTIONS} value={viewMode} onChange={setViewMode} iconOnlyMobile transparent />
+              <div className="mx-0.5 h-4 w-px bg-[var(--theme-border)]" />
+              <ReadingToolbar segmentStyle />
+            </div>
           </div>
 
-          {/* Right group: page info + reading toolbar + arrow */}
-          <div className="flex shrink-0 items-center gap-0.5">
+          {/* Right arrow — next juz */}
+          {hasNext ? (
             <Link
-              to="/page/$pageNumber"
-              params={{ pageNumber: String(pageStart) }}
-              className="hidden text-[12px] tabular-nums text-[var(--theme-text-tertiary)] transition-colors hover:text-primary-600 sm:inline"
+              to="/juz/$juzId"
+              params={{ juzId: String(juzNumber + 1) }}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[var(--theme-text-tertiary)] transition-colors hover:bg-[var(--theme-hover-bg)] hover:text-[var(--theme-text)]"
+              aria-label="Sonraki cüz"
             >
-              Sayfa {pageStart}–{pageEnd}
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
             </Link>
-            <ReadingToolbar />
-            {hasNext ? (
-              <Link
-                to="/juz/$juzId"
-                params={{ juzId: String(juzNumber + 1) }}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[var(--theme-text-tertiary)] transition-colors hover:bg-[var(--theme-hover-bg)] hover:text-[var(--theme-text)]"
-                aria-label="Sonraki cüz"
-              >
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
-              </Link>
-            ) : (
-              <span className="w-8 shrink-0" />
-            )}
-          </div>
+          ) : (
+            <span className="w-8 shrink-0" />
+          )}
         </div>
       </div>
 
