@@ -2,13 +2,11 @@
 
 <br>
 
-<img src="apps/web/public/icons/icon-512.png" width="280" alt="Mahfuz">
+<img src="apps/web/public/images/mahfuz-logo.svg" width="320" alt="Mahfuz — محفوظ">
 
-<br><br>
+<br>
 
-# Mahfuz · محفوظ
-
-A minimal, distraction free Quran reading experience on the web.
+A minimal, distraction-free Quran reading experience on the web.
 
 **[mahfuz.ilg.az](https://mahfuz.ilg.az)**
 
@@ -16,33 +14,30 @@ A minimal, distraction free Quran reading experience on the web.
 
 </div>
 
+---
+
 ## About
 
-Mahfuz is a Quran companion designed around simplicity. No clutter, no ads, just the text and the tools you need to read, listen, and learn.
+Mahfuz is a Quran companion designed around simplicity. No clutter, no ads — just the text and the tools you need to read, listen, and learn.
 
-Three view modes let you choose how to engage with the Quran: a clean line by line layout for focused reading, a word by word breakdown with inline translation and transliteration for deeper understanding, and a traditional Mushaf page with Karahisari style illuminated borders crafted entirely in CSS and SVG.
+- **Three reading modes** — Line-by-line for focused reading, word-by-word with inline translation and transliteration, and a traditional Mushaf page with Karahisari-style illuminated borders in CSS and SVG.
+- **Audio playback** — Verse or surah-level playback with real-time word highlighting, gapless preloading, reciter selection, adjustable speed, and lock screen controls via MediaSession.
+- **Offline first** — Three-layer caching strategy: in-memory, IndexedDB, and Service Worker.
+- **Memorization** — SM-2 spaced repetition, progress tracking per surah and ayah, daily goals and review sessions.
 
-Audio playback runs at the verse or surah level with real time word highlighting, gapless preloading between verses, reciter selection, adjustable speed, and lock screen controls via MediaSession. Everything works offline through a three layer caching strategy combining in memory, IndexedDB, and Service Worker.
+## Roadmap
 
-The interface stays minimal on purpose. Typography, spacing, and color choices are carefully considered so nothing gets between you and the Quran.
+| Status | Feature |
+|:------:|---------|
+| ✅ | Reading — Three view modes with offline support |
+| ✅ | Audio — Verse-level playback with word sync |
+| ✅ | Memorization — Spaced repetition with SM-2 |
+| 🔜 | Sync — Cross-device progress sync |
+| 🔜 | Gamification — Achievements, streaks, challenges |
+| 🔜 | Share & SEO — Social sharing, public surah pages |
+| 🔜 | Mobile — Native Android and iOS apps |
 
-## Where We're Headed
-
-Mahfuz is just getting started. The reading and listening experience is live today, but there is much more planned:
-
-**Memorization** · Spaced repetition, progress tracking per surah and ayah, quiz modes with hide and recall, daily goals and streaks.
-
-**Gamification** · Achievement badges, reading challenges, and optional leaderboards to keep you motivated.
-
-**Quran Education** · Curated content and interactive tools to support learning tajweed, tafsir context, and deeper study.
-
-**Mobile Apps** · Native Android and iOS applications are on the roadmap.
-
-## Contributing
-
-We'd love to have talented developers join the journey. Whether you're into React, mobile development, or just passionate about building tools for the Quran, there's a place for you here.
-
-Start by opening an issue to discuss your idea, then send a PR.
+## Getting Started
 
 ```bash
 git clone https://github.com/theilgaz/mahfuz.git
@@ -52,22 +47,29 @@ cp apps/web/.env.example apps/web/.env
 npx pnpm@9 dev
 ```
 
-The dev server runs at `http://localhost:3000`.
+Dev server runs at `http://localhost:3000`.
 
-## Tech
+## Tech Stack
 
-React 19 · TanStack Start (SSR) · TanStack Router · Vite 7 · Tailwind v4 · Zustand · Better Auth · Drizzle ORM · LibSQL · Turborepo · pnpm · Netlify
+React 19 · TanStack Start · TanStack Router · Vite 7 · Tailwind v4 · Zustand · Better Auth · Drizzle ORM · LibSQL · Turborepo · pnpm · Netlify
 
-## Structure
+## Project Structure
 
 ```
 apps/web              Main web application
 packages/api          Quran.com API client
-packages/audio-engine Playback engine with word level sync
+packages/audio-engine Playback engine with word-level sync
 packages/db           IndexedDB cache layer (Dexie)
+packages/memorization SM-2 spaced repetition engine
 packages/shared       Types and constants
 tooling/              Shared ESLint, TypeScript, Tailwind configs
 ```
+
+## Contributing
+
+We'd love to have talented developers join the journey. Whether you're into React, mobile development, or just passionate about building tools for the Quran — there's a place for you here.
+
+Start by opening an issue to discuss your idea, then send a PR.
 
 ## License
 
