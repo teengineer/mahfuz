@@ -86,11 +86,14 @@ export function ReviewCard({
             return (
               <span
                 key={w.id}
-                className={`inline-block transition-all duration-300 ${
+                className={`inline-block transition-[filter,opacity] duration-500 ease-out ${
                   isRevealed
                     ? "opacity-100"
-                    : "cursor-pointer rounded bg-[var(--theme-pill-bg)] text-[var(--theme-pill-bg)] select-none"
+                    : "cursor-pointer select-none opacity-40"
                 }`}
+                style={{
+                  filter: isRevealed ? "blur(0px)" : "blur(8px)",
+                }}
                 onClick={!isRevealed ? onRevealNext : undefined}
               >
                 {w.text_uthmani}{" "}
@@ -102,18 +105,26 @@ export function ReviewCard({
 
       {/* Actions */}
       {!isFullyRevealed ? (
-        <div className="flex justify-center gap-3">
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex gap-3">
+            <button
+              onClick={onRevealNext}
+              className="rounded-xl bg-primary-600 px-5 py-2.5 text-[14px] font-medium text-white shadow-sm transition-all hover:bg-primary-700 active:scale-[0.97]"
+            >
+              Sonraki Kelime
+            </button>
+            <button
+              onClick={onRevealAll}
+              className="rounded-xl bg-[var(--theme-hover-bg)] px-5 py-2.5 text-[14px] font-medium text-[var(--theme-text-secondary)] transition-all hover:bg-[var(--theme-pill-bg)]"
+            >
+              Tamamını Göster
+            </button>
+          </div>
           <button
-            onClick={onRevealNext}
-            className="rounded-xl bg-primary-600 px-5 py-2.5 text-[14px] font-medium text-white shadow-sm transition-all hover:bg-primary-700 active:scale-[0.97]"
+            onClick={() => onGrade(5)}
+            className="text-[13px] text-[var(--theme-text-tertiary)] transition-colors hover:text-emerald-600"
           >
-            Sonraki Kelime
-          </button>
-          <button
-            onClick={onRevealAll}
-            className="rounded-xl bg-[var(--theme-hover-bg)] px-5 py-2.5 text-[14px] font-medium text-[var(--theme-text-secondary)] transition-all hover:bg-[var(--theme-pill-bg)]"
-          >
-            Tamamını Göster
+            Ezberledim ✓
           </button>
         </div>
       ) : (

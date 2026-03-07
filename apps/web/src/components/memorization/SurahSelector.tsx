@@ -64,6 +64,80 @@ export function SurahSelector({ userId }: SurahSelectorProps) {
     );
   }, [chapters, search]);
 
+  const addedChapters = useMemo(() => {
+    return chapters.filter((ch) => {
+      const p = progress.get(ch.id);
+      return p && p.total > 0;
+    });
+  }, [chapters, progress]);
+
+  const renderRow = (ch: (typeof chapters)[number], highlighted: boolean) => {
+    const p = progress.get(ch.id);
+    return (
+      <div
+        key={highlighted ? `added-${ch.id}` : ch.id}
+        className="flex items-center gap-3 px-6 py-3 transition-colors hover:bg-[var(--theme-hover-bg)]"
+      >
+        <span
+          className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-[12px] font-semibold tabular-nums ${
+            highlighted
+              ? "bg-primary-50 text-primary-700"
+              : "bg-[var(--theme-hover-bg)] text-[var(--theme-text-secondary)]"
+          }`}
+        >
+          {ch.id}
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="text-[14px] font-medium text-[var(--theme-text)]">
+              {ch.name_simple}
+            </span>
+            <span className="text-[13px] text-[var(--theme-text-tertiary)]">
+              {ch.name_arabic}
+            </span>
+          </div>
+          {p && p.total > 0 && (
+            <div className="mt-1 flex h-1.5 overflow-hidden rounded-full bg-[var(--theme-hover-bg)]">
+              {(Object.keys(CONFIDENCE_COLORS) as ConfidenceLevel[]).map(
+                (level) => {
+                  const count = p.byConfidence[level] || 0;
+                  const pct = (count / ch.verses_count) * 100;
+                  if (pct === 0) return null;
+                  return (
+                    <div
+                      key={level}
+                      className={`${CONFIDENCE_COLORS[level]}`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  );
+                },
+              )}
+            </div>
+          )}
+        </div>
+        <span className="text-[12px] tabular-nums text-[var(--theme-text-quaternary)]">
+          {p?.total || 0}/{ch.verses_count}
+        </span>
+        <div className="flex gap-1.5">
+          <Link
+            to="/memorize/progress/$surahId"
+            params={{ surahId: String(ch.id) }}
+            className="rounded-lg px-2.5 py-1 text-[12px] font-medium text-primary-600 transition-colors hover:bg-primary-50"
+          >
+            İlerleme
+          </Link>
+          <Link
+            to="/memorize/add/$surahId"
+            params={{ surahId: String(ch.id) }}
+            className="rounded-lg px-2.5 py-1 text-[12px] font-medium text-[var(--theme-text-tertiary)] transition-colors hover:bg-[var(--theme-hover-bg)]"
+          >
+            Ekle
+          </Link>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="rounded-2xl bg-[var(--theme-bg-primary)] shadow-[var(--shadow-card)]">
       <div className="border-b border-[var(--theme-divider)] px-6 py-4">
@@ -105,66 +179,22 @@ export function SurahSelector({ userId }: SurahSelectorProps) {
         </div>
       ) : (
       <div className="divide-y divide-[var(--theme-divider)]">
-        {filtered.map((ch) => {
-          const p = progress.get(ch.id);
-          return (
-            <div
-              key={ch.id}
-              className="flex items-center gap-3 px-6 py-3 transition-colors hover:bg-[var(--theme-hover-bg)]"
-            >
-              <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--theme-hover-bg)] text-[12px] font-semibold tabular-nums text-[var(--theme-text-secondary)]">
-                {ch.id}
+        {search === "" && addedChapters.length > 0 && (
+          <>
+            <div className="border-b border-[var(--theme-divider)] bg-[var(--theme-hover-bg)] px-6 py-2.5">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-tertiary)]">
+                Eklenen Sureler ({addedChapters.length})
               </span>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-[14px] font-medium text-[var(--theme-text)]">
-                    {ch.name_simple}
-                  </span>
-                  <span className="text-[13px] text-[var(--theme-text-tertiary)]">
-                    {ch.name_arabic}
-                  </span>
-                </div>
-                {p && p.total > 0 && (
-                  <div className="mt-1 flex h-1.5 overflow-hidden rounded-full bg-[var(--theme-hover-bg)]">
-                    {(
-                      Object.keys(CONFIDENCE_COLORS) as ConfidenceLevel[]
-                    ).map((level) => {
-                      const count = p.byConfidence[level] || 0;
-                      const pct = (count / ch.verses_count) * 100;
-                      if (pct === 0) return null;
-                      return (
-                        <div
-                          key={level}
-                          className={`${CONFIDENCE_COLORS[level]}`}
-                          style={{ width: `${pct}%` }}
-                        />
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-              <span className="text-[12px] tabular-nums text-[var(--theme-text-quaternary)]">
-                {p?.total || 0}/{ch.verses_count}
-              </span>
-              <div className="flex gap-1.5">
-                <Link
-                  to="/memorize/progress/$surahId"
-                  params={{ surahId: String(ch.id) }}
-                  className="rounded-lg px-2.5 py-1 text-[12px] font-medium text-primary-600 transition-colors hover:bg-primary-50"
-                >
-                  İlerleme
-                </Link>
-                <Link
-                  to="/memorize/add/$surahId"
-                  params={{ surahId: String(ch.id) }}
-                  className="rounded-lg px-2.5 py-1 text-[12px] font-medium text-[var(--theme-text-tertiary)] transition-colors hover:bg-[var(--theme-hover-bg)]"
-                >
-                  Ekle
-                </Link>
-              </div>
             </div>
-          );
-        })}
+            {addedChapters.map((ch) => renderRow(ch, true))}
+            <div className="border-b border-[var(--theme-divider)] bg-[var(--theme-hover-bg)] px-6 py-2.5">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-tertiary)]">
+                Tüm Sureler
+              </span>
+            </div>
+          </>
+        )}
+        {(search === "" ? chapters : filtered).map((ch) => renderRow(ch, false))}
       </div>
       )}
     </div>
