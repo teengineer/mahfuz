@@ -66,7 +66,7 @@ function CreditsPage() {
   return (
     <div className="mx-auto max-w-2xl px-6 py-8">
       <h1 className="mb-1 text-2xl font-bold tracking-tight text-[var(--theme-text)]">
-        Krediler
+        Katkıda Bulunanlar
       </h1>
       <p className="mb-10 text-sm text-[var(--theme-text-tertiary)]">
         Bu uygulamayı mümkün kılan kişi ve kaynaklar

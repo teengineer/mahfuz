@@ -330,6 +330,24 @@ function AppLayout() {
       {/* Page content */}
       <main ref={mainRef} className={`relative flex-1 overflow-y-auto ${audioVisible ? "pb-16 lg:pb-0" : ""}`}>
         <Outlet />
+
+        {/* Footer */}
+        <footer className="border-t border-[var(--theme-border)] px-6 py-6">
+          <div className="mx-auto flex max-w-4xl flex-col items-center gap-3 sm:flex-row sm:justify-between">
+            <span className="text-[12px] text-[var(--theme-text-quaternary)]">
+              Mahfuz — Kur'an-ı Kerim
+            </span>
+            <div className="flex items-center gap-4">
+              <Link to="/credits" className="text-[12px] text-[var(--theme-text-quaternary)] transition-colors hover:text-[var(--theme-text-secondary)]">
+                Katkıda Bulunanlar
+              </Link>
+              <a href="https://github.com/theilgaz/mahfuz" target="_blank" rel="noopener noreferrer" className="text-[12px] text-[var(--theme-text-quaternary)] transition-colors hover:text-[var(--theme-text-secondary)]">
+                GitHub
+              </a>
+            </div>
+          </div>
+        </footer>
+
         {showScrollTop && (
           <button
             onClick={scrollToTop}
@@ -422,7 +440,7 @@ function AppLayout() {
                 }}
               >
                 <CreditsIcon />
-                <span className="text-[15px] font-medium">Krediler</span>
+                <span className="text-[15px] font-medium">Katkıda Bulunanlar</span>
               </Link>
             </div>
 

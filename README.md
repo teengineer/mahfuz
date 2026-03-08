@@ -65,6 +65,27 @@ packages/shared       Types and constants
 tooling/              Shared ESLint, TypeScript, Tailwind configs
 ```
 
+## Credits
+
+### Translations
+
+| Translation | Author | Source |
+|-------------|--------|--------|
+| Diyanet İşleri Başkanlığı Meali | Diyanet İşleri Başkanlığı | [quran.com](https://quran.com) API |
+| Ömer Çelik Meali | Prof. Dr. Ömer Çelik | [kuranvemeali.com](https://www.kuranvemeali.com) |
+| Ömer Nasuhi Bilmen Meali | Ömer Nasuhi Bilmen | [kuranayetleri.net](https://kuranayetleri.net) |
+| Ali Fikri Yavuz Meali | Ali Fikri Yavuz | [kuranayetleri.net](https://kuranayetleri.net) |
+
+### Data Sources
+
+- **[Quran.com API](https://quran.com)** — Verse text, word-by-word data, transliteration, and Diyanet translation
+- **[Kuran Meali Ebook Oluşturucu](https://github.com/alialparslan/Kuran-Meali-Ebook-Olusturucu)** by alialparslan — Ali Fikri Yavuz and Ömer Nasuhi Bilmen translations in JSON format
+
+### Fonts
+
+- **[KFGQPC Uthmani Hafs](https://fonts.qurancomplex.gov.sa)** — King Fahd Glorious Quran Printing Complex
+- **[Google Fonts](https://fonts.google.com)** — Scheherazade New, Amiri, Noto Naskh Arabic, Rubik, Zain, Reem Kufi, Playpen Sans Arabic
+
 ## Contributing
 
 We'd love to have talented developers join the journey. Whether you're into React, mobile development, or just passionate about building tools for the Quran — there's a place for you here.
