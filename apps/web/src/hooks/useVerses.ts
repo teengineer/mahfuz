@@ -6,9 +6,8 @@
 import { queryOptions } from "@tanstack/react-query";
 import type { TextType } from "@mahfuz/shared/types";
 import {
-  loadSurahText,
+  loadSurahVerses,
   loadQuranMeta,
-  tanzilToVerses,
 } from "~/lib/quran-data";
 import { usePreferencesStore } from "~/stores/usePreferencesStore";
 
@@ -25,10 +24,10 @@ export const versesByChapterQueryOptions = (
     queryKey: ["static-verses", "chapter", chapterId, getTextType()],
     queryFn: async () => {
       const textType = getTextType();
-      const data = await loadSurahText(chapterId, textType);
+      const verses = await loadSurahVerses(chapterId, textType);
       return {
-        verses: tanzilToVerses(data, chapterId, textType),
-        pagination: { current_page: 1, total_pages: 1, total_records: data.verses.length, per_page: data.verses.length },
+        verses,
+        pagination: { current_page: 1, total_pages: 1, total_records: verses.length, per_page: verses.length },
       };
     },
     staleTime: Infinity,
@@ -48,8 +47,7 @@ export const versesByPageQueryOptions = (
 
       const allVerses = [];
       for (const surahId of surahIds) {
-        const data = await loadSurahText(surahId, textType);
-        const verses = tanzilToVerses(data, surahId, textType);
+        const verses = await loadSurahVerses(surahId, textType);
         allVerses.push(...verses.filter((v) => v.page_number === pageNumber));
       }
 
@@ -80,8 +78,7 @@ export const versesByJuzQueryOptions = (
 
       const allVerses = [];
       for (let surahId = startSura; surahId <= endSura; surahId++) {
-        const data = await loadSurahText(surahId, textType);
-        const verses = tanzilToVerses(data, surahId, textType);
+        const verses = await loadSurahVerses(surahId, textType);
         allVerses.push(
           ...verses.filter((v) => {
             if (surahId === startSura && v.verse_number < startAya) return false;
@@ -109,8 +106,7 @@ export const verseByKeyQueryOptions = (
     queryFn: async () => {
       const textType = getTextType();
       const [surahId, verseNum] = verseKey.split(":").map(Number);
-      const data = await loadSurahText(surahId, textType);
-      const verses = tanzilToVerses(data, surahId, textType);
+      const verses = await loadSurahVerses(surahId, textType);
       const verse = verses.find((v) => v.verse_number === verseNum);
       if (!verse) throw new Error(`Verse not found: ${verseKey}`);
       return verse;

@@ -107,9 +107,14 @@ export function useReviewSession(userId: string | undefined) {
 
       if (cards.length === 0) return false;
 
-      // Prefetch verse data for first few cards
-      for (const card of cards.slice(0, 3)) {
-        queryClient.prefetchQuery(verseByKeyQueryOptions(card.verseKey));
+      // Prefetch verse data — load unique surahs (each load caches the full surah)
+      const seenSurahs = new Set<string>();
+      for (const card of cards) {
+        const surahKey = card.verseKey.split(":")[0];
+        if (!seenSurahs.has(surahKey)) {
+          seenSurahs.add(surahKey);
+          queryClient.prefetchQuery(verseByKeyQueryOptions(card.verseKey));
+        }
       }
 
       store.startSession(cards, mode);

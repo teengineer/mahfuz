@@ -45,6 +45,7 @@ const loadJsonFile = createIsomorphicFn()
 // ---------- Cache ----------
 
 const surahCache = new Map<string, TanzilSurahData>();
+const versesCache = new Map<string, Verse[]>();
 
 // ---------- Loaders ----------
 
@@ -65,6 +66,21 @@ export async function loadSurahText(
   const data = await loadJsonFile(`/quran/${textType}/${surahId}.json`);
   surahCache.set(key, data);
   return data;
+}
+
+/** Loads and converts surah verses with caching. Avoids re-parsing. */
+export async function loadSurahVerses(
+  surahId: number,
+  textType: TextType
+): Promise<Verse[]> {
+  const key = `${textType}/${surahId}`;
+  const cached = versesCache.get(key);
+  if (cached) return cached;
+
+  const data = await loadSurahText(surahId, textType);
+  const verses = tanzilToVerses(data, surahId, textType);
+  versesCache.set(key, verses);
+  return verses;
 }
 
 // ---------- Converters ----------
