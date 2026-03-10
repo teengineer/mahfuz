@@ -1000,6 +1000,13 @@ export const en = {
     noData: "Nothing here yet",
   },
 
+  // PWA
+  pwa: {
+    installPrompt: "Install Mahfuz on your device",
+    dismiss: "Close",
+    install: "Install",
+  },
+
   // Offline
   offline: {
     message: "You are offline. Showing cached data",

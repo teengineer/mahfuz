@@ -998,6 +998,13 @@ export const tr = {
     noData: "Henüz bir şey yok",
   },
 
+  // PWA
+  pwa: {
+    installPrompt: "Mahfuz'u cihazınıza yükleyin",
+    dismiss: "Kapat",
+    install: "Yükle",
+  },
+
   // Offline
   offline: {
     message: "Çevrimdışısınız. Önbellek verileri gösteriliyor",

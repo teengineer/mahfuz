@@ -1,9 +1,10 @@
 import { queryOptions } from "@tanstack/react-query";
 import { loadQuranMeta, staticChapterToChapter } from "~/lib/quran-data";
+import { QUERY_KEYS } from "~/lib/query-keys";
 
 export const chaptersQueryOptions = () =>
   queryOptions({
-    queryKey: ["chapters-static"],
+    queryKey: QUERY_KEYS.chapters(),
     queryFn: async () => {
       const meta = await loadQuranMeta();
       return meta.chapters.map(staticChapterToChapter);
@@ -14,7 +15,7 @@ export const chaptersQueryOptions = () =>
 
 export const chapterQueryOptions = (chapterId: number) =>
   queryOptions({
-    queryKey: ["chapter-static", chapterId],
+    queryKey: QUERY_KEYS.chapter(chapterId),
     queryFn: async () => {
       const meta = await loadQuranMeta();
       const sc = meta.chapters.find((c) => c.id === chapterId);
