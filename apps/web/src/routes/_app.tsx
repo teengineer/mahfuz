@@ -145,7 +145,7 @@ function AppLayout() {
           <div className="flex min-w-0 items-center gap-1">
             {/* Logo */}
             <Link to="/browse" className="mr-1.5 flex shrink-0 items-center gap-2 sm:mr-3">
-              <img src="/images/mahfuz-logo.png" alt="Mahfuz" className="h-10 w-auto lg:h-11" />
+              <img src="/images/mahfuz-logo.png" alt="Mahfuz" width={37} height={44} className="h-10 w-auto lg:h-11" />
               <span className="hidden text-[17px] font-semibold tracking-tight text-[var(--theme-text)] sm:inline">
                 Mahfuz
               </span>

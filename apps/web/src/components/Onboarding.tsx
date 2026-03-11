@@ -100,6 +100,8 @@ export function Onboarding() {
               <img
                 src="/images/mahfuz-logo.png"
                 alt="Mahfuz"
+                width={47}
+                height={56}
                 className="mx-auto mb-4 h-14"
               />
               <h2 className="mb-2 text-[20px] font-semibold text-[var(--theme-text)]">
