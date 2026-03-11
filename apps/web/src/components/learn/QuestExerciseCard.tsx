@@ -52,6 +52,20 @@ export function QuestExerciseCard({
     playAudioRef(exercise.word.audioRef);
   };
 
+  const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleAdvance = () => {
+    if (autoAdvanceTimer.current) {
+      clearTimeout(autoAdvanceTimer.current);
+      autoAdvanceTimer.current = null;
+    }
+    const wordId = selectedId;
+    const correct = wordId === exercise.word.id;
+    setSelectedId(null);
+    setAnswered(false);
+    if (wordId) onAnswer(wordId, correct);
+  };
+
   const handleSelect = (word: QuestWord) => {
     if (answered) return;
     setSelectedId(word.id);
@@ -63,12 +77,18 @@ export function QuestExerciseCard({
       playSuccessChime();
     }
 
-    setTimeout(() => {
-      onAnswer(word.id, isCorrect);
-      setSelectedId(null);
-      setAnswered(false);
-    }, 1500);
+    // Auto-advance after 3s if user doesn't tap "Next"
+    autoAdvanceTimer.current = setTimeout(handleAdvance, 3000);
   };
+
+  // Clean up timer on unmount or exercise change
+  useEffect(() => {
+    return () => {
+      if (autoAdvanceTimer.current) {
+        clearTimeout(autoAdvanceTimer.current);
+      }
+    };
+  }, [exercise.word.id]);
 
   return (
     <div className="rounded-2xl bg-[var(--theme-bg-primary)] p-6 shadow-[var(--shadow-card)]">
@@ -170,22 +190,30 @@ export function QuestExerciseCard({
         })}
       </div>
 
-      {/* Feedback with meaning */}
+      {/* Feedback with meaning + Next button */}
       {answered && selectedId !== null && (
-        <div
-          className={`mt-4 rounded-xl px-4 py-3 text-center ${
-            selectedId === exercise.word.id
-              ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400"
-              : "bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-400"
-          }`}
-        >
-          <p className="text-[13px] font-medium">
-            {selectedId === exercise.word.id ? t.learn.correct : t.learn.incorrect}
-          </p>
-          <p className="mt-1 text-[12px] opacity-80">
-            <span className="arabic-text" dir="rtl">{exercise.word.arabic}</span>
-            {" "}({exercise.word.transliteration}) — {exercise.word.meaning}
-          </p>
+        <div className="mt-4 space-y-3">
+          <div
+            className={`rounded-xl px-4 py-3 text-center ${
+              selectedId === exercise.word.id
+                ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400"
+                : "bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-400"
+            }`}
+          >
+            <p className="text-[13px] font-medium">
+              {selectedId === exercise.word.id ? t.learn.correct : t.learn.incorrect}
+            </p>
+            <p className="mt-1 text-[12px] opacity-80">
+              <span className="arabic-text" dir="rtl">{exercise.word.arabic}</span>
+              {" "}({exercise.word.transliteration}) — {exercise.word.meaning}
+            </p>
+          </div>
+          <button
+            onClick={handleAdvance}
+            className="w-full rounded-xl bg-primary-600 px-6 py-3 text-[14px] font-medium text-white transition-all hover:bg-primary-700 active:scale-[0.97]"
+          >
+            {t.learn.next}
+          </button>
         </div>
       )}
     </div>

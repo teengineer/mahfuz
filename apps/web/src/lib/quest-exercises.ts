@@ -17,9 +17,12 @@ export function generateQuestSession(
   const count = Math.min(quest.exercisesPerSession, bank.length);
   const correctSet = new Set(correctWordIds);
 
+  // Only use words with target letters as question words
+  const targetWords = bank.filter((w) => w.targetLetters.length > 0);
+
   // Partition into unseen/seen
-  const unseen = bank.filter((w) => !correctSet.has(w.id));
-  const seen = bank.filter((w) => correctSet.has(w.id));
+  const unseen = targetWords.filter((w) => !correctSet.has(w.id));
+  const seen = targetWords.filter((w) => correctSet.has(w.id));
 
   // Pick from unseen first, then fill from seen
   const shuffledUnseen = shuffle([...unseen]);
@@ -27,7 +30,7 @@ export function generateQuestSession(
   const selected = [...shuffledUnseen, ...shuffledSeen].slice(0, count);
 
   return selected.map((word) => {
-    // Pick 3 distractors from the rest of the bank
+    // Pick 3 distractors from the full bank (excluding the correct word)
     const distractors = shuffle(bank.filter((w) => w.id !== word.id)).slice(
       0,
       3,

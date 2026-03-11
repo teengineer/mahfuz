@@ -31,7 +31,7 @@ export const BA_FAMILY_WORDS: QuestWord[] = [
     transliteration: "ar-raḥīm",
     meaning: "çok merhametli",
     meaningEn: "the Most Merciful",
-    audioRef: { verseKey: "1:3", wordPosition: 1 },
+    audioRef: { verseKey: "1:3", wordPosition: 2 },
     targetLetters: [],
   },
   {
@@ -105,7 +105,7 @@ export const BA_FAMILY_WORDS: QuestWord[] = [
     transliteration: "bi-rabbi",
     meaning: "Rabbi ile",
     meaningEn: "with the Lord of",
-    audioRef: { verseKey: "114:1", wordPosition: 2 },
+    audioRef: { verseKey: "114:1", wordPosition: 3 },
     targetLetters: [2],
   },
   {
@@ -114,7 +114,7 @@ export const BA_FAMILY_WORDS: QuestWord[] = [
     transliteration: "an-nās",
     meaning: "insanların",
     meaningEn: "mankind",
-    audioRef: { verseKey: "114:1", wordPosition: 3 },
+    audioRef: { verseKey: "114:1", wordPosition: 4 },
     targetLetters: [],
   },
   {
@@ -132,7 +132,7 @@ export const BA_FAMILY_WORDS: QuestWord[] = [
     transliteration: "ṣudūr",
     meaning: "göğüslerinin",
     meaningEn: "breasts (hearts)",
-    audioRef: { verseKey: "114:5", wordPosition: 3 },
+    audioRef: { verseKey: "114:5", wordPosition: 4 },
     targetLetters: [],
   },
   // ─── Felak (113) ───────────────────────────
@@ -142,7 +142,7 @@ export const BA_FAMILY_WORDS: QuestWord[] = [
     transliteration: "al-falaq",
     meaning: "sabahın",
     meaningEn: "of daybreak",
-    audioRef: { verseKey: "113:1", wordPosition: 3 },
+    audioRef: { verseKey: "113:1", wordPosition: 4 },
     targetLetters: [],
   },
   // ─── Baqarah (2:1-5) ──────────────────────
@@ -242,7 +242,7 @@ export const BA_FAMILY_WORDS: QuestWord[] = [
     transliteration: "unzila",
     meaning: "indirildi",
     meaningEn: "was revealed",
-    audioRef: { verseKey: "2:4", wordPosition: 3 },
+    audioRef: { verseKey: "2:4", wordPosition: 4 },
     targetLetters: [],
   },
   {
@@ -251,7 +251,7 @@ export const BA_FAMILY_WORDS: QuestWord[] = [
     transliteration: "ilayk",
     meaning: "sana",
     meaningEn: "to you",
-    audioRef: { verseKey: "2:4", wordPosition: 4 },
+    audioRef: { verseKey: "2:4", wordPosition: 5 },
     targetLetters: [],
   },
   {
@@ -260,7 +260,7 @@ export const BA_FAMILY_WORDS: QuestWord[] = [
     transliteration: "qablik",
     meaning: "senden önce",
     meaningEn: "before you",
-    audioRef: { verseKey: "2:4", wordPosition: 7 },
+    audioRef: { verseKey: "2:4", wordPosition: 9 },
     targetLetters: [2],
   },
   {
@@ -269,7 +269,7 @@ export const BA_FAMILY_WORDS: QuestWord[] = [
     transliteration: "bil-ākhira",
     meaning: "ahirete",
     meaningEn: "in the Hereafter",
-    audioRef: { verseKey: "2:4", wordPosition: 8 },
+    audioRef: { verseKey: "2:4", wordPosition: 10 },
     targetLetters: [2],
   },
   {
@@ -278,7 +278,7 @@ export const BA_FAMILY_WORDS: QuestWord[] = [
     transliteration: "yūqinūna",
     meaning: "kesin inanırlar",
     meaningEn: "they are certain",
-    audioRef: { verseKey: "2:4", wordPosition: 9 },
+    audioRef: { verseKey: "2:4", wordPosition: 12 },
     targetLetters: [],
   },
   // ─── More common Quranic words ─────────────
@@ -315,7 +315,7 @@ export const BA_FAMILY_WORDS: QuestWord[] = [
     transliteration: "qadīr",
     meaning: "güç yetiren",
     meaningEn: "competent/powerful",
-    audioRef: { verseKey: "67:1", wordPosition: 8 },
+    audioRef: { verseKey: "67:1", wordPosition: 9 },
     targetLetters: [],
   },
   {
@@ -324,7 +324,7 @@ export const BA_FAMILY_WORDS: QuestWord[] = [
     transliteration: "thumma",
     meaning: "sonra",
     meaningEn: "then",
-    audioRef: { verseKey: "2:28", wordPosition: 3 },
+    audioRef: { verseKey: "2:28", wordPosition: 7 },
     targetLetters: [4],
   },
 ];
