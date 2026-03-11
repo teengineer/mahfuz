@@ -214,6 +214,9 @@ export const en = {
     sortRevelation: "Revelation",
     reference: "references",
     noResultsHint: "Try a different filter or search term",
+    dailyVerse: "Verse of the Day",
+    shareVerse: "Share",
+    quickAccess: "Quick Access",
   },
 
   // Continue Reading
@@ -299,6 +302,33 @@ export const en = {
     wordTranslationLabel: "Word Translation",
     wordTranslationSubtitle: "Meaning of each word",
     swapOrder: "Swap Order",
+  },
+
+  toolbar: {
+    decreaseSize: "Decrease",
+    increaseSize: "Increase",
+    cycleTheme: "Cycle theme",
+    sizeCategory: "Size",
+    textCategory: "Text & Translation",
+    colorCategory: "Color & Theme",
+    mushafNote: "Translation is not shown in Mushaf mode",
+  },
+
+  onboarding: {
+    skip: "Skip",
+    next: "Next",
+    start: "Start",
+    welcomeTitle: "Welcome to Mahfuz",
+    welcomeSubtitle: "Read, listen, learn and memorize the Holy Quran",
+    feature_read: "Read",
+    feature_listen: "Listen",
+    feature_learn: "Learn",
+    feature_memorize: "Memorize",
+    prefsTitle: "Choose Your Preferences",
+    prefsSubtitle: "You can change theme and language anytime in Settings",
+    readyTitle: "You're Ready!",
+    readySubtitle: "Let's begin with Bismillah",
+    showAgain: "Show welcome screen again",
   },
 
   // Translation Picker

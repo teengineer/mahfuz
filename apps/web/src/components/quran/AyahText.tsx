@@ -104,7 +104,7 @@ export const AyahText = memo(function AyahText({
       id={`verse-${verse.verse_key}`}
       role="article"
       aria-label={`${t.quranReader.verseLabel} ${verse.verse_key}`}
-      className={`animate-fade-in group px-4 py-5 transition-colors sm:px-6 sm:py-7 ${
+      className={`animate-fade-in group px-4 py-6 transition-colors sm:px-6 sm:py-8 ${
         isCurrentVerse && isAudioPlaying
           ? "bg-[var(--theme-highlight-bg)]"
           : "hover:bg-[var(--theme-hover-bg)]"
@@ -125,7 +125,7 @@ export const AyahText = memo(function AyahText({
             onClick={handleCopy}
             className={`flex h-8 w-8 items-center justify-center rounded-full transition-all sm:h-6 sm:w-6 ${
               copied
-                ? "bg-green-500 text-white"
+                ? "animate-copy-flash bg-green-500 text-white"
                 : "text-[var(--theme-text-quaternary)] hover:text-[var(--theme-text-tertiary)]"
             }`}
             aria-label={t.quranReader.copy}
@@ -153,7 +153,7 @@ export const AyahText = memo(function AyahText({
             }}
             className={`flex h-8 w-8 items-center justify-center rounded-full transition-all sm:h-6 sm:w-6 ${
               isPlayingThisVerse
-                ? "bg-primary-600 text-white shadow-sm"
+                ? `bg-primary-600 text-white shadow-sm ${playbackState === "playing" ? "animate-pulse-ring" : ""}`
                 : "bg-[var(--theme-hover-bg)] text-[var(--theme-text-tertiary)] hover:bg-[var(--theme-hover-bg)] hover:text-[var(--theme-text-secondary)]"
             }`}
             aria-label={
@@ -174,9 +174,9 @@ export const AyahText = memo(function AyahText({
         </div>
       </div>
       {/* Verse number + Arabic text */}
-      <div className="mb-4 flex items-start gap-4">
+      <div className="mb-5 flex items-start gap-4">
         <span
-          className="mt-2 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[var(--theme-verse-number-bg)] text-[11px] font-semibold tabular-nums text-[var(--theme-text-secondary)]"
+          className="mt-2 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[var(--theme-verse-number-bg)] text-[12px] font-semibold tabular-nums text-[var(--theme-text-secondary)]"
           aria-hidden="true"
         >
           {verse.verse_number}

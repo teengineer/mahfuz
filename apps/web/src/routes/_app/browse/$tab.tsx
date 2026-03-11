@@ -11,7 +11,11 @@ import { PageListPanel } from "~/components/browse/PageListPanel";
 import { FihristPanel } from "~/components/browse/FihristPanel";
 import { useTranslation } from "~/hooks/useTranslation";
 import { ContinueReadingSection } from "~/components/browse/ContinueReadingSection";
+import { DailyVerseCard } from "~/components/browse/DailyVerseCard";
+import { QuickAccessSection } from "~/components/browse/QuickAccessSection";
 import { useReadingListStore } from "~/stores/useReadingListStore";
+import { usePreferencesStore } from "~/stores/usePreferencesStore";
+import { Onboarding } from "~/components/Onboarding";
 
 const VALID_TABS = ["surahs", "juzs", "pages", "index"] as const;
 type TabType = (typeof VALID_TABS)[number];
@@ -64,6 +68,7 @@ function BrowsePage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const hasItems = useReadingListStore((s) => s.items.length > 0);
+  const hasSeenOnboarding = usePreferencesStore((s) => s.hasSeenOnboarding);
 
   const currentTab = tab as TabType;
 
@@ -92,7 +97,12 @@ function BrowsePage() {
   const greeting = useMemo(() => getGreeting(t), [t]);
 
   return (
-    <div className="mx-auto max-w-[680px] px-5 py-5 sm:px-6 sm:py-10">
+    <div className="mx-auto max-w-[680px] px-5 py-5 sm:px-6 sm:py-10 lg:max-w-[960px]">
+      {!hasSeenOnboarding && <Onboarding />}
+
+      {/* Daily Verse */}
+      <DailyVerseCard />
+
       {/* Greeting + Continue Reading */}
       {hasItems && (
         <p className="mb-1 text-[13px] font-medium text-[var(--theme-text-tertiary)]">
@@ -100,6 +110,9 @@ function BrowsePage() {
         </p>
       )}
       <ContinueReadingSection />
+
+      {/* Quick Access */}
+      <QuickAccessSection />
 
       <h1 className="mb-5 text-[24px] font-semibold tracking-[-0.02em] text-[var(--theme-text)] sm:mb-6 sm:text-[28px]">
         {TAB_TITLES[currentTab]}

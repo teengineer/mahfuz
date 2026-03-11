@@ -212,6 +212,9 @@ export const tr = {
     sortRevelation: "Nüzul",
     reference: "referans",
     noResultsHint: "Farklı bir filtre veya arama terimi deneyin",
+    dailyVerse: "Günün Ayeti",
+    shareVerse: "Paylaş",
+    quickAccess: "Hızlı Erişim",
   },
 
   // Continue Reading
@@ -297,6 +300,35 @@ export const tr = {
     wordTranslationLabel: "Kelime Çevirisi",
     wordTranslationSubtitle: "Her kelimenin anlamı",
     swapOrder: "Sırayı Değiştir",
+  },
+
+  // Toolbar (ReadingToolbar categories)
+  toolbar: {
+    decreaseSize: "Küçült",
+    increaseSize: "Büyüt",
+    cycleTheme: "Tema değiştir",
+    sizeCategory: "Boyut",
+    textCategory: "Yazım & Çeviri",
+    colorCategory: "Renk & Tema",
+    mushafNote: "Mushaf modunda çeviri gösterilmez",
+  },
+
+  // Onboarding
+  onboarding: {
+    skip: "Atla",
+    next: "İleri",
+    start: "Başla",
+    welcomeTitle: "Mahfuz'a Hoş Geldiniz",
+    welcomeSubtitle: "Kur'an-ı Kerim'i okuyun, dinleyin, öğrenin ve ezberleyin",
+    feature_read: "Oku",
+    feature_listen: "Dinle",
+    feature_learn: "Öğren",
+    feature_memorize: "Ezberle",
+    prefsTitle: "Tercihinizi Seçin",
+    prefsSubtitle: "Tema ve dil ayarlarını istediğiniz zaman değiştirebilirsiniz",
+    readyTitle: "Hazırsınız!",
+    readySubtitle: "Bismillah ile başlayalım",
+    showAgain: "Karşılama ekranını tekrar göster",
   },
 
   // Translation Picker

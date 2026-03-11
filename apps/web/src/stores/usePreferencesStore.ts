@@ -259,6 +259,12 @@ interface PreferencesState {
   showLearnTab: boolean;
   showMemorizeTab: boolean;
 
+  // Desktop sidebar
+  sidebarCollapsed: boolean;
+
+  // Onboarding
+  hasSeenOnboarding: boolean;
+
   // Setters
   setArabicFont: (id: string) => void;
   setViewMode: (mode: ViewMode) => void;
@@ -282,6 +288,8 @@ interface PreferencesState {
   setTextType: (t: "uthmani" | "simple") => void;
   setShowLearnTab: (v: boolean) => void;
   setShowMemorizeTab: (v: boolean) => void;
+  setSidebarCollapsed: (v: boolean) => void;
+  setHasSeenOnboarding: (v: boolean) => void;
 }
 
 export const usePreferencesStore = create<PreferencesState>()(
@@ -317,6 +325,12 @@ export const usePreferencesStore = create<PreferencesState>()(
       showLearnTab: true,
       showMemorizeTab: true,
 
+      // Desktop sidebar
+      sidebarCollapsed: false,
+
+      // Onboarding
+      hasSeenOnboarding: false,
+
       setArabicFont: (id) => set({ arabicFontId: id }),
       setViewMode: (mode) => set({ viewMode: mode }),
       setTheme: (theme) => set({ theme }),
@@ -347,10 +361,12 @@ export const usePreferencesStore = create<PreferencesState>()(
       setTextType: (t) => set({ textType: t }),
       setShowLearnTab: (v) => set({ showLearnTab: v }),
       setShowMemorizeTab: (v) => set({ showMemorizeTab: v }),
+      setSidebarCollapsed: (v) => set({ sidebarCollapsed: v }),
+      setHasSeenOnboarding: (v) => set({ hasSeenOnboarding: v }),
     }),
     {
       name: "mahfuz-preferences",
-      version: 7,
+      version: 8,
       migrate: (persisted: unknown, version: number) => {
         const state = persisted as Record<string, unknown>;
         if (version === 0 || !version) {
@@ -403,6 +419,11 @@ export const usePreferencesStore = create<PreferencesState>()(
           if (fontId === "rubik" || fontId === "zain") {
             state.arabicFontId = "uthmani-hafs";
           }
+        }
+        if ((version ?? 0) < 8) {
+          state.sidebarCollapsed ??= false;
+          // Existing users skip onboarding
+          state.hasSeenOnboarding = true;
         }
         return state as PreferencesState;
       },

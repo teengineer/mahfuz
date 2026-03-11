@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { usePreferencesStore, getTranslationFontSizeForMode, getArabicFontSizeForMode, getActiveColors } from "~/stores/usePreferencesStore";
-import type { ViewMode } from "~/stores/usePreferencesStore";
+import { usePreferencesStore, getTranslationFontSizeForMode, getArabicFontSizeForMode, getActiveColors, COLOR_PALETTES } from "~/stores/usePreferencesStore";
+import type { ViewMode, Theme, ColorPaletteId } from "~/stores/usePreferencesStore";
 import type { Verse } from "@mahfuz/shared/types";
 import { SegmentedControl } from "~/components/ui/SegmentedControl";
 import { verseByKeyQueryOptions } from "~/hooks/useVerses";
@@ -10,35 +10,7 @@ import { useAudioStore } from "~/stores/useAudioStore";
 import { TranslationPicker } from "./TranslationPicker";
 import { useTranslation } from "~/hooks/useTranslation";
 
-/* ─Shared helpers ─*/
-
-function SizeSlider({
-  label,
-  value,
-  onChange,
-  smallIcon,
-  largeIcon,
-}: {
-  label: string;
-  value: number;
-  onChange: (v: number) => void;
-  smallIcon: React.ReactNode;
-  largeIcon: React.ReactNode;
-}) {
-  return (
-    <div className="mb-4">
-      <div className="mb-2 flex items-center justify-between">
-        <span className="text-[12px] font-medium text-[var(--theme-text-tertiary)]">{label}</span>
-        <span className="text-[11px] tabular-nums text-[var(--theme-text-quaternary)]">%{Math.round(value * 100)}</span>
-      </div>
-      <div className="flex items-center gap-3">
-        <span className="flex w-5 shrink-0 items-center justify-center">{smallIcon}</span>
-        <input type="range" min="0.6" max="2.0" step="0.05" value={value} onChange={(e) => onChange(Number(e.target.value))} className="h-1 flex-1 cursor-pointer appearance-none rounded-full bg-[var(--theme-border)] accent-primary-600" />
-        <span className="flex w-5 shrink-0 items-center justify-center">{largeIcon}</span>
-      </div>
-    </div>
-  );
-}
+/* ─ Shared helpers ─ */
 
 function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -48,7 +20,71 @@ function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: (v: b
   );
 }
 
-/* ─Live Preview ─*/
+function CompactSlider({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-[12px] text-[var(--theme-text-tertiary)]">A</span>
+      <input type="range" min="0.6" max="2.0" step="0.05" value={value} onChange={(e) => onChange(Number(e.target.value))} className="h-1 flex-1 cursor-pointer appearance-none rounded-full bg-[var(--theme-border)] accent-primary-600" />
+      <span className="text-[18px] leading-none text-[var(--theme-text-tertiary)]">A</span>
+      <span className="w-8 text-right text-[10px] tabular-nums text-[var(--theme-text-quaternary)]">%{Math.round(value * 100)}</span>
+    </div>
+  );
+}
+
+/* ─ Accordion Category Section ─ */
+
+function CategorySection({ title, icon, children, defaultOpen = false }: {
+  title: string; icon: React.ReactNode; children: React.ReactNode; defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border-b border-[var(--theme-border)] last:border-b-0">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center gap-2.5 px-1 py-2.5 text-left transition-colors hover:bg-[var(--theme-hover-bg)] rounded-lg"
+      >
+        <span className="flex h-6 w-6 shrink-0 items-center justify-center text-[var(--theme-text-tertiary)]">{icon}</span>
+        <span className="flex-1 text-[13px] font-medium text-[var(--theme-text)]">{title}</span>
+        <svg className={`h-3.5 w-3.5 shrink-0 text-[var(--theme-text-quaternary)] transition-transform ${open ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <div className="accordion-grid" data-open={open}>
+        <div className="overflow-hidden">
+          <div className="px-1 pb-3 pt-1">
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─ iOS-style setting card ─ */
+
+function SettingCard({ icon, iconBg, label, subtitle, checked, onChange, children }: {
+  icon: React.ReactNode; iconBg: string; label: string; subtitle: string;
+  checked: boolean; onChange: (v: boolean) => void; children?: React.ReactNode;
+}) {
+  return (
+    <div className="mb-2 rounded-xl bg-[var(--theme-pill-bg)] px-3 py-2.5">
+      <div className="flex items-center gap-2.5">
+        <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-white ${iconBg}`}>{icon}</div>
+        <div className="min-w-0 flex-1">
+          <span className="block text-[13px] font-medium leading-snug text-[var(--theme-text)]">{label}</span>
+          <span className="block text-[11px] leading-snug text-[var(--theme-text-quaternary)]">{subtitle}</span>
+        </div>
+        <ToggleSwitch checked={checked} onChange={onChange} />
+      </div>
+      {checked && children && (
+        <div className="mt-2 border-t border-[var(--theme-divider)] pt-2 pl-[38px]">{children}</div>
+      )}
+    </div>
+  );
+}
+
+/* ─ Live Preview ─ */
 
 function PreviewCard({ verse }: { verse: Verse }) {
   const viewMode = usePreferencesStore((s) => s.viewMode);
@@ -73,10 +109,9 @@ function PreviewCard({ verse }: { verse: Verse }) {
   const wordItems = verse.words?.filter((w) => w.char_type_name === "word") || [];
   const colorOf = (i: number) => (colorizeWords && colors.length > 0 ? colors[i % colors.length] : undefined);
 
-  // Preview base sizes, must match actual rendering components
-  const arabicPx = 26.4 * arabicScale;  // 1.65rem (AyahText.tsx)
-  const wbwArabicPx = 24 * arabicScale;  // 1.5rem (WordByWord.tsx)
-  const translationPx = 15 * translationScale;  // 15px (AyahText.tsx)
+  const arabicPx = 26.4 * arabicScale;
+  const wbwArabicPx = 24 * arabicScale;
+  const translationPx = 15 * translationScale;
 
   if (viewMode === "wordByWord") {
     return (
@@ -124,7 +159,7 @@ function PreviewCard({ verse }: { verse: Verse }) {
   );
 }
 
-/* ─Mode selector options ─*/
+/* ─ Mode selector options ─ */
 
 function getModeOptions(t: ReturnType<typeof useTranslation>["t"]): { value: ViewMode; label: string; icon: React.ReactNode }[] {
   return [
@@ -143,127 +178,16 @@ function getModeOptions(t: ReturnType<typeof useTranslation>["t"]): { value: Vie
   ];
 }
 
-/* ─iOS-style setting card ─*/
+/* ─ Theme circles ─ */
 
-function SettingCard({ icon, iconBg, label, subtitle, checked, onChange, children }: {
-  icon: React.ReactNode; iconBg: string; label: string; subtitle: string;
-  checked: boolean; onChange: (v: boolean) => void; children?: React.ReactNode;
-}) {
-  return (
-    <div className="mb-2 rounded-xl bg-[var(--theme-pill-bg)] px-3 py-2.5">
-      <div className="flex items-center gap-2.5">
-        <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-white ${iconBg}`}>{icon}</div>
-        <div className="min-w-0 flex-1">
-          <span className="block text-[13px] font-medium leading-snug text-[var(--theme-text)]">{label}</span>
-          <span className="block text-[11px] leading-snug text-[var(--theme-text-quaternary)]">{subtitle}</span>
-        </div>
-        <ToggleSwitch checked={checked} onChange={onChange} />
-      </div>
-      {checked && children && (
-        <div className="mt-2 border-t border-[var(--theme-divider)] pt-2 pl-[38px]">{children}</div>
-      )}
-    </div>
-  );
-}
+const THEMES: { value: Theme; color: string; border: string }[] = [
+  { value: "light", color: "#ffffff", border: "#d2d2d7" },
+  { value: "sepia", color: "#f5ead6", border: "#d4b882" },
+  { value: "dark", color: "#1a1a1a", border: "#444" },
+  { value: "dimmed", color: "#22272e", border: "#444c56" },
+];
 
-function CompactSlider({ value, onChange }: { value: number; onChange: (v: number) => void }) {
-  return (
-    <div className="flex items-center gap-2">
-      <span className="text-[12px] text-[var(--theme-text-tertiary)]">A</span>
-      <input type="range" min="0.6" max="2.0" step="0.05" value={value} onChange={(e) => onChange(Number(e.target.value))} className="h-1 flex-1 cursor-pointer appearance-none rounded-full bg-[var(--theme-border)] accent-primary-600" />
-      <span className="text-[18px] leading-none text-[var(--theme-text-tertiary)]">A</span>
-      <span className="w-8 text-right text-[10px] tabular-nums text-[var(--theme-text-quaternary)]">%{Math.round(value * 100)}</span>
-    </div>
-  );
-}
-
-/* ─Tab: Boyut ─*/
-
-function ModeTabContent({ viewMode, setViewMode, normalArabicFontSize, setNormalArabicFontSize, wbwArabicFontSize, setWbwArabicFontSize, mushafArabicFontSize, setMushafArabicFontSize, translationFontSize, setNormalTranslationFontSize, normalShowTranslation, setNormalShowTranslation, normalShowWordHover, setNormalShowWordHover, wbwShowTranslation, setWbwShowTranslation, wbwShowWordTranslation, setWbwShowWordTranslation, wordTranslationSize, setWordTranslationSize, wbwShowWordTransliteration, setWbwShowWordTransliteration, wordTransliterationSize, setWordTransliterationSize, wbwTransliterationFirst, setWbwTransliterationFirst }: {
-  viewMode: ViewMode; setViewMode: (m: ViewMode) => void;
-  normalArabicFontSize: number; setNormalArabicFontSize: (s: number) => void;
-  wbwArabicFontSize: number; setWbwArabicFontSize: (s: number) => void;
-  mushafArabicFontSize: number; setMushafArabicFontSize: (s: number) => void;
-  translationFontSize: number; setNormalTranslationFontSize: (s: number) => void;
-  normalShowTranslation: boolean; setNormalShowTranslation: (v: boolean) => void;
-  normalShowWordHover: boolean; setNormalShowWordHover: (v: boolean) => void;
-  wbwShowTranslation: boolean; setWbwShowTranslation: (v: boolean) => void;
-  wbwShowWordTranslation: boolean; setWbwShowWordTranslation: (v: boolean) => void;
-  wordTranslationSize: number; setWordTranslationSize: (s: number) => void;
-  wbwShowWordTransliteration: boolean; setWbwShowWordTransliteration: (v: boolean) => void;
-  wordTransliterationSize: number; setWordTransliterationSize: (s: number) => void;
-  wbwTransliterationFirst: boolean; setWbwTransliterationFirst: (v: boolean) => void;
-}) {
-  const { t } = useTranslation();
-  const modeOptions = getModeOptions(t);
-
-  const arabicSize = viewMode === "wordByWord" ? wbwArabicFontSize : viewMode === "mushaf" ? mushafArabicFontSize : normalArabicFontSize;
-  const setArabicSize = viewMode === "wordByWord" ? setWbwArabicFontSize : viewMode === "mushaf" ? setMushafArabicFontSize : setNormalArabicFontSize;
-
-  return (
-    <>
-      <div className="mb-4">
-        <SegmentedControl options={modeOptions} value={viewMode} onChange={setViewMode} stretch />
-      </div>
-
-      <SizeSlider label={t.settings.arabicSize} value={arabicSize} onChange={setArabicSize}
-        smallIcon={<span className="-translate-y-[4px] text-[15px] leading-none text-[var(--theme-text-tertiary)]" style={{ fontFamily: 'var(--font-arabic)' }}>ع</span>}
-        largeIcon={<span className="-translate-y-[5px] text-[24px] leading-none text-[var(--theme-text-tertiary)]" style={{ fontFamily: 'var(--font-arabic)' }}>ع</span>}
-      />
-
-      {viewMode === "normal" && (
-        <>
-          <SettingCard
-            icon={<svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M3 4h10M3 8h6M3 12h8" /></svg>}
-            iconBg="bg-blue-500" label={t.reading.translation} subtitle={t.reading.translationSubtitle}
-            checked={normalShowTranslation} onChange={setNormalShowTranslation}
-          >
-            <CompactSlider value={translationFontSize} onChange={setNormalTranslationFontSize} />
-            <TranslationPicker compact />
-          </SettingCard>
-          <SettingCard
-            icon={<svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1.5 12L4 3.5h1L7.5 12" /><path d="M2.8 9.5h3.4" /><path d="M14 12V8.5a2 2 0 1 0-4 0V12" /></svg>}
-            iconBg="bg-teal-500" label={t.reading.wordInfo} subtitle={t.reading.wordInfoSubtitle}
-            checked={normalShowWordHover} onChange={setNormalShowWordHover}
-          />
-        </>
-      )}
-
-      {viewMode === "wordByWord" && (
-        <>
-          {(wbwTransliterationFirst
-            ? [
-                { key: "tl", label: t.reading.transliterationLabel, subtitle: t.reading.transliterationSubtitle, checked: wbwShowWordTransliteration, onChange: setWbwShowWordTransliteration, size: wordTransliterationSize, onSize: setWordTransliterationSize, iconBg: "bg-purple-500", icon: <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1.5 12L4 3.5h1L7.5 12" /><path d="M2.8 9.5h3.4" /><path d="M14 12V8.5a2 2 0 1 0-4 0V12" /></svg> },
-                { key: "tr", label: t.reading.wordTranslationLabel, subtitle: t.reading.wordTranslationSubtitle, checked: wbwShowWordTranslation, onChange: setWbwShowWordTranslation, size: wordTranslationSize, onSize: setWordTranslationSize, iconBg: "bg-emerald-500", icon: <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"><rect x="1.5" y="2" width="5.5" height="5.5" rx="1.5" /><rect x="9" y="2" width="5.5" height="5.5" rx="1.5" /><rect x="1.5" y="9.5" width="5.5" height="5" rx="1.5" /><rect x="9" y="9.5" width="5.5" height="5" rx="1.5" /></svg> },
-              ]
-            : [
-                { key: "tr", label: t.reading.wordTranslationLabel, subtitle: t.reading.wordTranslationSubtitle, checked: wbwShowWordTranslation, onChange: setWbwShowWordTranslation, size: wordTranslationSize, onSize: setWordTranslationSize, iconBg: "bg-emerald-500", icon: <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"><rect x="1.5" y="2" width="5.5" height="5.5" rx="1.5" /><rect x="9" y="2" width="5.5" height="5.5" rx="1.5" /><rect x="1.5" y="9.5" width="5.5" height="5" rx="1.5" /><rect x="9" y="9.5" width="5.5" height="5" rx="1.5" /></svg> },
-                { key: "tl", label: t.reading.transliterationLabel, subtitle: t.reading.transliterationSubtitle, checked: wbwShowWordTransliteration, onChange: setWbwShowWordTransliteration, size: wordTransliterationSize, onSize: setWordTransliterationSize, iconBg: "bg-purple-500", icon: <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1.5 12L4 3.5h1L7.5 12" /><path d="M2.8 9.5h3.4" /><path d="M14 12V8.5a2 2 0 1 0-4 0V12" /></svg> },
-              ]
-          ).map((item) => (
-            <SettingCard key={item.key} icon={item.icon} iconBg={item.iconBg} label={item.label} subtitle={item.subtitle} checked={item.checked} onChange={item.onChange}>
-              <CompactSlider value={item.size} onChange={item.onSize} />
-            </SettingCard>
-          ))}
-          <SettingCard
-            icon={<svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M3 4h10M3 8h6M3 12h8" /></svg>}
-            iconBg="bg-blue-500" label={t.reading.translation} subtitle={t.reading.translationSubtitle}
-            checked={wbwShowTranslation} onChange={setWbwShowTranslation}
-          >
-            <TranslationPicker compact />
-          </SettingCard>
-          <button type="button" onClick={() => setWbwTransliterationFirst(!wbwTransliterationFirst)}
-            className="mt-1 flex w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--theme-pill-bg)] px-3 py-2 text-[12px] font-medium text-[var(--theme-text-tertiary)] transition-colors hover:bg-[var(--theme-hover-bg)]">
-            <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M7 4v16M7 4l-4 4M7 4l4 4M17 20V4M17 20l-4-4M17 20l4-4" /></svg>
-            {t.reading.swapOrder}
-          </button>
-        </>
-      )}
-    </>
-  );
-}
-
-/* ─Main Component ─*/
+/* ─ Main Component ─ */
 
 export function ReadingToolbar({ segmentStyle }: { segmentStyle?: boolean } = {}) {
   const [open, setOpen] = useState(false);
@@ -278,11 +202,16 @@ export function ReadingToolbar({ segmentStyle }: { segmentStyle?: boolean } = {}
   const translatedPreview = useTranslatedVerses(rawPreviewVerse ? [rawPreviewVerse] : []);
   const previewVerse = translatedPreview[0] ?? rawPreviewVerse;
 
-  // View mode
+  // All preferences
   const viewMode = usePreferencesStore((s) => s.viewMode);
   const setViewMode = usePreferencesStore((s) => s.setViewMode);
+  const theme = usePreferencesStore((s) => s.theme);
+  const setTheme = usePreferencesStore((s) => s.setTheme);
+  const colorizeWords = usePreferencesStore((s) => s.colorizeWords);
+  const setColorizeWords = usePreferencesStore((s) => s.setColorizeWords);
+  const colorPaletteId = usePreferencesStore((s) => s.colorPaletteId);
+  const setColorPalette = usePreferencesStore((s) => s.setColorPalette);
 
-  // Arabic font sizes (per-mode)
   const normalArabicFontSize = usePreferencesStore((s) => s.normalArabicFontSize);
   const wbwArabicFontSize = usePreferencesStore((s) => s.wbwArabicFontSize);
   const mushafArabicFontSize = usePreferencesStore((s) => s.mushafArabicFontSize);
@@ -290,14 +219,12 @@ export function ReadingToolbar({ segmentStyle }: { segmentStyle?: boolean } = {}
   const setWbwArabicFontSize = usePreferencesStore((s) => s.setWbwArabicFontSize);
   const setMushafArabicFontSize = usePreferencesStore((s) => s.setMushafArabicFontSize);
 
-  // Normal mode settings
   const normalTranslationFontSize = usePreferencesStore((s) => s.normalTranslationFontSize);
   const setNormalTranslationFontSize = usePreferencesStore((s) => s.setNormalTranslationFontSize);
   const normalShowTranslation = usePreferencesStore((s) => s.normalShowTranslation);
   const setNormalShowTranslation = usePreferencesStore((s) => s.setNormalShowTranslation);
   const normalShowWordHover = usePreferencesStore((s) => s.normalShowWordHover);
   const setNormalShowWordHover = usePreferencesStore((s) => s.setNormalShowWordHover);
-  // Word-by-word settings
   const wbwShowTranslation = usePreferencesStore((s) => s.wbwShowTranslation);
   const setWbwShowTranslation = usePreferencesStore((s) => s.setWbwShowTranslation);
   const wbwShowWordTranslation = usePreferencesStore((s) => s.wbwShowWordTranslation);
@@ -311,7 +238,10 @@ export function ReadingToolbar({ segmentStyle }: { segmentStyle?: boolean } = {}
   const wbwTransliterationFirst = usePreferencesStore((s) => s.wbwTransliterationFirst);
   const setWbwTransliterationFirst = usePreferencesStore((s) => s.setWbwTransliterationFirst);
 
-  const translationFontSize = getTranslationFontSizeForMode({ viewMode, normalTranslationFontSize });
+  const arabicSize = viewMode === "wordByWord" ? wbwArabicFontSize : viewMode === "mushaf" ? mushafArabicFontSize : normalArabicFontSize;
+  const setArabicSize = viewMode === "wordByWord" ? setWbwArabicFontSize : viewMode === "mushaf" ? setMushafArabicFontSize : setNormalArabicFontSize;
+
+  const modeOptions = getModeOptions(t);
 
   const handleClickOutside = useCallback((e: MouseEvent) => {
     if (popoverRef.current && !popoverRef.current.contains(e.target as Node) && buttonRef.current && !buttonRef.current.contains(e.target as Node)) {
@@ -333,6 +263,18 @@ export function ReadingToolbar({ segmentStyle }: { segmentStyle?: boolean } = {}
       document.removeEventListener("keydown", handleEscape);
     };
   }, [open, handleClickOutside, handleEscape]);
+
+  // Quick font size adjust
+  const bump = (delta: number) => {
+    const next = Math.max(0.6, Math.min(2.0, arabicSize + delta));
+    setArabicSize(next);
+  };
+
+  // Theme cycle
+  const cycleTheme = () => {
+    const idx = THEMES.findIndex((t) => t.value === theme);
+    setTheme(THEMES[(idx + 1) % THEMES.length].value);
+  };
 
   return (
     <div className="relative">
@@ -367,21 +309,148 @@ export function ReadingToolbar({ segmentStyle }: { segmentStyle?: boolean } = {}
             {/* Live preview */}
             {previewVerse && <PreviewCard verse={previewVerse} />}
 
-            <ModeTabContent
-              viewMode={viewMode} setViewMode={setViewMode}
-              normalArabicFontSize={normalArabicFontSize} setNormalArabicFontSize={setNormalArabicFontSize}
-              wbwArabicFontSize={wbwArabicFontSize} setWbwArabicFontSize={setWbwArabicFontSize}
-              mushafArabicFontSize={mushafArabicFontSize} setMushafArabicFontSize={setMushafArabicFontSize}
-              translationFontSize={translationFontSize} setNormalTranslationFontSize={setNormalTranslationFontSize}
-              normalShowTranslation={normalShowTranslation} setNormalShowTranslation={setNormalShowTranslation}
-              normalShowWordHover={normalShowWordHover} setNormalShowWordHover={setNormalShowWordHover}
-              wbwShowTranslation={wbwShowTranslation} setWbwShowTranslation={setWbwShowTranslation}
-              wbwShowWordTranslation={wbwShowWordTranslation} setWbwShowWordTranslation={setWbwShowWordTranslation}
-              wordTranslationSize={wordTranslationSize} setWordTranslationSize={setWordTranslationSize}
-              wbwShowWordTransliteration={wbwShowWordTransliteration} setWbwShowWordTransliteration={setWbwShowWordTransliteration}
-              wordTransliterationSize={wordTransliterationSize} setWordTransliterationSize={setWordTransliterationSize}
-              wbwTransliterationFirst={wbwTransliterationFirst} setWbwTransliterationFirst={setWbwTransliterationFirst}
-            />
+            {/* Quick access row */}
+            <div className="mb-3 flex items-center gap-2 rounded-xl bg-[var(--theme-pill-bg)] px-3 py-2">
+              {/* Font size −/+ */}
+              <button onClick={() => bump(-0.1)} className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--theme-text-secondary)] transition-colors hover:bg-[var(--theme-hover-bg)]" aria-label={t.toolbar.decreaseSize}>
+                <span className="text-[13px] font-bold">A-</span>
+              </button>
+              <button onClick={() => bump(0.1)} className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--theme-text-secondary)] transition-colors hover:bg-[var(--theme-hover-bg)]" aria-label={t.toolbar.increaseSize}>
+                <span className="text-[16px] font-bold">A+</span>
+              </button>
+
+              <span className="mx-1 h-4 w-px bg-[var(--theme-divider)]" />
+
+              {/* Theme cycle */}
+              <button onClick={cycleTheme} className="flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:bg-[var(--theme-hover-bg)]" aria-label={t.toolbar.cycleTheme}>
+                <span className="h-4 w-4 rounded-full border-2" style={{ backgroundColor: THEMES.find((th) => th.value === theme)?.color, borderColor: THEMES.find((th) => th.value === theme)?.border }} />
+              </button>
+
+              <span className="mx-1 h-4 w-px bg-[var(--theme-divider)]" />
+
+              {/* View mode segmented */}
+              <div className="flex-1">
+                <SegmentedControl options={modeOptions} value={viewMode} onChange={setViewMode} stretch />
+              </div>
+            </div>
+
+            {/* Category accordions */}
+            <div className="rounded-xl bg-[var(--theme-pill-bg)] px-3">
+              {/* Size Category */}
+              <CategorySection
+                title={t.toolbar.sizeCategory}
+                icon={<svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round"><path d="M4 7V4h16v3M9 20h6M12 4v16" /></svg>}
+              >
+                <div className="mb-3">
+                  <div className="mb-1 flex items-center justify-between">
+                    <span className="text-[12px] font-medium text-[var(--theme-text-tertiary)]">{t.settings.arabicSize}</span>
+                    <span className="text-[11px] tabular-nums text-[var(--theme-text-quaternary)]">%{Math.round(arabicSize * 100)}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="-translate-y-[4px] text-[15px] leading-none text-[var(--theme-text-tertiary)]" style={{ fontFamily: 'var(--font-arabic)' }}>ع</span>
+                    <input type="range" min="0.6" max="2.0" step="0.05" value={arabicSize} onChange={(e) => setArabicSize(Number(e.target.value))} className="h-1 flex-1 cursor-pointer appearance-none rounded-full bg-[var(--theme-border)] accent-primary-600" />
+                    <span className="-translate-y-[5px] text-[24px] leading-none text-[var(--theme-text-tertiary)]" style={{ fontFamily: 'var(--font-arabic)' }}>ع</span>
+                  </div>
+                </div>
+                {viewMode !== "mushaf" && (
+                  <div>
+                    <div className="mb-1 flex items-center justify-between">
+                      <span className="text-[12px] font-medium text-[var(--theme-text-tertiary)]">{t.settings.translationSize}</span>
+                      <span className="text-[11px] tabular-nums text-[var(--theme-text-quaternary)]">%{Math.round(normalTranslationFontSize * 100)}</span>
+                    </div>
+                    <CompactSlider value={normalTranslationFontSize} onChange={setNormalTranslationFontSize} />
+                  </div>
+                )}
+              </CategorySection>
+
+              {/* Text/Translation Category */}
+              <CategorySection
+                title={t.toolbar.textCategory}
+                icon={<svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round"><path d="M3 5h12M3 10h8M3 15h10M3 20h6" /></svg>}
+              >
+                {viewMode === "normal" && (
+                  <>
+                    <SettingCard
+                      icon={<svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M3 4h10M3 8h6M3 12h8" /></svg>}
+                      iconBg="bg-blue-500" label={t.reading.translation} subtitle={t.reading.translationSubtitle}
+                      checked={normalShowTranslation} onChange={setNormalShowTranslation}
+                    >
+                      <TranslationPicker compact />
+                    </SettingCard>
+                    <SettingCard
+                      icon={<svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1.5 12L4 3.5h1L7.5 12" /><path d="M2.8 9.5h3.4" /><path d="M14 12V8.5a2 2 0 1 0-4 0V12" /></svg>}
+                      iconBg="bg-teal-500" label={t.reading.wordInfo} subtitle={t.reading.wordInfoSubtitle}
+                      checked={normalShowWordHover} onChange={setNormalShowWordHover}
+                    />
+                  </>
+                )}
+                {viewMode === "wordByWord" && (
+                  <>
+                    {(wbwTransliterationFirst
+                      ? [
+                          { key: "tl", label: t.reading.transliterationLabel, subtitle: t.reading.transliterationSubtitle, checked: wbwShowWordTransliteration, onChange: setWbwShowWordTransliteration, size: wordTransliterationSize, onSize: setWordTransliterationSize, iconBg: "bg-purple-500", icon: <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1.5 12L4 3.5h1L7.5 12" /><path d="M2.8 9.5h3.4" /><path d="M14 12V8.5a2 2 0 1 0-4 0V12" /></svg> },
+                          { key: "tr", label: t.reading.wordTranslationLabel, subtitle: t.reading.wordTranslationSubtitle, checked: wbwShowWordTranslation, onChange: setWbwShowWordTranslation, size: wordTranslationSize, onSize: setWordTranslationSize, iconBg: "bg-emerald-500", icon: <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"><rect x="1.5" y="2" width="5.5" height="5.5" rx="1.5" /><rect x="9" y="2" width="5.5" height="5.5" rx="1.5" /><rect x="1.5" y="9.5" width="5.5" height="5" rx="1.5" /><rect x="9" y="9.5" width="5.5" height="5" rx="1.5" /></svg> },
+                        ]
+                      : [
+                          { key: "tr", label: t.reading.wordTranslationLabel, subtitle: t.reading.wordTranslationSubtitle, checked: wbwShowWordTranslation, onChange: setWbwShowWordTranslation, size: wordTranslationSize, onSize: setWordTranslationSize, iconBg: "bg-emerald-500", icon: <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"><rect x="1.5" y="2" width="5.5" height="5.5" rx="1.5" /><rect x="9" y="2" width="5.5" height="5.5" rx="1.5" /><rect x="1.5" y="9.5" width="5.5" height="5" rx="1.5" /><rect x="9" y="9.5" width="5.5" height="5" rx="1.5" /></svg> },
+                          { key: "tl", label: t.reading.transliterationLabel, subtitle: t.reading.transliterationSubtitle, checked: wbwShowWordTransliteration, onChange: setWbwShowWordTransliteration, size: wordTransliterationSize, onSize: setWordTransliterationSize, iconBg: "bg-purple-500", icon: <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1.5 12L4 3.5h1L7.5 12" /><path d="M2.8 9.5h3.4" /><path d="M14 12V8.5a2 2 0 1 0-4 0V12" /></svg> },
+                        ]
+                    ).map((item) => (
+                      <SettingCard key={item.key} icon={item.icon} iconBg={item.iconBg} label={item.label} subtitle={item.subtitle} checked={item.checked} onChange={item.onChange}>
+                        <CompactSlider value={item.size} onChange={item.onSize} />
+                      </SettingCard>
+                    ))}
+                    <SettingCard
+                      icon={<svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M3 4h10M3 8h6M3 12h8" /></svg>}
+                      iconBg="bg-blue-500" label={t.reading.translation} subtitle={t.reading.translationSubtitle}
+                      checked={wbwShowTranslation} onChange={setWbwShowTranslation}
+                    >
+                      <TranslationPicker compact />
+                    </SettingCard>
+                    <button type="button" onClick={() => setWbwTransliterationFirst(!wbwTransliterationFirst)}
+                      className="mt-1 flex w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--theme-bg-primary)] px-3 py-2 text-[12px] font-medium text-[var(--theme-text-tertiary)] transition-colors hover:bg-[var(--theme-hover-bg)]">
+                      <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M7 4v16M7 4l-4 4M7 4l4 4M17 20V4M17 20l-4-4M17 20l4-4" /></svg>
+                      {t.reading.swapOrder}
+                    </button>
+                  </>
+                )}
+                {viewMode === "mushaf" && (
+                  <p className="text-[12px] text-[var(--theme-text-quaternary)]">{t.toolbar.mushafNote}</p>
+                )}
+              </CategorySection>
+
+              {/* Color/Theme Category */}
+              <CategorySection
+                title={t.toolbar.colorCategory}
+                icon={<svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10" /><path d="M2 12h20" /></svg>}
+              >
+                {/* Theme selector */}
+                <div className="mb-3 flex items-center gap-3">
+                  {THEMES.map((th) => (
+                    <button key={th.value} onClick={() => setTheme(th.value)} className="flex flex-col items-center gap-1" aria-label={t.theme[th.value as "light" | "sepia" | "dark" | "dimmed"]}>
+                      <span className={`flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all ${theme === th.value ? "border-primary-600 ring-2 ring-primary-600/30" : "border-[var(--theme-divider)]"}`} style={{ backgroundColor: th.color }}>
+                        {theme === th.value && <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke={th.value === "dark" || th.value === "dimmed" ? "#e5e5e5" : "#059669"} strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                      </span>
+                      <span className="text-[10px] text-[var(--theme-text-tertiary)]">{t.theme[th.value as "light" | "sepia" | "dark" | "dimmed"]}</span>
+                    </button>
+                  ))}
+                </div>
+                {/* Colorize words */}
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] font-medium text-[var(--theme-text-secondary)]">{t.theme.colorizeWords}</span>
+                  <ToggleSwitch checked={colorizeWords} onChange={setColorizeWords} />
+                </div>
+                {colorizeWords && (
+                  <div className="mt-2 flex items-center gap-2">
+                    {COLOR_PALETTES.map((p) => (
+                      <button key={p.id} onClick={() => setColorPalette(p.id as ColorPaletteId)} className={`flex h-7 w-7 items-center justify-center rounded-full border-2 transition-all ${colorPaletteId === p.id ? "border-primary-600 ring-2 ring-primary-600/30" : "border-[var(--theme-divider)]"}`} aria-label={p.name} title={p.name}>
+                        <svg width="16" height="16" viewBox="0 0 18 18"><rect x="1" y="1" width="7" height="7" rx="1.5" fill={p.colors[0]} /><rect x="10" y="1" width="7" height="7" rx="1.5" fill={p.colors[1]} /><rect x="1" y="10" width="7" height="7" rx="1.5" fill={p.colors[2]} /><rect x="10" y="10" width="7" height="7" rx="1.5" fill={p.colors[3]} /></svg>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </CategorySection>
+            </div>
           </div>
         </>
       )}

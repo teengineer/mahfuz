@@ -566,6 +566,19 @@ function SettingsPage() {
         </SettingsAccordion>
       </div>
 
+      {/* Show onboarding again */}
+      <div className="mt-4">
+        <button
+          onClick={() => {
+            usePreferencesStore.getState().setHasSeenOnboarding(false);
+            window.location.href = "/browse/surahs";
+          }}
+          className="w-full rounded-xl bg-[var(--theme-pill-bg)] px-4 py-3 text-[13px] font-medium text-[var(--theme-text-secondary)] transition-colors hover:bg-[var(--theme-hover-bg)]"
+        >
+          {t.onboarding.showAgain}
+        </button>
+      </div>
+
       <SaveStatusBar visible={showSaved} />
 
       <ReciterModal open={reciterModalOpen} onClose={() => setReciterModalOpen(false)} />

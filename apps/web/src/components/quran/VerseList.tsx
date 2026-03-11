@@ -52,7 +52,7 @@ function VirtualizedVerseList({
 
   const virtualizer = useWindowVirtualizer({
     count: verses.length,
-    estimateSize: () => 200,
+    estimateSize: () => 240,
     overscan: 3,
     getItemKey: (index) => verses[index].id,
     scrollMargin: listRef.current?.offsetTop ?? 0,
@@ -110,13 +110,18 @@ function VirtualizedVerseList({
                 transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
               }}
             >
-              <div className="border-b border-[var(--theme-divider)]/40">
+              <div>
                 {needsBismillah && <Bismillah />}
                 <AyahText
                   verse={verse}
                   onPlayFromVerse={onPlayFromVerse}
                   onTogglePlayPause={onTogglePlayPause}
                 />
+                <div className="flex items-center justify-center py-1">
+                  <span className="h-px flex-1 bg-[var(--theme-divider)]/30" />
+                  <span className="mx-3 text-[8px] text-[var(--theme-text-quaternary)]/40">✦</span>
+                  <span className="h-px flex-1 bg-[var(--theme-divider)]/30" />
+                </div>
               </div>
             </div>
           );
