@@ -602,6 +602,14 @@ export const en = {
       pickWord: "Pick the correct word",
     },
 
+    skipExam: {
+      title: "All verses mastered",
+      description:
+        "You have mastered all verses of this surah through your reviews. You can skip the exam or take it anyway.",
+      skip: "Skip Exam",
+      takeAnyway: "Take Exam Anyway",
+    },
+
     // Badges
     badges: {
       title: "Badges",

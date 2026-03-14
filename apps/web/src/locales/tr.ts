@@ -602,6 +602,14 @@ export const tr = {
       pickWord: "Doğru kelimeyi seçin",
     },
 
+    skipExam: {
+      title: "Tüm ayetler ezberlenmiş",
+      description:
+        "Bu surenin tüm ayetlerini tekrar çalışmalarınızla ezberlediniz. Sınavı atlayabilir veya yine de girebilirsiniz.",
+      skip: "Sınavı Atla",
+      takeAnyway: "Yine de Gir",
+    },
+
     // Badges
     badges: {
       title: "Rozetler",

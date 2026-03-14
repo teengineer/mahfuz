@@ -2,10 +2,14 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { chapterQueryOptions } from "~/hooks/useChapters";
-import { useMemorizationDashboard } from "~/hooks/useMemorization";
+import {
+  useMemorizationDashboard,
+  useSurahProgress,
+} from "~/hooks/useMemorization";
 import { SurahVerifyQuiz } from "~/components/memorization/SurahVerifyQuiz";
 import { VerificationResults } from "~/components/memorization/VerificationResults";
 import { memorizationRepository } from "@mahfuz/db";
+import { useTranslation } from "~/hooks/useTranslation";
 import type { SessionResult } from "~/stores/useMemorizationStore";
 
 export const Route = createFileRoute(
@@ -20,11 +24,19 @@ function VerifyPage() {
   const { surahId: surahIdStr } = Route.useParams();
   const surahId = Number(surahIdStr);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { data: chapter } = useSuspenseQuery(chapterQueryOptions(surahId));
   const { refreshStats } = useMemorizationDashboard(userId);
+  const { progressMap } = useSurahProgress(userId, surahId);
+
+  const allMastered =
+    chapter &&
+    progressMap.size === chapter.verses_count &&
+    [...progressMap.values()].every((v) => v.confidence === "mastered");
 
   const [phase, setPhase] = useState<"quiz" | "results">("quiz");
+  const [dismissedSkip, setDismissedSkip] = useState(false);
   const [passed, setPassed] = useState(false);
   const [sessionResults, setSessionResults] = useState<SessionResult[]>([]);
 
@@ -90,6 +102,17 @@ function VerifyPage() {
     navigate({ to: "/memorize" });
   }, [refreshStats, navigate]);
 
+  const handleSkipExam = useCallback(async () => {
+    if (!chapter) return;
+    await memorizationRepository.bulkMasterSurah(
+      userId,
+      surahId,
+      chapter.verses_count,
+    );
+    refreshStats();
+    navigate({ to: "/memorize" });
+  }, [userId, surahId, chapter, refreshStats, navigate]);
+
   if (phase === "results") {
     return (
       <div className="mx-auto max-w-2xl px-6 py-8 animate-fade-in">
@@ -99,6 +122,54 @@ function VerifyPage() {
           surahName={chapter?.name_simple || ""}
           onContinue={handleContinue}
         />
+      </div>
+    );
+  }
+
+  // Skip exam prompt for fully mastered surahs
+  if (allMastered && phase === "quiz" && !dismissedSkip) {
+    return (
+      <div className="mx-auto max-w-2xl px-6 py-8 animate-fade-in">
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-8 text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30">
+            <svg
+              className="h-8 w-8 text-emerald-600 dark:text-emerald-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">
+            {t.memorize.skipExam.title}
+          </h2>
+          <p className="text-[var(--text-secondary)] mb-2">
+            {chapter?.name_simple}
+          </p>
+          <p className="text-sm text-[var(--text-secondary)] mb-8 max-w-md mx-auto">
+            {t.memorize.skipExam.description}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              onClick={handleSkipExam}
+              className="rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white hover:bg-emerald-700 transition-colors"
+            >
+              {t.memorize.skipExam.skip}
+            </button>
+            <button
+              onClick={() => setDismissedSkip(true)}
+              className="rounded-xl border border-[var(--border)] px-6 py-3 font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-colors"
+            >
+              {t.memorize.skipExam.takeAnyway}
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
