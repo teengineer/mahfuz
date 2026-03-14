@@ -28,6 +28,9 @@ import { InstallPrompt } from "~/components/ui/InstallPrompt";
 import { ReadingToolbar } from "~/components/quran/ReadingToolbar";
 import { MahfuzLogo } from "~/components/icons";
 import { useFontLoader } from "~/hooks/useFontLoader";
+import { useI18nStore } from "~/stores/useI18nStore";
+import { getAllLocaleConfigs, getLocaleConfig } from "~/locales/registry";
+import type { Locale } from "~/locales/registry";
 
 export const Route = createFileRoute("/_app")({
   component: AppLayout,
@@ -58,6 +61,8 @@ function AppLayout() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [bookmarksOpen, setBookmarksOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
+  const i18nLocale = useI18nStore((s) => s.locale);
   const verseBookmarks = useVerseBookmarks((s) => s.bookmarks);
   const recentBookmarks = useMemo(
     () => [...verseBookmarks].sort((a, b) => b.addedAt - a.addedAt).slice(0, 5),
@@ -420,6 +425,49 @@ function AppLayout() {
               </PopoverContent>
             </Popover>
 
+            {/* Language switcher popover */}
+            <Popover open={langOpen} onOpenChange={setLangOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className={`hidden items-center justify-center rounded-lg p-1.5 transition-colors lg:flex ${
+                    langOpen
+                      ? "bg-primary-600/10 text-primary-700"
+                      : "text-[var(--theme-text-secondary)] hover:bg-[var(--theme-hover-bg)] hover:text-[var(--theme-text)]"
+                  }`}
+                  title={t.settings.language}
+                >
+                  <GlobeIcon />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-56 overflow-hidden rounded-xl p-0">
+                <div className="max-h-[320px] overflow-y-auto py-1">
+                  {getAllLocaleConfigs().map(({ code, config }) => (
+                    <button
+                      key={code}
+                      type="button"
+                      onClick={() => {
+                        useI18nStore.getState().setLocale(code);
+                        setLangOpen(false);
+                      }}
+                      className={`flex w-full items-center justify-between px-3 py-2 text-left text-[13px] transition-colors hover:bg-[var(--theme-hover-bg)] ${
+                        i18nLocale === code
+                          ? "font-semibold text-primary-600"
+                          : "text-[var(--theme-text-secondary)]"
+                      }`}
+                    >
+                      <span>{config.displayName}</span>
+                      {i18nLocale === code && (
+                        <svg className="h-4 w-4 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+
             {/* Desktop settings gear */}
             <Link
               to="/settings"
@@ -643,6 +691,14 @@ function SettingsIcon() {
   );
 }
 
+
+function GlobeIcon() {
+  return (
+    <svg className="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5a17.92 17.92 0 01-8.716-2.247m0 0A8.966 8.966 0 013 12c0-1.777.515-3.435 1.404-4.832" />
+    </svg>
+  );
+}
 
 function LogOutIcon() {
   return (

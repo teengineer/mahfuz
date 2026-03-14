@@ -30,21 +30,71 @@ export const LOCAL_TRANSLATIONS = [
   { id: "omer-nasuhi-bilmen", name: "Ömer Nasuhi Bilmen", author: "Ömer Nasuhi Bilmen", source: "local" as const, language: "turkish" as const },
   { id: "ali-fikri-yavuz", name: "Ali Fikri Yavuz", author: "Ali Fikri Yavuz", source: "local" as const, language: "turkish" as const },
   { id: "sahih-international", name: "Sahih International", author: "Sahih International", source: "local" as const, language: "english" as const },
+  { id: "taisirul-quran", name: "Taisirul Quran", author: "Taisirul Quran", source: "local" as const, language: "bengali" as const },
+  { id: "islamhouse-fa", name: "IslamHouse.com", author: "IslamHouse.com", source: "local" as const, language: "persian" as const },
+  { id: "montada-fr", name: "Montada Islamic Foundation", author: "Montada Islamic Foundation", source: "local" as const, language: "french" as const },
+  { id: "kfqpc-id", name: "King Fahad Quran Complex", author: "King Fahad Quran Complex", source: "local" as const, language: "indonesian" as const },
+  { id: "piccardo", name: "Hamza Roberto Piccardo", author: "Hamza Roberto Piccardo", source: "local" as const, language: "italian" as const },
+  { id: "abdalsalaam-nl", name: "Malak Faris Abdalsalaam", author: "Malak Faris Abdalsalaam", source: "local" as const, language: "dutch" as const },
+  { id: "helmi-nasr", name: "Helmi Nasr", author: "Helmi Nasr", source: "local" as const, language: "portuguese" as const },
+  { id: "kuliev", name: "Elmir Kuliev", author: "Elmir Kuliev", source: "local" as const, language: "russian" as const },
+  { id: "nahi", name: "Hasan Efendi Nahi", author: "Hasan Efendi Nahi", source: "local" as const, language: "albanian" as const },
+  { id: "kfqpc-th", name: "King Fahad Quran Complex", author: "King Fahad Quran Complex", source: "local" as const, language: "thai" as const },
+  { id: "junagarhi", name: "Muhammad Junagarhi", author: "Muhammad Junagarhi", source: "local" as const, language: "urdu" as const },
+  { id: "ma-jian", name: "Ma Jian", author: "Ma Jian", source: "local" as const, language: "chinese" as const },
+  { id: "basmeih", name: "Abdullah Muhammad Basmeih", author: "Abdullah Muhammad Basmeih", source: "local" as const, language: "malay" as const },
+  { id: "isa-garcia", name: "Sheikh Isa Garcia", author: "Sheikh Isa Garcia", source: "local" as const, language: "spanish" as const },
+  { id: "barwani", name: "Ali Muhsin Al-Barwani", author: "Ali Muhsin Al-Barwani", source: "local" as const, language: "swahili" as const },
+  { id: "ruwwad-vi", name: "Ruwwad Center", author: "Ruwwad Center", source: "local" as const, language: "vietnamese" as const },
 ] as const;
 
 export type TranslationId = (typeof LOCAL_TRANSLATIONS)[number]["id"];
-export type TranslationLanguage = (typeof LOCAL_TRANSLATIONS)[number]["language"];
+export type TranslationLanguage = keyof typeof LANGUAGE_BADGE_LABELS;
 
 /** Short badge labels for translation languages */
-export const LANGUAGE_BADGE_LABELS: Record<TranslationLanguage, string> = {
+export const LANGUAGE_BADGE_LABELS = {
   turkish: "TR",
   english: "EN",
+  arabic: "AR",
+  bengali: "BN",
+  persian: "FA",
+  french: "FR",
+  indonesian: "ID",
+  italian: "IT",
+  dutch: "NL",
+  portuguese: "PT",
+  russian: "RU",
+  albanian: "SQ",
+  thai: "TH",
+  urdu: "UR",
+  chinese: "ZH",
+  malay: "MS",
+  spanish: "ES",
+  swahili: "SW",
+  vietnamese: "VI",
 } as const;
 
 /** Full display names for translation languages */
 export const LANGUAGE_DISPLAY_NAMES: Record<TranslationLanguage, string> = {
   turkish: "Türkçe",
   english: "English",
+  arabic: "العربية",
+  bengali: "বাংলা",
+  persian: "فارسی",
+  french: "Français",
+  indonesian: "Indonesia",
+  italian: "Italiano",
+  dutch: "Dutch",
+  portuguese: "Português",
+  russian: "русский",
+  albanian: "Shqip",
+  thai: "ภาษาไทย",
+  urdu: "اردو",
+  chinese: "简体中文",
+  malay: "Melayu",
+  spanish: "Español",
+  swahili: "Kiswahili",
+  vietnamese: "Tiếng Việt",
 } as const;
 
 /** Turkish tafsir resource IDs */
@@ -91,7 +141,10 @@ export { CURATED_RECITERS, FEATURED_RECITERS } from "./reciters";
 export type { CuratedReciter, ReciterStyleTag } from "./reciters";
 
 /** Supported app languages */
-export const SUPPORTED_LANGUAGES = ["tr", "en", "ar"] as const;
+export const SUPPORTED_LANGUAGES = [
+  "tr", "en", "ar", "bn", "fa", "fr", "id", "it", "nl", "pt",
+  "ru", "sq", "th", "ur", "zh", "ms", "es", "sw", "vi",
+] as const;
 
 /** Breakpoints for responsive design */
 export const BREAKPOINTS = {

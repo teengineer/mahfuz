@@ -73,9 +73,9 @@ export const TranslationBlock = memo(function TranslationBlock({
               />
               <span className="flex flex-1 items-center gap-1.5 text-[12px] font-semibold text-[var(--theme-text-tertiary)]">
                 {t.resource_name}
-                {(t.language_name === "turkish" || t.language_name === "english") && (
+                {t.language_name in LANGUAGE_BADGE_LABELS && (
                   <span className="inline-flex items-center rounded bg-[var(--theme-hover-bg)] px-1 py-0.5 text-[8px] font-semibold uppercase leading-none text-[var(--theme-text-quaternary)]">
-                    {LANGUAGE_BADGE_LABELS[t.language_name]}
+                    {LANGUAGE_BADGE_LABELS[t.language_name as keyof typeof LANGUAGE_BADGE_LABELS]}
                   </span>
                 )}
               </span>

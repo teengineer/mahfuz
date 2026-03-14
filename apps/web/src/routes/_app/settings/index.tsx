@@ -24,6 +24,7 @@ import { WordColorSection } from "~/components/settings/WordColorSection";
 import { ReciterSection } from "~/components/settings/ReciterSection";
 import { ReadingModeSection } from "~/components/settings/ReadingModeSection";
 import { LanguageSection } from "~/components/settings/LanguageSection";
+import { getLocaleConfig } from "~/locales/registry";
 
 export const Route = createFileRoute("/_app/settings/")({
   component: SettingsPage,
@@ -115,7 +116,7 @@ function SettingsPage() {
     : t.settings.colorOff;
   const reciterSummary = currentReciter?.name ?? "—";
   const readingModeSummary = t.settings.viewModes[viewMode];
-  const langSummary = locale === "tr" ? "Türkçe" : "English";
+  const langSummary = getLocaleConfig(locale).displayName;
 
   const sections: { id: AccordionSection; title: string; summary: string; icon: React.ReactNode }[] = [
     { id: "font", title: t.settings.sectionFont, summary: fontSummary, icon: <IconFont /> },
