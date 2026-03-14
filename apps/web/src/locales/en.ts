@@ -1153,6 +1153,30 @@ export const en = {
     appTafsirDesc: "Verse commentaries and explanations",
   },
 
+  // Playlist / Audio Page
+  playlist: {
+    title: "Listen",
+    subtitle: "Create a playlist",
+    addSurah: "Add Surah",
+    empty: "No surahs added yet",
+    emptyHint: "Add surahs you want to listen to",
+    verseRange: "Verse",
+    allVerses: "All",
+    repeat: "Repeat",
+    remove: "Remove",
+    moveUp: "Move up",
+    moveDown: "Move down",
+    clearAll: "Clear All",
+    playAll: "Play All",
+    stopPlaylist: "Stop",
+    skipNext: "Next",
+    nowPlaying: "Now Playing",
+    repeatProgress: "Repeat {current}/{total}",
+    complete: "Complete",
+    selectSurah: "Select Surah",
+    searchSurah: "Search surah...",
+  },
+
   // Focus Mode
   focus: {
     title: "Focus Mode",

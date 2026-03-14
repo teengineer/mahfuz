@@ -34,6 +34,13 @@ export function BottomTabBar() {
       visible: true,
     },
     {
+      to: "/audio",
+      label: t.nav.audio,
+      icon: (active) => <HeadphonesTabIcon active={active} />,
+      matchPatterns: ["/audio"],
+      visible: true,
+    },
+    {
       to: "/settings",
       label: t.nav.settings,
       icon: (active) => <SettingsIcon active={active} />,
@@ -110,6 +117,21 @@ function LibraryIcon({ active }: { active: boolean }) {
   return (
     <svg className="h-6 w-6 text-[var(--theme-text-tertiary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6M4.5 10.5v8.25A.75.75 0 005.25 19.5h13.5a.75.75 0 00.75-.75V10.5" />
+    </svg>
+  );
+}
+
+function HeadphonesTabIcon({ active }: { active: boolean }) {
+  if (active) {
+    return (
+      <svg className="h-6 w-6 text-primary-600" viewBox="0 0 24 24" fill="currentColor">
+        <path fillRule="evenodd" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" clipRule="evenodd" />
+      </svg>
+    );
+  }
+  return (
+    <svg className="h-6 w-6 text-[var(--theme-text-tertiary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
     </svg>
   );
 }

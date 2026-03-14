@@ -1153,6 +1153,30 @@ export const tr = {
     appTafsirDesc: "Ayet yorumları ve açıklamalar",
   },
 
+  // Playlist / Audio Page
+  playlist: {
+    title: "Dinleme",
+    subtitle: "Çalma listesi oluşturun",
+    addSurah: "Sure Ekle",
+    empty: "Henüz listeye sure eklenmedi",
+    emptyHint: "Dinlemek istediğiniz sureleri ekleyin",
+    verseRange: "Ayet",
+    allVerses: "Tümü",
+    repeat: "Tekrar",
+    remove: "Kaldır",
+    moveUp: "Yukarı",
+    moveDown: "Aşağı",
+    clearAll: "Temizle",
+    playAll: "Tümünü Oynat",
+    stopPlaylist: "Durdur",
+    skipNext: "Sonraki",
+    nowPlaying: "Çalıyor",
+    repeatProgress: "Tekrar {current}/{total}",
+    complete: "Tamamlandı",
+    selectSurah: "Sure Seçin",
+    searchSurah: "Sure ara...",
+  },
+
   // Focus Mode
   focus: {
     title: "Odak Modu",

@@ -7,6 +7,7 @@ import type {
 } from "@mahfuz/shared/types";
 import { DEFAULT_RECITER_ID } from "@mahfuz/shared/constants";
 import type { AudioEngine, ChapterAudioData } from "@mahfuz/audio-engine";
+import { usePlaylistStore } from "./usePlaylistStore";
 
 export type { PlaybackState, PlaybackSpeed, RepeatMode };
 
@@ -150,6 +151,7 @@ export const useAudioStore = create<AudioStoreState>()(
       stop: () => {
         get().engine?.stop();
         set({ isVisible: false, isExpanded: false });
+        usePlaylistStore.getState().stopPlaylist();
       },
 
       nextVerse: () => get().engine?.nextVerse(),
@@ -182,13 +184,20 @@ export const useAudioStore = create<AudioStoreState>()(
       setExpanded: (expanded) => set({ isExpanded: expanded }),
 
       // Callbacks
-      _onPlaybackStateChange: (playbackState) => set({ playbackState }),
+      _onPlaybackStateChange: (playbackState) => {
+        set({ playbackState });
+        if (playbackState === "ended") {
+          usePlaylistStore.getState()._handlePlaybackEnded();
+        }
+      },
       _onTimeUpdate: (currentTime, duration) =>
         set({ currentTime, duration }),
       _onWordPositionChange: (currentWordPosition) =>
         set({ currentWordPosition }),
       _onVerseChange: (verseKey) => set({ currentVerseKey: verseKey }),
-      _onVerseEnd: () => {},
+      _onVerseEnd: (verseKey) => {
+        usePlaylistStore.getState()._handleVerseEnd(verseKey);
+      },
     }),
     {
       name: "mahfuz-audio",
