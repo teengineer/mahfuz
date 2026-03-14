@@ -133,6 +133,7 @@ export const pages = {
       pirveysal: "Akademik titizlikle hazırlanmış, anlaşılır Türkçesiyle öne çıkan meal çalışması.",
       bilmen: "Cumhuriyet döneminin ilk Diyanet İşleri Başkanlarından Ömer Nasuhi Bilmen'in klasik meal çalışması.",
       yavuz: "Sade ve akıcı Türkçesiyle bilinen, geniş okuyucu kitlesine ulaşmış meal çalışması.",
+      sahihInternational: "Dünya genelinde en yaygın kullanılan İngilizce Kur'an-ı Kerim çevirisi.",
     },
     dataCredits: {
       tanzil: "Kur'an-ı Kerim ayet metinlerinin (Uthmani ve Basit hat) kaynağı. Creative Commons BY 3.0 lisansı ile sunulmaktadır.",

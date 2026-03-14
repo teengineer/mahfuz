@@ -29,7 +29,7 @@ export function useTranslatedVerses(verses: Verse[]): Verse[] {
             resource_id: 0,
             resource_name: meta?.name ?? id,
             text,
-            language_name: "turkish",
+            language_name: meta?.language ?? "turkish",
           });
         }
       }

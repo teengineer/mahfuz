@@ -133,6 +133,7 @@ export const pages = {
       pirveysal: "A scholarly translation known for its academic rigor and clear Turkish.",
       bilmen: "A classic translation by Ömer Nasuhi Bilmen, one of the first heads of Religious Affairs in the Republic era.",
       yavuz: "A widely read translation known for its plain and fluent Turkish.",
+      sahihInternational: "One of the most widely used English translations of the Holy Quran worldwide.",
     },
     dataCredits: {
       tanzil: "Source for Quran verse texts (Uthmani and Simple scripts). Licensed under Creative Commons BY 3.0.",

@@ -34,6 +34,13 @@ const TRANSLATION_CREDITS = [
     source: "kuranayetleri.net",
     url: "https://kuranayetleri.net",
   },
+  {
+    name: "Sahih International",
+    author: "Sahih International",
+    descKey: "sahihInternational" as const,
+    source: "quran.com API",
+    url: "https://quran.com",
+  },
 ] as const;
 
 const DATA_CREDITS = [
