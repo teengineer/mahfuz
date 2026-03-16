@@ -1,5 +1,6 @@
 import { tr } from "./tr";
 import { en } from "./en";
+import { es } from "./es";
 import type { LocaleConfig } from "./types";
 
 /**
@@ -124,11 +125,11 @@ const registry = {
     complete: false,
   },
   es: {
-    messages: {},
+    messages: es,
     displayName: "Español",
     dir: "ltr",
     bcp47: "es",
-    complete: false,
+    complete: true,
   },
   sw: {
     messages: {},
