@@ -9,11 +9,15 @@ import { interpolate } from "~/lib/i18n-utils";
 import type { Chapter } from "@mahfuz/shared/types";
 
 function getCategoryLabel(cat: TopicCategory, locale: string) {
-  return locale === "en" ? cat.labelEn : cat.label;
+  if (locale === "en") return cat.labelEn;
+  if (locale === "es") return cat.labelEs;
+  return cat.label;
 }
 
 function getTopicName(entry: TopicEntry, locale: string) {
-  return locale === "en" ? entry.topicEn : entry.topic;
+  if (locale === "en") return entry.topicEn;
+  if (locale === "es") return entry.topicEs;
+  return entry.topic;
 }
 
 export function FihristPanel({ initialTopic }: { initialTopic?: string }) {
