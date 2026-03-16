@@ -26,6 +26,13 @@ const registry = {
     bcp47: "en",
     complete: true,
   },
+  es: {
+    messages: es,
+    displayName: "Español",
+    dir: "ltr",
+    bcp47: "es",
+    complete: true,
+  },
   ar: {
     messages: {},
     displayName: "العربية",
@@ -123,13 +130,6 @@ const registry = {
     dir: "ltr",
     bcp47: "ms",
     complete: false,
-  },
-  es: {
-    messages: es,
-    displayName: "Español",
-    dir: "ltr",
-    bcp47: "es",
-    complete: true,
   },
   sw: {
     messages: {},

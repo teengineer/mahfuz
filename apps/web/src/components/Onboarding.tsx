@@ -172,7 +172,9 @@ export function Onboarding() {
                 ))}
               </div>
               <div className="flex items-center justify-center gap-2 rounded-xl bg-[var(--theme-pill-bg)] p-1">
-                {getAllLocaleConfigs().map(({ code, config }) => (
+                {getAllLocaleConfigs()
+                  .filter(({ config }) => config.complete)
+                  .map(({ code, config }) => (
                   <button
                     key={code}
                     onClick={() => setLocale(code)}

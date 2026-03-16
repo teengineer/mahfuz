@@ -501,7 +501,7 @@ function AppLayout() {
                 <button
                   onClick={handleSignOut}
                   className="rounded-lg p-1.5 text-[var(--theme-text-tertiary)] transition-colors hover:bg-[var(--theme-hover-bg)] hover:text-[var(--theme-text)]"
-                  title={t.auth.signOut}
+                  title={t.nav.signOut}
                 >
                   <LogOutIcon />
                 </button>
@@ -511,7 +511,7 @@ function AppLayout() {
                 to="/auth/login"
                 className="hidden items-center rounded-full bg-primary-600 px-3.5 py-1.5 text-[13px] font-medium text-white transition-all hover:bg-primary-700 active:scale-[0.97] lg:flex"
               >
-                {t.auth.login}
+                {t.nav.login}
               </Link>
             )}
 
