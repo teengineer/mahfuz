@@ -12,6 +12,7 @@ export const useReadingPrefs = createPreferenceStore("mahfuz-reading-prefs", {
   wbwShowWordTranslation: true,
   wbwShowWordTransliteration: true,
   wbwTransliterationFirst: false,
+  wbwShowGrammar: false,
 
   // Per-mode font sizes
   normalArabicFontSize: 1,

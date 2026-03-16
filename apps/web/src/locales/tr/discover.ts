@@ -1,0 +1,122 @@
+export const discoverMessages = {
+  discover: {
+    title: "Keşfet",
+    subtitle: "Kur'an'ın dilbilimsel zenginliklerini keşfedin",
+
+    // Tab labels
+    dictionary: "Sözlük",
+    concepts: "Kavramlar",
+    irab: "İ'rab",
+
+    // Dictionary tab
+    searchRoots: "Kök ara...",
+    rootsFound: "kök bulundu",
+    frequency: "Frekans",
+    forms: "form",
+    occurrences: "geçiş",
+    viewDetail: "Detay",
+    relatedRoots: "İlgili Kökler",
+    verseReferences: "Ayet Referansları",
+    enrichment: "Zenginleştirme",
+    rhetoric: "Belâgat",
+    etymology: "Etimoloji",
+    semanticField: "Anlam Alanı",
+    allRoots: "Tüm Kökler",
+    noMeaning: "Anlam henüz eklenmedi",
+
+    // Frequency sets
+    frequencySet: "Frekans Seti",
+    top10: "En Sık 10",
+    top50: "En Sık 50",
+    top100: "En Sık 100",
+    top200: "En Sık 200",
+    top500: "En Sık 500",
+    all: "Tümü",
+
+    // Arabic keyboard
+    keyboard: "Klavye",
+    clearSearch: "Aramayı temizle",
+
+    // Concepts tab
+    allCategories: "Tüm Kategoriler",
+    searchConcepts: "Kavram ara...",
+    conceptsFound: "kavram bulundu",
+    relatedConcepts: "İlgili Kavramlar",
+    verseCount: "ayet",
+    viewVerses: "Ayetleri Gör",
+    description: "Açıklama",
+
+    // İ'rab tab
+    selectSurah: "Sure seçin",
+    selectVerse: "Ayet seçin",
+    syntaxTree: "Sentaks Ağacı",
+    syntaxLegend: "Renk Anahtarı",
+    wordDetail: "Kelime Detayı",
+    role: "Rol",
+    caseEnding: "İ'rab Hali",
+    morphemes: "Morfemler",
+    prefix: "Önek",
+    stem: "Gövde",
+    suffix: "Sonek",
+    root: "Kök",
+    lemma: "Sözlük Formu",
+    pos: "Kelime Türü",
+    noData: "Bu ayet için i'rab verisi bulunmuyor",
+
+    // Syntactic roles
+    roles: {
+      mubtada: "Mübteda",
+      khabar: "Haber",
+      fail: "Fâil",
+      mafool: "Mef'ûl",
+      "jar-majrur": "Câr-Mecrûr",
+      hal: "Hâl",
+      tamyiz: "Temyîz",
+      naat: "Na't",
+      mudaf: "Muzâf",
+      "mudaf-ilayh": "Muzâfun İleyh",
+      atf: "Atıf",
+      badal: "Bedel",
+      harf: "Harf",
+      fiil: "Fiil",
+      "mafool-mutlaq": "Mef'ûl-ü Mutlak",
+      "mafool-fih": "Mef'ûl-ü Fih",
+      "mafool-lahu": "Mef'ûl-ü Leh",
+      istisna: "İstisnâ",
+      nida: "Nidâ",
+      tawkid: "Te'kid",
+    },
+
+    // POS labels
+    posLabels: {
+      N: "İsim",
+      PN: "Özel İsim",
+      ADJ: "Sıfat",
+      V: "Fiil",
+      PRON: "Zamir",
+      REL: "İsm-i Mevsul",
+      DEM: "İşaret Zamiri",
+      P: "Harf-i Cer",
+      CONJ: "Bağlaç",
+      NEG: "Olumsuzluk",
+      EMPH: "Te'kit",
+      DET: "Belirteç",
+      INTG: "İstifham",
+      COND: "Şart",
+      VOC: "Nidâ",
+    },
+
+    // Grammar in WBW mode
+    grammar: "Gramer",
+    showGrammar: "Gramer bilgisi göster",
+    morphologyDetail: "Morfolojik Detay",
+    definite: "Belirli",
+    indefinite: "Belirsiz",
+    nominative: "Merfû",
+    accusative: "Mansûb",
+    genitive: "Mecrûr",
+    active: "Ma'lûm",
+    passive: "Mechûl",
+    goToRoot: "Köke Git →",
+  },
+} as const;

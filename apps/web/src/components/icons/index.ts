@@ -18,5 +18,8 @@ export { FontIcon, DropletIcon, MicrophoneIcon, PaletteIcon, BookOpenIcon, Globe
 // Quran reading
 export { ViewModeNormalIcon, ViewModeWbwIcon, ViewModeMushafIcon, VIEW_MODE_ICONS, SurahTypeIcon, PageTypeIcon, JuzTypeIcon, VerseTypeIcon } from "./quran";
 
+// Discover
+export { DiscoverIcon, TabDiscoverIcon } from "./discover";
+
 // Logo
 export { MahfuzLogo } from "./MahfuzLogo";

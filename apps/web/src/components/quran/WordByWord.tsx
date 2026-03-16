@@ -1,13 +1,17 @@
 import { memo, useState, useCallback, useEffect, useRef } from "react";
-import type { Word } from "@mahfuz/shared/types";
+import type { Word, WordMorphology } from "@mahfuz/shared/types";
 import { usePreferencesStore } from "~/stores/usePreferencesStore";
 import { useShallow } from "zustand/react/shallow";
+import { useReadingPrefs } from "~/stores/useReadingPrefs";
+import { MorphologyPopover } from "./MorphologyPopover";
 
 interface WordByWordProps {
   words: Word[];
   colorizeWords?: boolean;
   colors?: string[];
   activeWordPosition?: number | null;
+  /** Per-word morphology data, keyed by position (1-based) */
+  morphologyData?: WordMorphology[];
 }
 
 export const WordByWord = memo(function WordByWord({
@@ -15,7 +19,9 @@ export const WordByWord = memo(function WordByWord({
   colorizeWords = false,
   colors = [],
   activeWordPosition,
+  morphologyData,
 }: WordByWordProps) {
+  const showGrammar = useReadingPrefs((s) => s.wbwShowGrammar);
   // Consolidated preferences selector — single subscription instead of 6
   const prefs = usePreferencesStore(useShallow((s) => ({
     showTranslation: s.wbwShowWordTranslation,
@@ -119,7 +125,7 @@ export const WordByWord = memo(function WordByWord({
             )}
 
             {/* Tap-to-select popup */}
-            {isSelected && hasPopup && (
+            {isSelected && hasPopup && !showGrammar && (
               <span className="absolute bottom-full left-1/2 z-30 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-lg bg-[var(--theme-bg-elevated)] px-3 py-2 shadow-[var(--shadow-float)]">
                 {word.translation?.text && (
                   <span className="block font-sans font-medium text-[var(--theme-text)]" style={{ fontSize: `calc(12px * ${prefs.wbwPopupTextSize})` }}>
@@ -134,6 +140,11 @@ export const WordByWord = memo(function WordByWord({
                 <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[var(--theme-bg-elevated)]" />
               </span>
             )}
+            {/* Grammar popover */}
+            {isSelected && showGrammar && morphologyData && (() => {
+              const morph = morphologyData.find((m) => m.p === word.position);
+              return morph ? <MorphologyPopover morph={morph} onClose={() => setSelectedWordId(null)} /> : null;
+            })()}
           </div>
         );
       })}

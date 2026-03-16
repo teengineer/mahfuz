@@ -1,0 +1,122 @@
+export const discoverMessages = {
+  discover: {
+    title: "Discover",
+    subtitle: "Explore the linguistic richness of the Quran",
+
+    // Tab labels
+    dictionary: "Dictionary",
+    concepts: "Concepts",
+    irab: "I'rab",
+
+    // Dictionary tab
+    searchRoots: "Search roots...",
+    rootsFound: "roots found",
+    frequency: "Frequency",
+    forms: "forms",
+    occurrences: "occurrences",
+    viewDetail: "Detail",
+    relatedRoots: "Related Roots",
+    verseReferences: "Verse References",
+    enrichment: "Enrichment",
+    rhetoric: "Rhetoric",
+    etymology: "Etymology",
+    semanticField: "Semantic Field",
+    allRoots: "All Roots",
+    noMeaning: "Meaning not yet added",
+
+    // Frequency sets
+    frequencySet: "Frequency Set",
+    top10: "Top 10",
+    top50: "Top 50",
+    top100: "Top 100",
+    top200: "Top 200",
+    top500: "Top 500",
+    all: "All",
+
+    // Arabic keyboard
+    keyboard: "Keyboard",
+    clearSearch: "Clear search",
+
+    // Concepts tab
+    allCategories: "All Categories",
+    searchConcepts: "Search concepts...",
+    conceptsFound: "concepts found",
+    relatedConcepts: "Related Concepts",
+    verseCount: "verses",
+    viewVerses: "View Verses",
+    description: "Description",
+
+    // İ'rab tab
+    selectSurah: "Select surah",
+    selectVerse: "Select verse",
+    syntaxTree: "Syntax Tree",
+    syntaxLegend: "Color Legend",
+    wordDetail: "Word Detail",
+    role: "Role",
+    caseEnding: "Case Ending",
+    morphemes: "Morphemes",
+    prefix: "Prefix",
+    stem: "Stem",
+    suffix: "Suffix",
+    root: "Root",
+    lemma: "Dictionary Form",
+    pos: "Part of Speech",
+    noData: "No i'rab data available for this verse",
+
+    // Syntactic roles
+    roles: {
+      mubtada: "Subject",
+      khabar: "Predicate",
+      fail: "Agent",
+      mafool: "Object",
+      "jar-majrur": "Prep. Phrase",
+      hal: "State",
+      tamyiz: "Specification",
+      naat: "Adjective",
+      mudaf: "Possessor",
+      "mudaf-ilayh": "Possessed",
+      atf: "Conjunction",
+      badal: "Substitution",
+      harf: "Particle",
+      fiil: "Verb",
+      "mafool-mutlaq": "Absolute Object",
+      "mafool-fih": "Adverbial",
+      "mafool-lahu": "Object of Purpose",
+      istisna: "Exception",
+      nida: "Vocative",
+      tawkid: "Emphasis",
+    },
+
+    // POS labels
+    posLabels: {
+      N: "Noun",
+      PN: "Proper Noun",
+      ADJ: "Adjective",
+      V: "Verb",
+      PRON: "Pronoun",
+      REL: "Relative Pronoun",
+      DEM: "Demonstrative",
+      P: "Preposition",
+      CONJ: "Conjunction",
+      NEG: "Negative",
+      EMPH: "Emphatic",
+      DET: "Determiner",
+      INTG: "Interrogative",
+      COND: "Conditional",
+      VOC: "Vocative",
+    },
+
+    // Grammar in WBW mode
+    grammar: "Grammar",
+    showGrammar: "Show grammar info",
+    morphologyDetail: "Morphological Detail",
+    definite: "Definite",
+    indefinite: "Indefinite",
+    nominative: "Nominative",
+    accusative: "Accusative",
+    genitive: "Genitive",
+    active: "Active",
+    passive: "Passive",
+    goToRoot: "Go to Root →",
+  },
+} as const;

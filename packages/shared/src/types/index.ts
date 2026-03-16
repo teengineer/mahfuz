@@ -7,3 +7,4 @@ export * from "./sync";
 export * from "./api";
 export * from "./learn";
 export * from "./morphology";
+export * from "./concepts";

@@ -130,3 +130,82 @@ export interface RootEnrichment {
   /** Related root keys */
   relatedRoots?: string[];
 }
+
+// ---------- Frequency Sets ----------
+
+export interface FrequencyWord {
+  /** Root letters, e.g. "كتب" */
+  root: string;
+  /** Total occurrence count */
+  count: number;
+  /** Meaning in TR and EN */
+  meaning: { tr: string; en: string };
+}
+
+export interface FrequencySet {
+  /** Set identifier, e.g. "top-10" */
+  id: string;
+  /** Display label */
+  label: { tr: string; en: string };
+  /** Ordered words (most frequent first) */
+  words: FrequencyWord[];
+}
+
+export interface FrequencySetsData {
+  sets: FrequencySet[];
+}
+
+// ---------- Syntax / İ'rab ----------
+
+/** Syntactic role in a verse */
+export type IrabRole =
+  | "mubtada"   // مبتدأ (subject)
+  | "khabar"    // خبر (predicate)
+  | "fail"      // فاعل (agent/doer)
+  | "mafool"    // مفعول به (direct object)
+  | "jar-majrur" // جار ومجرور (preposition + genitive)
+  | "hal"       // حال (adverbial of state)
+  | "tamyiz"    // تميز (specification)
+  | "naat"      // نعت (adjective/qualifier)
+  | "mudaf"     // مضاف (possessor)
+  | "mudaf-ilayh" // مضاف إليه (possessed)
+  | "atf"       // عطف (conjunction)
+  | "badal"     // بدل (substitution)
+  | "harf"      // حرف (particle)
+  | "fiil"      // فعل (verb)
+  | "mafool-mutlaq" // مفعول مطلق (absolute object)
+  | "mafool-fih"    // مفعول فيه (adverbial of place/time)
+  | "mafool-lahu"   // مفعول لأجله (object of purpose)
+  | "istisna"   // استثناء (exception)
+  | "nida"      // نداء (vocative)
+  | "tawkid"    // توكيد (emphasis)
+  | string;     // allow unknown roles
+
+export interface SyntaxNode {
+  /** Word position in verse (1-based) */
+  p: number;
+  /** Arabic text */
+  ar: string;
+  /** Syntactic role */
+  role: IrabRole;
+  /** Case ending label (e.g. "مرفوع", "منصوب", "مجرور") */
+  caseLabel?: { tr: string; en: string; ar: string };
+  /** Parent node position (for dependency arc), null for root */
+  parent?: number;
+  /** Dependency label (e.g. "nsubj", "obj", "obl") */
+  depLabel?: string;
+  /** Full i'rab description */
+  irabDesc?: { tr: string; en: string };
+}
+
+export interface VerseSyntax {
+  /** Verse number */
+  verse: number;
+  /** Syntax nodes for each word */
+  nodes: SyntaxNode[];
+}
+
+export interface SurahSyntaxData {
+  /** Keyed by verse number as string */
+  verses: Record<string, SyntaxNode[]>;
+}

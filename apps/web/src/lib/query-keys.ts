@@ -83,6 +83,17 @@ export const QUERY_KEYS = {
     all: (userId: string) => ["badges", userId] as const,
   },
 
+  // Discover (static JSON)
+  discover: {
+    rootsIndex: () => ["discover", "roots-index"] as const,
+    rootDetail: (rootKey: string) => ["discover", "root-detail", rootKey] as const,
+    rootEnrichment: () => ["discover", "roots-enrichment"] as const,
+    morphology: (surahId: number) => ["discover", "morphology", surahId] as const,
+    concepts: () => ["discover", "concepts"] as const,
+    syntax: (surahId: number) => ["discover", "syntax", surahId] as const,
+    frequencySets: () => ["discover", "frequency-sets"] as const,
+  },
+
   // Annotations (Dexie-backed, Focus Mode)
   annotations: {
     all: (userId: string) => ["annotations", userId] as const,
