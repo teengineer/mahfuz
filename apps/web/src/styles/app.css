@@ -731,6 +731,19 @@ body {
   margin: 0.5rem 1.5rem;
 }
 
+/* QCF surah divider between surahs on same page */
+.mushaf-qcf-surah-divider {
+  text-align: center;
+  padding: 0.25rem 0;
+}
+.mushaf-qcf-surah-badge {
+  display: inline-block;
+  font-family: var(--font-arabic), "Traditional Arabic", serif;
+  font-size: clamp(0.85rem, 2.5vw, 1.1rem);
+  color: var(--mushaf-gold, #8B7355);
+  letter-spacing: 0.02em;
+}
+
 /* Desktop two-page QCF spread */
 .mushaf-qcf-spread {
   display: flex;
@@ -743,12 +756,28 @@ body {
   flex: 1 1 50%;
   min-width: 0;
 }
+/* In spread, each page is ~half viewport → scale font-size down */
+.mushaf-qcf-spread .mushaf-qcf-line {
+  font-size: clamp(0.85rem, 2.2vw, 1.35rem);
+  line-height: 2.2;
+}
+.mushaf-qcf-spread .mushaf-qcf-content {
+  padding: 0.75rem 0.5rem;
+}
 @media (max-width: 1023px) {
   .mushaf-qcf-spread {
     flex-direction: column;
   }
   .mushaf-qcf-spread > * {
     flex: 1 1 100%;
+  }
+  /* Back to normal size when stacked */
+  .mushaf-qcf-spread .mushaf-qcf-line {
+    font-size: clamp(1.4rem, 4.5vw, 2rem);
+    line-height: 2.4;
+  }
+  .mushaf-qcf-spread .mushaf-qcf-content {
+    padding: 1rem 0.75rem;
   }
 }
 
