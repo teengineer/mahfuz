@@ -93,6 +93,7 @@ function ArabicPage({
   colorizeWords,
   colors,
   fontSize,
+  tooltipTextSize,
   selectedWord,
   onSelectWord,
 }: {
