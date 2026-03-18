@@ -103,6 +103,9 @@ function SettingsPage() {
   const reciterId = useAudioStore((s) => s.reciterId);
   const currentReciter = CURATED_RECITERS.find((r) => r.id === reciterId);
 
+  // Page layout (must be before the useEffect that depends on it)
+  const pageLayout = useReadingPrefs((s) => s.pageLayout);
+
   // Show "Saved" toast briefly when any preference changes
   const [showSaved, setShowSaved] = useState(false);
   const isFirstRender = useRef(true);
@@ -135,9 +138,6 @@ function SettingsPage() {
       }
     }
   }, []);
-
-  // Page layout
-  const pageLayout = useReadingPrefs((s) => s.pageLayout);
 
   // ── Summaries ──
   const fontSummary = currentFont.name;
