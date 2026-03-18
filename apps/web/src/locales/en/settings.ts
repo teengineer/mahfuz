@@ -55,6 +55,7 @@ export const settingsMessages = {
     pageLayoutBerkenarDesc: "600 pages, each juz exactly 20 pages",
     credits: "Credits",
     creditsDesc: "Those whose valuable feedback, vision, and contributions helped make Mahfuz better",
+    creditsSeeAll: "See all credits",
   },
 
   pwa: {

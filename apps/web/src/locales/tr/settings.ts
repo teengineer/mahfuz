@@ -55,6 +55,7 @@ export const settingsMessages = {
     pageLayoutBerkenarDesc: "600 sayfa, her cüz tam 20 sayfa",
     credits: "Katkıda Bulunanlar",
     creditsDesc: "Değerli geri bildirimleri, önerileri ve vizyonuyla Mahfuz'un daha iyiye ulaşmasında büyük emeği geçen",
+    creditsSeeAll: "Tüm katkıları gör",
   },
 
   pwa: {

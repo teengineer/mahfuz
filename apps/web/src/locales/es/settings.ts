@@ -55,6 +55,7 @@ export const settingsMessages = {
     pageLayoutBerkenarDesc: "600 páginas, cada yuz exactamente 20 páginas",
     credits: "Colaboradores",
     creditsDesc: "Quienes con sus valiosos comentarios, visión y aportes ayudaron a que Mahfuz sea mejor",
+    creditsSeeAll: "Ver todos los créditos",
   },
 
   pwa: {

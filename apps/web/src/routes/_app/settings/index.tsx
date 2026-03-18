@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
 import {
   usePreferencesStore,
@@ -341,6 +341,15 @@ function SettingsPage() {
             <p className="text-xs text-[var(--theme-text-tertiary)]">@enesismail</p>
           </div>
         </div>
+        <Link
+          to="/credits"
+          className="mt-4 flex items-center justify-center gap-1.5 rounded-xl bg-[var(--theme-pill-bg)] px-4 py-2.5 text-[12px] font-medium text-[var(--theme-text-secondary)] transition-colors hover:bg-[var(--theme-hover-bg)]"
+        >
+          {t.settings.creditsSeeAll}
+          <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </Link>
       </div>
 
       <SaveStatusBar visible={showSaved} label={t.settings.saved} />
