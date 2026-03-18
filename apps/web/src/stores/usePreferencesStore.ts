@@ -198,7 +198,17 @@ export const usePreferencesStore = create<PreferencesState>()(
       setSidebarCollapsed: (v) => set({ sidebarCollapsed: v }),
       setHasSeenOnboarding: (v) => set({ hasSeenOnboarding: v }),
     }),
-    { name: "mahfuz-preferences" },
+    {
+      name: "mahfuz-preferences",
+      version: 1,
+      migrate: (persisted: any, version: number) => {
+        if (version === 0 && persisted) {
+          // mushafPage → mushaf (QCF is now primary mushaf mode)
+          if (persisted.viewMode === "mushafPage") persisted.viewMode = "mushaf";
+        }
+        return persisted;
+      },
+    },
   ),
 );
 
@@ -207,7 +217,7 @@ export function getArabicFontSizeForMode(
 ): number {
   switch (state.viewMode) {
     case "wordByWord": return state.wbwArabicFontSize;
-    case "mushaf": return state.mushafArabicFontSize;
+    case "mushafFlow": return state.mushafArabicFontSize;
     default: return state.normalArabicFontSize;
   }
 }
@@ -215,6 +225,6 @@ export function getArabicFontSizeForMode(
 export function getTranslationFontSizeForMode(
   state: Pick<PreferencesState, "viewMode" | "normalTranslationFontSize" | "mushafTranslationFontSize">,
 ): number {
-  if (state.viewMode === "mushaf") return state.mushafTranslationFontSize;
+  if (state.viewMode === "mushafFlow") return state.mushafTranslationFontSize;
   return state.normalTranslationFontSize;
 }

@@ -20,7 +20,6 @@ export const settingsMessages = {
       normal: "Normal",
       wordByWord: "Palabra",
       mushaf: "Mushaf",
-      mushafPage: "Página",
     },
     language: "Idioma",
     languageDesc: "Cambiar idioma de la interfaz",
@@ -54,6 +53,8 @@ export const settingsMessages = {
     pageLayoutBerkenar: "Berkenar",
     pageLayoutMedineDesc: "604 páginas, impresión estándar de Medina",
     pageLayoutBerkenarDesc: "600 páginas, cada yuz exactamente 20 páginas",
+    credits: "Colaboradores",
+    creditsDesc: "Quienes con sus valiosos comentarios, visión y aportes ayudaron a que Mahfuz sea mejor",
   },
 
   pwa: {

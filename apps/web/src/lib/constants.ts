@@ -1,5 +1,5 @@
 export type Theme = "light" | "crystal" | "sepia" | "dark" | "dimmed" | "teal" | "black";
-export type ViewMode = "normal" | "wordByWord" | "mushaf" | "mushafPage";
+export type ViewMode = "normal" | "wordByWord" | "mushaf" | "mushafFlow";
 
 export const THEME_OPTIONS: { value: Theme; color: string; border: string }[] = [
   { value: "light", color: "#ffffff", border: "#d2d2d7" },

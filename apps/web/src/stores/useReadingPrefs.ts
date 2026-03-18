@@ -35,7 +35,7 @@ export function getArabicFontSizeForMode(
 ): number {
   switch (viewMode) {
     case "wordByWord": return state.wbwArabicFontSize;
-    case "mushaf": return state.mushafArabicFontSize;
+    case "mushafFlow": return state.mushafArabicFontSize;
     default: return state.normalArabicFontSize;
   }
 }
@@ -45,7 +45,7 @@ export function getTranslationFontSizeForMode(
   viewMode: ViewMode,
   state: { normalTranslationFontSize: number; mushafTranslationFontSize?: number },
 ): number {
-  if (viewMode === "mushaf") return state.mushafTranslationFontSize ?? 1;
+  if (viewMode === "mushafFlow") return state.mushafTranslationFontSize ?? 1;
   return state.normalTranslationFontSize;
 }
 

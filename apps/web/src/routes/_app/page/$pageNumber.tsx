@@ -45,7 +45,7 @@ export const Route = createFileRoute("/_app/page/$pageNumber")({
   component: MushafPageView,
 });
 
-const VIEW_MODE_ICONS: Record<ViewMode, React.ReactNode> = {
+const VIEW_MODE_ICONS: Record<string, React.ReactNode> = {
   normal: (
     <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
       <path d="M3 4h10M3 8h7M3 12h10" />
@@ -63,12 +63,6 @@ const VIEW_MODE_ICONS: Record<ViewMode, React.ReactNode> = {
     <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M2 2.5h4.5a1.5 1.5 0 0 1 1.5 1.5v10S6.5 13 4.25 13 2 14 2 14V2.5z" />
       <path d="M14 2.5H9.5A1.5 1.5 0 0 0 8 4v10s1.5-1 3.75-1S14 14 14 14V2.5z" />
-    </svg>
-  ),
-  mushafPage: (
-    <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="1.5" width="12" height="13" rx="1.5" />
-      <path d="M5 5h6M5 8h6M5 11h6" />
     </svg>
   ),
 };
@@ -147,7 +141,6 @@ function MushafPageView() {
     { value: "normal" as ViewMode, label: t.quranReader.viewModes.normal, icon: VIEW_MODE_ICONS.normal },
     { value: "wordByWord" as ViewMode, label: t.quranReader.viewModes.wordByWord, icon: VIEW_MODE_ICONS.wordByWord },
     { value: "mushaf" as ViewMode, label: t.quranReader.viewModes.mushaf, icon: VIEW_MODE_ICONS.mushaf },
-    { value: "mushafPage" as ViewMode, label: t.quranReader.viewModes.mushafPage, icon: VIEW_MODE_ICONS.mushafPage },
   ]), [t]);
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -169,7 +162,7 @@ function MushafPageView() {
     return Array.from(ids);
   }, [versesData.verses]);
 
-  const isMushaf = viewMode === "mushaf" || viewMode === "wordByWord";
+  const isMushaf = viewMode === "mushafFlow" || viewMode === "wordByWord";
   const wbwQueries = useQueries({
     queries: surahIdsOnPage.map((chId) => ({
       ...wbwByChapterQueryOptions(chId),
@@ -242,7 +235,7 @@ function MushafPageView() {
   }, []);
 
   useEffect(() => {
-    if (viewMode !== "mushaf" && viewMode !== "mushafPage" && document.fullscreenElement) {
+    if (viewMode !== "mushaf" && document.fullscreenElement) {
       document.exitFullscreen();
     }
   }, [viewMode]);
@@ -326,8 +319,8 @@ function MushafPageView() {
   const goPrev = useCallback(() => {
     if (hasPrev) navigate({ to: "/page/$pageNumber", params: { pageNumber: String(pageNum - 1) } });
   }, [hasPrev, pageNum, navigate]);
-  // Disable swipe nav in mushaf/mushafPage mode — conflicts with scroll-snap or page rendering
-  const swipeEnabled = viewMode !== "mushaf" && viewMode !== "mushafPage";
+  // Disable swipe nav in mushaf mode — conflicts with QCF page rendering
+  const swipeEnabled = viewMode !== "mushaf";
   useSwipeNavigation(swipeContainerRef, {
     onSwipeLeft: swipeEnabled ? goPrev : () => {},
     onSwipeRight: swipeEnabled ? goNext : () => {},
@@ -434,7 +427,7 @@ function MushafPageView() {
 
           {/* Right group: fullscreen + arrow */}
           <div className="flex shrink-0 items-center gap-0.5">
-            {(viewMode === "mushaf" || viewMode === "mushafPage") && (
+            {viewMode === "mushaf" && (
               <button
                 type="button"
                 onClick={toggleFullscreen}
@@ -482,8 +475,8 @@ function MushafPageView() {
           </button>
         )}
 
-        {/* QCF mushafPage mode */}
-        {viewMode === "mushafPage" ? (
+        {/* QCF mushaf mode (matbu eşleşen) */}
+        {viewMode === "mushaf" ? (
           <>
             {/* Desktop: show two pages side by side (odd/even spread) */}
             {pageNum > 2 && pageNum % 2 === 1 ? (

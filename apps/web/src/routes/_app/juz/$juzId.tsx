@@ -4,7 +4,7 @@ import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { versesByJuzQueryOptions } from "~/hooks/useVerses";
 import { chaptersQueryOptions } from "~/hooks/useChapters";
 import { chapterAudioQueryOptions } from "~/hooks/useAudio";
-import { VerseList, ReadingToolbar } from "~/components/quran";
+import { VerseList, ReadingToolbar, MushafPageImage } from "~/components/quran";
 import { useAudioStore } from "~/stores/useAudioStore";
 import type { ChapterAudioData } from "@mahfuz/audio-engine";
 import { SegmentedControl } from "~/components/ui/SegmentedControl";
@@ -35,7 +35,7 @@ export const Route = createFileRoute("/_app/juz/$juzId")({
   component: JuzView,
 });
 
-const VIEW_MODE_ICONS: Record<ViewMode, React.ReactNode> = {
+const VIEW_MODE_ICONS: Record<string, React.ReactNode> = {
   normal: (
     <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
       <path d="M3 4h10M3 8h7M3 12h10" />
@@ -222,10 +222,21 @@ function JuzView() {
         </div>
       </div>
 
-      <VerseList
-        verses={translatedVerses}
-        onPlayFromVerse={handlePlayFromVerse}
-      />
+      {viewMode === "mushaf" ? (
+        <div className="space-y-4">
+          {Array.from(
+            { length: pageEnd - pageStart + 1 },
+            (_, i) => pageStart + i,
+          ).map((pageNum) => (
+            <MushafPageImage key={pageNum} pageNumber={pageNum} onVerseTap={handlePlayFromVerse} />
+          ))}
+        </div>
+      ) : (
+        <VerseList
+          verses={translatedVerses}
+          onPlayFromVerse={handlePlayFromVerse}
+        />
+      )}
 
       <div className="mt-10 flex items-center justify-between border-t border-[var(--theme-divider)]/40 pt-6">
         {hasPrev ? (

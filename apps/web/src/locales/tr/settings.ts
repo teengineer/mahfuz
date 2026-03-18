@@ -20,7 +20,6 @@ export const settingsMessages = {
       normal: "Normal",
       wordByWord: "Kelime",
       mushaf: "Mushaf",
-      mushafPage: "Sayfa",
     },
     language: "Dil",
     languageDesc: "Arayüz dilini değiştirin",
@@ -54,6 +53,8 @@ export const settingsMessages = {
     pageLayoutBerkenar: "Berkenar",
     pageLayoutMedineDesc: "604 sayfa, standart Medine baskısı",
     pageLayoutBerkenarDesc: "600 sayfa, her cüz tam 20 sayfa",
+    credits: "Katkıda Bulunanlar",
+    creditsDesc: "Değerli geri bildirimleri, önerileri ve vizyonuyla Mahfuz'un daha iyiye ulaşmasında büyük emeği geçen",
   },
 
   pwa: {

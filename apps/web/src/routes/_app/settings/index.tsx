@@ -315,6 +315,34 @@ function SettingsPage() {
         </button>
       </div>
 
+      {/* Credits */}
+      <div className="mt-8 rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-bg-primary)] p-5">
+        <h2 className="mb-1 text-sm font-semibold text-[var(--theme-text)]">
+          {t.settings.credits}
+        </h2>
+        <p className="mb-4 text-xs text-[var(--theme-text-tertiary)]">
+          {t.settings.creditsDesc}
+        </p>
+        <div className="flex items-center gap-3">
+          <img
+            src="https://github.com/enesismail.png"
+            alt="Ismail Arslan"
+            className="h-10 w-10 rounded-full ring-2 ring-[var(--theme-border)]"
+          />
+          <div>
+            <a
+              href="https://github.com/enesismail"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium text-[var(--theme-text)] hover:text-primary-600 transition-colors"
+            >
+              Ismail Arslan
+            </a>
+            <p className="text-xs text-[var(--theme-text-tertiary)]">@enesismail</p>
+          </div>
+        </div>
+      </div>
+
       <SaveStatusBar visible={showSaved} label={t.settings.saved} />
     </div>
   );

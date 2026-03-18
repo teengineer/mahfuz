@@ -8,7 +8,7 @@ import { versesByChapterQueryOptions } from "~/hooks/useVerses";
 import { wbwByChapterQueryOptions } from "~/hooks/useWbwData";
 import { mergeWbwIntoVerses } from "~/lib/quran-data";
 import { chapterAudioQueryOptions } from "~/hooks/useAudio";
-import { VerseList } from "~/components/quran";
+import { VerseList, MushafPageImage } from "~/components/quran";
 import { Loading } from "~/components/ui/Loading";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { TOTAL_CHAPTERS } from "@mahfuz/shared/constants";
@@ -78,7 +78,7 @@ export const Route = createFileRoute("/_app/$surahId/")({
   component: SurahView,
 });
 
-const VIEW_MODE_ICONS: Record<ViewMode, React.ReactNode> = {
+const VIEW_MODE_ICONS: Record<string, React.ReactNode> = {
   normal: (
     <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
       <path d="M3 4h10M3 8h7M3 12h10" />
@@ -431,13 +431,24 @@ function SurahView() {
           </button>
         )}
 
-        {/* Verses (Bismillah is rendered automatically by VerseList for the first verse of a surah) */}
-        <VerseList
-          verses={translatedVerses}
-          onPlayFromVerse={handlePlayFromVerse}
-          onTogglePlayPause={togglePlayPause}
-          scrollToVerse={verseParam}
-        />
+        {/* Content: QCF pages for mushaf mode, flowing text otherwise */}
+        {viewMode === "mushaf" ? (
+          <div className="space-y-4">
+            {Array.from(
+              { length: chapter.pages[1] - chapter.pages[0] + 1 },
+              (_, i) => chapter.pages[0] + i,
+            ).map((pageNum) => (
+              <MushafPageImage key={pageNum} pageNumber={pageNum} onVerseTap={handlePlayFromVerse} />
+            ))}
+          </div>
+        ) : (
+          <VerseList
+            verses={translatedVerses}
+            onPlayFromVerse={handlePlayFromVerse}
+            onTogglePlayPause={togglePlayPause}
+            scrollToVerse={verseParam}
+          />
+        )}
       </div>
 
       {/* Surah picker overlay */}

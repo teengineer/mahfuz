@@ -20,7 +20,6 @@ export const settingsMessages = {
       normal: "Normal",
       wordByWord: "Word",
       mushaf: "Mushaf",
-      mushafPage: "Page",
     },
     language: "Language",
     languageDesc: "Change interface language",
@@ -54,6 +53,8 @@ export const settingsMessages = {
     pageLayoutBerkenar: "Berkenar",
     pageLayoutMedineDesc: "604 pages, standard Medine print",
     pageLayoutBerkenarDesc: "600 pages, each juz exactly 20 pages",
+    credits: "Credits",
+    creditsDesc: "Those whose valuable feedback, vision, and contributions helped make Mahfuz better",
   },
 
   pwa: {

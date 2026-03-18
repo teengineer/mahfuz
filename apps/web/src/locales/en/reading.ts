@@ -31,7 +31,6 @@ export const readingMessages = {
       normal: "Normal",
       wordByWord: "Word",
       mushaf: "Mushaf",
-      mushafPage: "Page",
     },
     juzLoading: "Loading juz...",
     goToJuz: "Go to Juz",

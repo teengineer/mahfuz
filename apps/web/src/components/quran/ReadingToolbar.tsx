@@ -342,8 +342,8 @@ export function ReadingToolbar({ segmentStyle }: { segmentStyle?: boolean } = {}
   const adjustGlobalFontScale = usePreferencesStore((s) => s.adjustGlobalFontScale);
   const setGlobalFontScale = usePreferencesStore((s) => s.setGlobalFontScale);
 
-  const arabicSize = viewMode === "wordByWord" ? wbwArabicFontSize : viewMode === "mushaf" ? mushafArabicFontSize : normalArabicFontSize;
-  const setArabicSize = viewMode === "wordByWord" ? setWbwArabicFontSize : viewMode === "mushaf" ? setMushafArabicFontSize : setNormalArabicFontSize;
+  const arabicSize = viewMode === "wordByWord" ? wbwArabicFontSize : viewMode === "mushafFlow" ? mushafArabicFontSize : normalArabicFontSize;
+  const setArabicSize = viewMode === "wordByWord" ? setWbwArabicFontSize : viewMode === "mushafFlow" ? setMushafArabicFontSize : setNormalArabicFontSize;
 
   const modeOptions = getModeOptions(t);
 
@@ -443,7 +443,7 @@ export function ReadingToolbar({ segmentStyle }: { segmentStyle?: boolean } = {}
               <span className="-translate-y-[5px] text-[24px] leading-none text-[var(--theme-text-tertiary)]" style={{ fontFamily: 'var(--font-arabic)' }}>ع</span>
             </div>
           </div>
-          {viewMode === "mushaf" ? (
+          {viewMode === "mushafFlow" ? (
             <div>
               <div className="mb-1 flex items-center justify-between">
                 <span className="text-[12px] font-medium text-[var(--theme-text-tertiary)]">{t.settings.translationSize}</span>
@@ -531,7 +531,7 @@ export function ReadingToolbar({ segmentStyle }: { segmentStyle?: boolean } = {}
               </button>
             </>
           )}
-          {viewMode === "mushaf" && (
+          {viewMode === "mushafFlow" && (
             <>
               <div className="flex items-center justify-between">
                 <span className="text-[12px] font-medium text-[var(--theme-text-secondary)]">

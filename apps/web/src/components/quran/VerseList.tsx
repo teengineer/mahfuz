@@ -27,7 +27,7 @@ export function VerseList({
 }: VerseListProps) {
   const viewMode = usePreferencesStore((s) => s.viewMode);
 
-  if (viewMode === "mushaf") {
+  if (viewMode === "mushafFlow") {
     return <MushafView verses={verses} showBismillah={showBismillah} />;
   }
 

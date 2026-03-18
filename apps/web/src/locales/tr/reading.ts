@@ -31,7 +31,6 @@ export const readingMessages = {
       normal: "Normal",
       wordByWord: "Kelime",
       mushaf: "Mushaf",
-      mushafPage: "Sayfa",
     },
     juzLoading: "Cüz yükleniyor...",
     goToJuz: "Cüze Git",
