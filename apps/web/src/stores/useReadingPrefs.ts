@@ -26,6 +26,7 @@ export const useReadingPrefs = createPreferenceStore("mahfuz-reading-prefs", {
   // WBW sub-text sizes
   wordTranslationSize: 1,
   wordTransliterationSize: 1,
+  favoriteSurahs: [] as number[],
 });
 
 // Helper: get arabic font size for current view mode

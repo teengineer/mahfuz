@@ -4,6 +4,8 @@ import { chaptersQueryOptions } from "~/hooks/useChapters";
 import { ChapterCard } from "~/components/quran";
 import { useTranslation } from "~/hooks/useTranslation";
 import { getSurahName } from "~/lib/surah-name";
+import { useFavorites } from "~/hooks/useFavorites";
+import { useReadingHistory } from "~/stores/useReadingHistory";
 
 type SortType = "mushaf" | "revelation";
 
@@ -15,6 +17,9 @@ export function SurahListPanel({ sort = "mushaf" }: SurahListPanelProps) {
   const { t, locale } = useTranslation();
   const { data: chapters } = useSuspenseQuery(chaptersQueryOptions());
   const [search, setSearch] = useState("");
+  const { favoriteSurahs, isFavorite, toggleFavorite } = useFavorites();
+  const lastSurahId = useReadingHistory((s) => s.lastSurahId);
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -27,11 +32,12 @@ export function SurahListPanel({ sort = "mushaf" }: SurahListPanelProps) {
         String(ch.id).startsWith(q)
       );
     });
+    const filteredResult = showFavoritesOnly ? result.filter((ch) => favoriteSurahs.includes(ch.id)) : result;
     if (sort === "revelation") {
-      return [...result].sort((a, b) => a.revelation_order - b.revelation_order);
+      return [...filteredResult].sort((a, b) => a.revelation_order - b.revelation_order);
     }
-    return result;
-  }, [chapters, search, sort]);
+    return filteredResult;
+  }, [chapters, search, sort, showFavoritesOnly, favoriteSurahs]);
 
   return (
     <>
@@ -59,11 +65,34 @@ export function SurahListPanel({ sort = "mushaf" }: SurahListPanelProps) {
         />
       </div>
 
+      <div className="mb-3 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setShowFavoritesOnly((v) => !v)}
+          className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-[12px] font-medium transition-all ${
+            showFavoritesOnly
+              ? "bg-primary-600 text-white"
+              : "bg-[var(--theme-pill-bg)] text-[var(--theme-text-secondary)] hover:bg-[var(--theme-hover-bg)]"
+          }`}
+        >
+          <svg className="h-3 w-3" viewBox="0 0 24 24" fill={showFavoritesOnly ? "currentColor" : "none"} stroke="currentColor" strokeWidth={2}>
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+          </svg>
+          {t.browse.favorites}
+        </button>
+      </div>
+
       {/* Chapter list */}
       {filtered.length > 0 ? (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
           {filtered.map((chapter) => (
-            <ChapterCard key={chapter.id} chapter={chapter} />
+            <ChapterCard
+              key={chapter.id}
+              chapter={chapter}
+              isFavorite={isFavorite(chapter.id)}
+              isLastRead={chapter.id === lastSurahId}
+              onToggleFavorite={() => toggleFavorite(chapter.id)}
+            />
           ))}
         </div>
       ) : (

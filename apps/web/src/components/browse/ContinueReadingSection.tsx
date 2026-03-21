@@ -3,10 +3,13 @@ import { chaptersQueryOptions } from "~/hooks/useChapters";
 import { useReadingListStore } from "~/stores/useReadingListStore";
 import { ReadingListCard } from "./ReadingListCard";
 import { useTranslation } from "~/hooks/useTranslation";
+import { useReadingHistory } from "~/stores/useReadingHistory";
 
 export function ContinueReadingSection() {
   const items = useReadingListStore((s) => s.items);
   const { t } = useTranslation();
+  const lastVerseKey = useReadingHistory((s) => s.lastVerseKey);
+  const lastSurahName = useReadingHistory((s) => s.lastSurahName);
   const { data: chapters } = useSuspenseQuery(chaptersQueryOptions());
 
   if (items.length === 0) return null;
@@ -20,6 +23,11 @@ export function ContinueReadingSection() {
         <span className="text-[11px] tabular-nums text-[var(--theme-text-quaternary)]">
           {items.length}
         </span>
+        {lastVerseKey && (
+          <span className="text-[11px] text-primary-600 font-medium">
+            {lastSurahName} · {t.common.verse} {lastVerseKey.split(":")[1]}
+          </span>
+        )}
       </div>
       <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 scrollbar-none">
         {items.map((item) => (

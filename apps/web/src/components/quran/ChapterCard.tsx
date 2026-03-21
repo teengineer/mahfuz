@@ -6,9 +6,12 @@ import { getSurahName } from "~/lib/surah-name";
 
 interface ChapterCardProps {
   chapter: Chapter;
+  isFavorite?: boolean;
+  isLastRead?: boolean;
+  onToggleFavorite?: (e: React.MouseEvent) => void;
 }
 
-export const ChapterCard = memo(function ChapterCard({ chapter }: ChapterCardProps) {
+export const ChapterCard = memo(function ChapterCard({ chapter, isFavorite, isLastRead, onToggleFavorite }: ChapterCardProps) {
   const { t, locale } = useTranslation();
   const isMakkah = chapter.revelation_place === "makkah";
   const surahName = getSurahName(chapter.id, chapter.translated_name.name, locale);
@@ -50,7 +53,26 @@ export const ChapterCard = memo(function ChapterCard({ chapter }: ChapterCardPro
         </span>
       </div>
 
-      {/* Bottom: names + meta */}
+      {/* Favorite star */}
+        {onToggleFavorite && (
+          <button
+            type="button"
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleFavorite(e); }}
+            className="absolute top-3 right-3 z-10 flex h-6 w-6 items-center justify-center rounded-full transition-all hover:bg-[var(--theme-hover-bg)]"
+            aria-label={isFavorite ? "Remove favorite" : "Add favorite"}
+          >
+            <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill={isFavorite ? "var(--color-primary-600)" : "none"} stroke={isFavorite ? "var(--color-primary-600)" : "var(--theme-text-quaternary)"} strokeWidth={2}>
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+          </button>
+        )}
+
+        {/* Last read badge */}
+        {isLastRead && (
+          <span className="absolute top-3 left-3 z-10 h-2 w-2 rounded-full bg-green-500" title="Son okunan" />
+        )}
+
+        {/* Bottom: names + meta */}
       <div className="relative">
         <h3 className="truncate text-[14px] font-semibold leading-snug text-[var(--theme-text)]">
           {surahName}
