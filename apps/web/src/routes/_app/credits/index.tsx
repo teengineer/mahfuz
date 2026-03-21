@@ -1,5 +1,13 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "~/hooks/useTranslation";
+
+interface GitHubContributor {
+  login: string;
+  avatar_url: string;
+  html_url: string;
+  contributions: number;
+}
 
 export const Route = createFileRoute("/_app/credits/")({
   component: CreditsPage,
@@ -102,6 +110,19 @@ const ISSUE_LINK_DEFS = [
 function CreditsPage() {
   const { t, locale } = useTranslation();
 
+  const { data: contributors } = useQuery<GitHubContributor[]>({
+    queryKey: ["github", "contributors"],
+    queryFn: async () => {
+      const res = await fetch(
+        "https://api.github.com/repos/theilgaz/mahfuz/contributors?per_page=50"
+      );
+      if (!res.ok) return [];
+      return res.json();
+    },
+    staleTime: 24 * 60 * 60 * 1000,
+    gcTime: 24 * 60 * 60 * 1000,
+  });
+
   return (
     <div className="mx-auto max-w-2xl px-6 py-8">
       <h1 className="mb-1 text-2xl font-bold tracking-tight text-[var(--theme-text)]">
@@ -110,6 +131,36 @@ function CreditsPage() {
       <p className="mb-10 text-sm text-[var(--theme-text-tertiary)]">
         {t.credits.subtitle}
       </p>
+
+      {/* Dev Team */}
+      {contributors && contributors.length > 0 && (
+        <CreditsSection title={t.credits.devTeam}>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {contributors.map((c) => (
+              <div key={c.login} className="flex items-center gap-3">
+                <img
+                  src={c.avatar_url}
+                  alt={c.login}
+                  className="h-10 w-10 rounded-full ring-2 ring-[var(--theme-border)]"
+                />
+                <div className="min-w-0 flex-1">
+                  <a
+                    href={c.html_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[13px] font-semibold text-[var(--theme-text)] hover:text-primary-600 transition-colors"
+                  >
+                    @{c.login}
+                  </a>
+                  <p className="text-[12px] text-[var(--theme-text-tertiary)]">
+                    {c.contributions} {t.credits.commits}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CreditsSection>
+      )}
 
       {/* Translations */}
       <CreditsSection title={t.credits.translations}>

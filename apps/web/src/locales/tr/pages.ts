@@ -149,6 +149,8 @@ export const pages = {
       meQuran: "Medine Mushafı stilinde, dijital ortama uygun Arapça yazı tipi.",
       googleFonts: "Inter, Amiri Quran, Amiri, Lateef, Scheherazade New, Noto Naskh Arabic, Noto Sans Arabic, Cairo, Tajawal, Reem Kufi, Noto Kufi Arabic, Playpen Sans Arabic, Mada, Gulzar ve Mirza yazı tipleri.",
     },
+    devTeam: "Geliştirme Ekibi",
+    commits: "katkı",
     specialThanks: "Özel Teşekkürler",
     specialThanksDesc: "Değerli geri bildirimleri, önerileri ve vizyonuyla Mahfuz'un daha iyiye ulaşmasında büyük emeği geçen",
     issueLinks: {

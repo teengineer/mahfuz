@@ -149,6 +149,8 @@ export const pages = {
       meQuran: "Arabic typeface styled after the Medina Mushaf, optimized for digital use.",
       googleFonts: "Inter, Amiri Quran, Amiri, Lateef, Scheherazade New, Noto Naskh Arabic, Noto Sans Arabic, Cairo, Tajawal, Reem Kufi, Noto Kufi Arabic, Playpen Sans Arabic, Mada, Gulzar and Mirza fonts.",
     },
+    devTeam: "Development Team",
+    commits: "contributions",
     specialThanks: "Special Thanks",
     specialThanksDesc: "Those whose valuable feedback, vision, and contributions helped make Mahfuz better",
     issueLinks: {
