@@ -45,6 +45,12 @@ export const media = {
     complete: "Complete",
     selectSurah: "Select Surah",
     searchSurah: "Search surah...",
+    split: "Split",
+    infinite: "Infinite repeat",
+    splitInto: "Split into",
+    perVerse: "Per verse",
+    nVerses: "{n} verses",
+    memorizeSurahs: "Memorization Surahs",
   },
 
   focus: {

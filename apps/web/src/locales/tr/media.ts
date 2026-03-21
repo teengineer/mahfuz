@@ -45,6 +45,12 @@ export const media = {
     complete: "Tamamlandı",
     selectSurah: "Sure Seçin",
     searchSurah: "Sure ara...",
+    split: "Böl",
+    infinite: "Sonsuz tekrar",
+    splitInto: "Böl",
+    perVerse: "Ayet ayet",
+    nVerses: "{n}'er ayet",
+    memorizeSurahs: "Ezber Sureleri",
   },
 
   focus: {
