@@ -119,23 +119,15 @@ function SurahView() {
   const lockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [lockProgress, setLockProgress] = useState(false); // visual feedback during long-press
   const [lockPickerOpen, setLockPickerOpen] = useState(false);
-  const [lockVerseNum, setLockVerseNum] = useState<number | null>(null);
 
-  // Scroll to verse when changed via lock mode controls
-  useEffect(() => {
-    if (!lockMode || lockVerseNum === null) return;
-    const el = document.querySelector(`[data-verse-key="${chapterId}:${lockVerseNum}"]`);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  }, [lockMode, lockVerseNum, chapterId]);
+  // Current verse for lock mode display (derived from search param)
+  const lockVerseNum = verseParam ?? 1;
 
   const handleLockUnlockStart = useCallback(() => {
     setLockProgress(true);
     lockTimerRef.current = setTimeout(() => {
       setLockMode(false);
       setLockProgress(false);
-      setLockVerseNum(null);
       navigate({ search: (prev: Record<string, unknown>) => { const { lock: _, ...rest } = prev; return rest; }, replace: true });
     }, 1500);
   }, [navigate]);
@@ -457,7 +449,6 @@ function SurahView() {
             <button
               onClick={() => {
                 setLockMode(true);
-                setLockVerseNum(null);
                 navigate({ search: (prev: Record<string, unknown>) => ({ ...prev, lock: true }), replace: true });
               }}
               className="inline-flex items-center gap-1 rounded-full bg-[var(--theme-hover-bg)] px-3 py-1.5 text-[11px] font-medium text-[var(--theme-text-secondary)] transition-all hover:bg-[var(--theme-pill-bg)] active:scale-[0.97]"
@@ -636,8 +627,11 @@ function SurahView() {
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
-                  onClick={() => setLockVerseNum((v) => Math.max(1, (v ?? 1) - 1))}
-                  disabled={lockVerseNum !== null && lockVerseNum <= 1}
+                  onClick={() => {
+                    const prev = Math.max(1, lockVerseNum - 1);
+                    navigate({ search: (s: Record<string, unknown>) => ({ ...s, verse: prev }), replace: true });
+                  }}
+                  disabled={lockVerseNum <= 1}
                   className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20 text-white transition-colors hover:bg-white/30 disabled:opacity-40"
                 >
                   <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
@@ -645,12 +639,15 @@ function SurahView() {
                   </svg>
                 </button>
                 <span className="min-w-[4.5rem] text-center text-[12px] font-semibold tabular-nums text-white">
-                  {t.quranReader.verseLabel} {lockVerseNum ?? 1} / {chapter.verses_count}
+                  {t.quranReader.verseLabel} {lockVerseNum} / {chapter.verses_count}
                 </span>
                 <button
                   type="button"
-                  onClick={() => setLockVerseNum((v) => Math.min(chapter.verses_count, (v ?? 1) + 1))}
-                  disabled={lockVerseNum !== null && lockVerseNum >= chapter.verses_count}
+                  onClick={() => {
+                    const next = Math.min(chapter.verses_count, lockVerseNum + 1);
+                    navigate({ search: (s: Record<string, unknown>) => ({ ...s, verse: next }), replace: true });
+                  }}
+                  disabled={lockVerseNum >= chapter.verses_count}
                   className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20 text-white transition-colors hover:bg-white/30 disabled:opacity-40"
                 >
                   <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
@@ -718,8 +715,7 @@ function SurahView() {
                 locale={locale}
                 onSelect={(id) => {
                   setLockPickerOpen(false);
-                  setLockVerseNum(null);
-                  navigate({ to: "/$surahId", params: { surahId: String(id) }, search: { lock: true } });
+                  navigate({ to: "/$surahId", params: { surahId: String(id) }, search: { lock: true, verse: 1 } });
                 }}
                 onClose={() => setLockPickerOpen(false)}
               />
