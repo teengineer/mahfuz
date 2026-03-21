@@ -312,7 +312,7 @@ export function SurahSelector({ userId }: SurahSelectorProps) {
             })}
 
             <Link
-              to="/memorize/add/$surahId"
+              to="/memorize/session/$surahId"
               params={{ surahId: String(ch.id) }}
               className="flex items-center gap-1.5 rounded-xl bg-[var(--theme-hover-bg)] px-3 py-1.5 text-[12px] font-medium text-[var(--theme-text-secondary)] transition-colors hover:bg-[var(--theme-pill-bg)]"
             >
@@ -320,17 +320,6 @@ export function SurahSelector({ userId }: SurahSelectorProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
               {t.memorize.surahSelector.add}
-            </Link>
-
-            <Link
-              to="/memorize/verify/$surahId"
-              params={{ surahId: String(ch.id) }}
-              className="flex items-center gap-1.5 rounded-xl bg-[var(--theme-hover-bg)] px-3 py-1.5 text-[12px] font-medium text-[var(--theme-text-secondary)] transition-colors hover:bg-[var(--theme-pill-bg)]"
-            >
-              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              {t.memorize.surahSelector.markMastered}
             </Link>
           </div>
         )}

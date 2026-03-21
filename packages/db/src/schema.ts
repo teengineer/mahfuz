@@ -253,6 +253,24 @@ export class MahfuzDB extends Dexie {
       annotation_pages: "id, [userId+pageNumber]",
       text_notes: "id, [userId+pageNumber]",
     });
+
+    // v8: add standalone userId index to lesson_progress (needed for .where("userId") queries)
+    this.version(8).stores({
+      cache: "key",
+      memorization_cards:
+        "id, [userId+verseKey], [userId+nextReviewDate], [userId+confidence]",
+      review_entries: "id, cardId, [userId+reviewedAt]",
+      memorization_goals: "userId",
+      sync_queue: "id, [table+synced], createdAt",
+      user_badges: "id, [userId+badgeId], userId",
+      lesson_progress:
+        "id, userId, [userId+stageId], [userId+status], lessonId, [userId+updatedAt]",
+      learn_concepts:
+        "id, [userId+conceptId], [userId+nextReviewAt], userId, [userId+updatedAt]",
+      quest_progress: "id, [userId+questId], userId, [userId+updatedAt]",
+      annotation_pages: "id, [userId+pageNumber]",
+      text_notes: "id, [userId+pageNumber]",
+    });
   }
 }
 

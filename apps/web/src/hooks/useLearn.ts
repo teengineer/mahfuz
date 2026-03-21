@@ -23,6 +23,8 @@ export function useLearnDashboard(userId: string) {
       ]);
       setStageProgress(progressMap);
       setTotalSevapPoint(sevapPoint);
+    } catch (err) {
+      console.error("[useLearnDashboard] Failed to load:", err);
     } finally {
       setIsLoading(false);
     }
@@ -71,6 +73,8 @@ export function useStageUnlockStatus(userId: string) {
       }
 
       setUnlockedStages(unlocked);
+    } catch (err) {
+      console.error("[useStageUnlockStatus] Failed to load:", err);
     } finally {
       setIsLoading(false);
     }
