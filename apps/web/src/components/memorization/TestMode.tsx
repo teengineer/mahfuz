@@ -75,7 +75,7 @@ interface TestModeProps {
 export function TestMode({ source, verses, onVerseChange, onComplete }: TestModeProps) {
   const { t } = useTranslation();
 
-  // Stable verse keys — only recompute blanks when verse_keys actually change (not WBW enrichment)
+  // Stable verse keys
   const verseKeysStr = useMemo(
     () => verses.map((v) => v.verse_key).join(","),
     [verses],
@@ -99,14 +99,7 @@ export function TestMode({ source, verses, onVerseChange, onComplete }: TestMode
     return result;
   }, [verses]);
 
-  // Build a fast lookup: (verseIdx, wordIdx) → flatIdx
-  const flatIdxMap = useMemo(() => {
-    const m = new Map<string, number>();
-    allWords.forEach((w, i) => m.set(`${w.verseIdx}:${w.wordIdx}`, i));
-    return m;
-  }, [allWords]);
-
-  // Build blank slots — deterministic via seeded PRNG keyed on surahId + verse keys
+  // Build blank slots
   const blanks: BlankSlot[] = useMemo(() => {
     if (allWords.length === 0) return [];
 
@@ -116,7 +109,6 @@ export function TestMode({ source, verses, onVerseChange, onComplete }: TestMode
     let blankCount = Math.max(1, Math.round(totalWords * blankRatio));
     blankCount = Math.min(blankCount, 40);
 
-    // Ensure at least 1 blank per verse (if verse has >= 3 words)
     const verseWordCounts = new Map<number, number>();
     allWords.forEach((w) => {
       verseWordCounts.set(w.verseIdx, (verseWordCounts.get(w.verseIdx) || 0) + 1);
@@ -182,18 +174,13 @@ export function TestMode({ source, verses, onVerseChange, onComplete }: TestMode
       };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [verseKeysStr, source.id]); // stable key — won't recompute on WBW enrichment
+  }, [verseKeysStr, source.id]);
 
   const [currentBlankIdx, setCurrentBlankIdx] = useState(0);
   const [answers, setAnswers] = useState<Map<number, { selected: string; correct: boolean }>>(new Map());
-  const [pendingAdvance, setPendingAdvance] = useState(false);
+  const [feedback, setFeedback] = useState<{ correct: boolean; correctWord: string } | null>(null);
   const wordResultsRef = useRef<WordResult[]>([]);
   const wordStartTime = useRef(Date.now());
-  const blankRefs = useRef<Map<number, HTMLSpanElement>>(new Map());
-  const currentBlankIdxRef = useRef(currentBlankIdx);
-  currentBlankIdxRef.current = currentBlankIdx;
-
-  const blankSet = useMemo(() => new Set(blanks.map((b) => b.flatIdx)), [blanks]);
 
   const currentBlank = blanks[currentBlankIdx];
 
@@ -204,18 +191,10 @@ export function TestMode({ source, verses, onVerseChange, onComplete }: TestMode
     }
   }, [currentBlank?.verseIdx]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Auto-scroll to current blank
-  useEffect(() => {
-    if (blanks.length === 0) return;
-    const el = blankRefs.current.get(blanks[currentBlankIdx]?.flatIdx);
-    el?.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [currentBlankIdx, blanks]);
-
   const handlePickOption = useCallback(
     (word: string) => {
-      const blankIdx = currentBlankIdxRef.current;
-      const blank = blanks[blankIdx];
-      if (!blank) return;
+      const blank = blanks[currentBlankIdx];
+      if (!blank || feedback) return;
 
       const isCorrect = word === blank.correctWord;
       setAnswers((prev) => {
@@ -232,17 +211,17 @@ export function TestMode({ source, verses, onVerseChange, onComplete }: TestMode
         timeMs: Date.now() - wordStartTime.current,
       });
 
-      setPendingAdvance(true);
+      setFeedback({ correct: isCorrect, correctWord: blank.correctWord });
 
-      const delay = isCorrect ? 500 : 1200;
+      const delay = isCorrect ? 600 : 1400;
       setTimeout(() => {
+        setFeedback(null);
         wordStartTime.current = Date.now();
-        const nextIdx = currentBlankIdxRef.current + 1;
+        const nextIdx = currentBlankIdx + 1;
         if (nextIdx < blanks.length) {
           setCurrentBlankIdx(nextIdx);
-          setPendingAdvance(false);
         } else {
-          // Build verse results from all answers
+          // Build results
           setAnswers((finalAnswers) => {
             const verseMap = new Map<string, { correct: number; total: number }>();
             for (const b of blanks) {
@@ -264,14 +243,8 @@ export function TestMode({ source, verses, onVerseChange, onComplete }: TestMode
               }),
             );
 
-            const totalCorrect = verseResults.reduce(
-              (s, v) => s + v.wordsCorrect,
-              0,
-            );
-            const totalWords = verseResults.reduce(
-              (s, v) => s + v.wordsTotal,
-              0,
-            );
+            const totalCorrect = verseResults.reduce((s, v) => s + v.wordsCorrect, 0);
+            const totalWords = verseResults.reduce((s, v) => s + v.wordsTotal, 0);
 
             onComplete({
               mode: "test",
@@ -287,7 +260,7 @@ export function TestMode({ source, verses, onVerseChange, onComplete }: TestMode
         }
       }, delay);
     },
-    [blanks, source, onComplete],
+    [blanks, currentBlankIdx, source, onComplete, feedback],
   );
 
   if (blanks.length === 0) {
@@ -301,116 +274,115 @@ export function TestMode({ source, verses, onVerseChange, onComplete }: TestMode
   const answeredCount = answers.size;
   const totalBlanks = blanks.length;
 
-  // Whether bottom panel is visible (options or feedback)
-  const showBottomPanel =
-    (currentBlank && !answers.has(currentBlank.flatIdx) && !pendingAdvance) ||
-    (currentBlank && answers.has(currentBlank.flatIdx));
+  // Build the current verse with the blank highlighted
+  const currentVerse = currentBlank ? verses[currentBlank.verseIdx] : null;
+  const currentVerseWords = currentVerse?.words?.filter((w) => w.char_type_name === "word") || [];
 
   return (
-    <div className="flex flex-col" style={{ minHeight: "calc(100dvh - 200px)" }}>
-      {/* Sub-progress */}
-      <div className="px-4 pb-2 pt-1">
-        <div className="flex items-center justify-between text-[12px] text-[var(--theme-text-tertiary)]">
-          <span>{t.memorize.verification.quizTitle}</span>
-          <span className="tabular-nums">
-            {answeredCount} / {totalBlanks}
-          </span>
+    <div className="flex h-full flex-col items-center justify-between px-4 py-4">
+      {/* Progress dots */}
+      <div className="flex w-full items-center gap-1.5">
+        <div className="flex flex-1 gap-0.5">
+          {blanks.map((b, i) => {
+            const ans = answers.get(b.flatIdx);
+            let dotColor = "bg-[var(--theme-hover-bg)]";
+            if (ans) dotColor = ans.correct ? "bg-emerald-500" : "bg-red-400";
+            else if (i === currentBlankIdx) dotColor = "bg-primary-500";
+            return (
+              <div
+                key={b.flatIdx}
+                className={`h-1 flex-1 rounded-full transition-colors ${dotColor}`}
+              />
+            );
+          })}
         </div>
+        <span className="ml-2 shrink-0 text-[11px] tabular-nums text-[var(--theme-text-quaternary)]">
+          {answeredCount}/{totalBlanks}
+        </span>
       </div>
 
-      {/* Surah text with blanks */}
-      <div
-        className="flex-1 overflow-y-auto rounded-2xl bg-[var(--theme-bg-primary)] p-4 shadow-[var(--shadow-card)] sm:p-6"
-        dir="rtl"
-        style={{ paddingBottom: showBottomPanel ? "calc(280px + env(safe-area-inset-bottom, 0px))" : undefined }}
-      >
-        {verses.map((verse, vIdx) => {
-          const words =
-            verse.words?.filter((w) => w.char_type_name === "word") || [];
-          return (
-            <p
-              key={verse.verse_key}
-              className="arabic-text mb-3 leading-[2.6] text-[var(--theme-text)]"
-              style={{ fontSize: "calc(1.65rem * 1.05)" }}
-            >
-              {words.map((w, wIdx) => {
-                const flatIdx = flatIdxMap.get(`${vIdx}:${wIdx}`) ?? -1;
-                const isBlank = blankSet.has(flatIdx);
-                const answer = answers.get(flatIdx);
+      {/* Center — verse context with blank */}
+      <div className="flex w-full max-w-lg flex-1 flex-col items-center justify-center">
+        {currentVerse && (
+          <div className="w-full text-center" dir="rtl">
+            {/* Verse number */}
+            <p className="mb-3 text-[12px] text-[var(--theme-text-quaternary)]" dir="ltr">
+              {currentVerse.verse_key.replace(":", "/")}
+            </p>
+
+            {/* Verse text with blank */}
+            <p className="arabic-text leading-[2.8] text-[var(--theme-text)]" style={{ fontSize: "1.5rem" }}>
+              {currentVerseWords.map((w, wIdx) => {
+                const isBlank = wIdx === currentBlank?.wordIdx;
 
                 if (!isBlank) {
                   return (
-                    <span key={w.id} className="inline-block">
+                    <span key={w.id} className="inline-block opacity-50">
                       {w.text_imlaei || w.text}{" "}
                     </span>
                   );
                 }
 
-                const isCurrent =
-                  currentBlank?.flatIdx === flatIdx && !answer;
-                const isAnswered = answer !== undefined;
-
-                let pillClass =
-                  "inline-block rounded-lg px-1.5 py-0.5 mx-0.5 transition-all ";
-                if (isAnswered) {
-                  pillClass += answer.correct
-                    ? "bg-emerald-500/15 text-emerald-500 border border-emerald-500/30"
-                    : "bg-red-500/15 border border-red-500/30";
-                } else if (isCurrent) {
-                  pillClass +=
-                    "bg-primary-500/15 border-2 border-primary-500 text-primary-500 animate-pulse";
-                } else {
-                  pillClass +=
-                    "bg-[var(--theme-hover-bg)] border border-dashed border-[var(--theme-text-quaternary)] text-[var(--theme-text-quaternary)]";
+                // The blank slot
+                if (feedback) {
+                  return (
+                    <span
+                      key={w.id}
+                      className={`inline-block rounded-lg px-2 py-1 text-[1.6rem] font-bold ${
+                        feedback.correct
+                          ? "bg-emerald-500/15 text-emerald-600"
+                          : "bg-red-500/15 text-red-500"
+                      }`}
+                    >
+                      {feedback.correct ? (
+                        w.text_imlaei || w.text
+                      ) : (
+                        <span>
+                          <span className="text-red-400 line-through">{answers.get(currentBlank!.flatIdx)?.selected}</span>
+                          {" "}
+                          <span className="text-emerald-600">{w.text_imlaei || w.text}</span>
+                        </span>
+                      )}{" "}
+                    </span>
+                  );
                 }
 
                 return (
                   <span
                     key={w.id}
-                    ref={(el) => {
-                      if (el) blankRefs.current.set(flatIdx, el);
-                    }}
-                    className={pillClass}
+                    className="inline-block rounded-lg border-2 border-dashed border-primary-500/60 bg-primary-500/10 px-4 py-1 text-[1.6rem] text-primary-500"
                   >
-                    {isAnswered ? (
-                      answer.correct ? (
-                        <span className="text-emerald-500">{w.text_imlaei || w.text}</span>
-                      ) : (
-                        <span>
-                          <span className="text-red-400 line-through">{answer.selected}</span>
-                          <span className="mx-0.5 text-emerald-500">{w.text_imlaei || w.text}</span>
-                        </span>
-                      )
-                    ) : (
-                      "..."
-                    )}{" "}
+                    ؟{" "}
                   </span>
                 );
               })}
-              <span className="inline-block text-[0.65em] text-[var(--theme-text-quaternary)]">
-                {" "}
-                ﴿{verse.verse_number}﴾
+              <span className="inline-block text-[0.6em] text-[var(--theme-text-quaternary)]">
+                {" "}﴿{currentVerse.verse_number}﴾
               </span>
             </p>
-          );
-        })}
+          </div>
+        )}
+
+        {/* Feedback text */}
+        {feedback && (
+          <p className={`mt-4 text-[15px] font-semibold ${feedback.correct ? "text-emerald-600" : "text-red-500"}`}>
+            {feedback.correct ? t.memorize.verification.correct : t.memorize.verification.wrong}
+          </p>
+        )}
       </div>
 
-      {/* MCQ options — fixed bottom panel */}
-      {currentBlank && !answers.has(currentBlank.flatIdx) && !pendingAdvance && (
-        <div
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--theme-border)] bg-[var(--theme-bg-primary)] px-4 pt-3 shadow-[0_-4px_24px_rgba(0,0,0,0.12)]"
-          style={{ paddingBottom: "calc(68px + env(safe-area-inset-bottom, 0px))" }}
-        >
-          <p className="mb-2.5 text-center text-[12px] font-medium text-[var(--theme-text-tertiary)]">
+      {/* Bottom — MCQ options */}
+      {currentBlank && !feedback && (
+        <div className="w-full max-w-lg pb-2" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
+          <p className="mb-3 text-center text-[12px] text-[var(--theme-text-quaternary)]">
             {t.memorize.verification.pickWord}
           </p>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2.5">
             {currentBlank.options.map((word, idx) => (
               <button
                 key={`${currentBlank.flatIdx}-${idx}`}
                 onClick={() => handlePickOption(word)}
-                className="arabic-text rounded-2xl border-2 border-[var(--theme-divider)] bg-[var(--theme-bg-primary)] px-4 py-4 text-center text-[22px] leading-snug text-[var(--theme-text)] transition-all hover:border-primary-400 hover:bg-primary-500/10 active:scale-[0.97] sm:text-[24px]"
+                className="arabic-text rounded-xl border border-[var(--theme-border)] bg-[var(--theme-bg-primary)] px-3 py-3.5 text-center text-[20px] leading-snug text-[var(--theme-text)] transition-colors hover:bg-[var(--theme-hover-bg)] active:scale-[0.97]"
               >
                 {word}
               </button>
@@ -419,26 +391,10 @@ export function TestMode({ source, verses, onVerseChange, onComplete }: TestMode
         </div>
       )}
 
-      {/* Feedback flash — fixed bottom panel */}
-      {currentBlank && answers.has(currentBlank.flatIdx) && (
-        <div
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--theme-border)] bg-[var(--theme-bg-primary)] px-4 py-5 text-center shadow-[0_-4px_24px_rgba(0,0,0,0.12)]"
-          style={{ paddingBottom: "calc(68px + env(safe-area-inset-bottom, 0px))" }}
-        >
-          {answers.get(currentBlank.flatIdx)!.correct ? (
-            <p className="text-[17px] font-semibold text-emerald-600">
-              {t.memorize.verification.correct}
-            </p>
-          ) : (
-            <div>
-              <p className="text-[17px] font-semibold text-red-500">
-                {t.memorize.verification.wrong}
-              </p>
-              <p className="arabic-text mt-2 text-[24px] text-emerald-600">
-                {currentBlank.correctWord}
-              </p>
-            </div>
-          )}
+      {/* Spacer when feedback is shown (keep layout stable) */}
+      {feedback && (
+        <div className="w-full max-w-lg pb-2" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
+          <div className="h-[140px]" />
         </div>
       )}
     </div>
