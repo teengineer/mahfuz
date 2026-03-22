@@ -10,6 +10,7 @@ export const media = {
     searchReciter: "Kârî ara...",
     featured: "Öne Çıkanlar",
     allReciters: "Tüm Kârîler",
+    countryAll: "Tümü",
     prevVerse: "Önceki ayet",
     nextVerse: "Sonraki ayet",
     play: "Oynat",

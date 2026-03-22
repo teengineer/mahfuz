@@ -37,6 +37,7 @@ interface AudioStoreState {
   isMuted: boolean;
   repeatMode: RepeatMode;
   autoContinue: boolean;
+  featuredReciterIds: number[];
 
   // UI
   isVisible: boolean;
@@ -74,6 +75,7 @@ interface AudioStoreState {
   setVolume: (volume: number) => void;
   toggleMute: () => void;
   setAutoContinue: (enabled: boolean) => void;
+  toggleFeaturedReciter: (reciterId: number) => void;
   setExpanded: (expanded: boolean) => void;
   _setFetchChapterAudioFn: (fn: FetchChapterAudioFn | null) => void;
 
@@ -103,6 +105,7 @@ export const useAudioStore = create<AudioStoreState>()(
       isMuted: false,
       repeatMode: "none",
       autoContinue: true,
+      featuredReciterIds: [7, 129], // Alafasy + Al-Banna
       isVisible: false,
       isExpanded: false,
       engine: null,
@@ -220,6 +223,12 @@ export const useAudioStore = create<AudioStoreState>()(
       },
 
       setAutoContinue: (enabled) => set({ autoContinue: enabled }),
+      toggleFeaturedReciter: (id) =>
+        set((s) => ({
+          featuredReciterIds: s.featuredReciterIds.includes(id)
+            ? s.featuredReciterIds.filter((r) => r !== id)
+            : [...s.featuredReciterIds, id],
+        })),
 
       setExpanded: (expanded) => set({ isExpanded: expanded }),
 
@@ -275,6 +284,7 @@ export const useAudioStore = create<AudioStoreState>()(
         volume: state.volume,
         isMuted: state.isMuted,
         autoContinue: state.autoContinue,
+        featuredReciterIds: state.featuredReciterIds,
       }),
     },
   ),

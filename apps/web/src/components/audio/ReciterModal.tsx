@@ -1,9 +1,6 @@
 import { useState, useMemo } from "react";
 import { useAudioStore } from "~/stores/useAudioStore";
-import {
-  CURATED_RECITERS,
-  FEATURED_RECITERS,
-} from "@mahfuz/shared/constants";
+import { CURATED_RECITERS } from "@mahfuz/shared/constants";
 import type { CuratedReciter } from "@mahfuz/shared/constants";
 import { useTranslation } from "~/hooks/useTranslation";
 import {
@@ -26,21 +23,56 @@ const STYLE_LABELS: Record<string, string> = {
   "Çocuk Tekrarı": "Çocuk Tekrarı",
 };
 
+/** Country filter chips — ordered by reciter count (descending) */
+const COUNTRY_CHIPS = [
+  "Suudi Arabistan",
+  "Mısır",
+  "Kuveyt",
+  "BAE",
+  "Irak",
+  "Suriye",
+  "Bosna",
+];
+
 export function ReciterModal({ open, onClose, onSelect }: ReciterModalProps) {
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
+  const [countryFilter, setCountryFilter] = useState<string | null>(null);
   const reciterId = useAudioStore((s) => s.reciterId);
   const setReciter = useAudioStore((s) => s.setReciter);
+  const featuredIds = useAudioStore((s) => s.featuredReciterIds);
+  const toggleFeatured = useAudioStore((s) => s.toggleFeaturedReciter);
+
+  const featuredSet = useMemo(() => new Set(featuredIds), [featuredIds]);
 
   const filtered = useMemo(() => {
-    if (!search.trim()) return null; // null = show featured + all sections
-    const q = search.toLowerCase();
-    return CURATED_RECITERS.filter((r) =>
-      r.name.toLowerCase().includes(q) ||
-      r.country.toLowerCase().includes(q) ||
-      r.style.toLowerCase().includes(q),
-    );
-  }, [search]);
+    let list = CURATED_RECITERS;
+    if (countryFilter) {
+      list = list.filter((r) => r.country.includes(countryFilter));
+    }
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      list = list.filter(
+        (r) =>
+          r.name.toLowerCase().includes(q) ||
+          r.country.toLowerCase().includes(q) ||
+          r.style.toLowerCase().includes(q),
+      );
+    }
+    return list;
+  }, [search, countryFilter]);
+
+  const isSearching = search.trim().length > 0 || countryFilter !== null;
+
+  const featuredReciters = useMemo(
+    () => CURATED_RECITERS.filter((r) => featuredSet.has(r.id)),
+    [featuredSet],
+  );
+
+  const nonFeatured = useMemo(
+    () => CURATED_RECITERS.filter((r) => !featuredSet.has(r.id)),
+    [featuredSet],
+  );
 
   const handleSelect = (id: number) => {
     if (onSelect) {
@@ -51,7 +83,10 @@ export function ReciterModal({ open, onClose, onSelect }: ReciterModalProps) {
     onClose();
   };
 
-  const nonFeatured = CURATED_RECITERS.filter((r) => !r.featured);
+  const handleToggleStar = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation();
+    toggleFeatured(id);
+  };
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
@@ -89,9 +124,36 @@ export function ReciterModal({ open, onClose, onSelect }: ReciterModalProps) {
             className="mb-3 w-full rounded-xl border border-[var(--theme-border)] bg-[var(--theme-input-bg)] px-4 py-2.5 text-[14px] text-[var(--theme-text)] outline-none placeholder:text-[var(--theme-text-quaternary)] focus:border-primary-500/40 focus:ring-2 focus:ring-primary-500/20"
           />
 
+          {/* Country filter chips */}
+          <div className="mb-3 flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+            <button
+              onClick={() => setCountryFilter(null)}
+              className={`shrink-0 rounded-full px-3 py-1 text-[12px] font-medium transition-colors ${
+                countryFilter === null
+                  ? "bg-primary-600 text-white"
+                  : "bg-[var(--theme-hover-bg)] text-[var(--theme-text-secondary)] hover:bg-[var(--theme-pill-bg)]"
+              }`}
+            >
+              {t.audio.countryAll}
+            </button>
+            {COUNTRY_CHIPS.map((country) => (
+              <button
+                key={country}
+                onClick={() => setCountryFilter(countryFilter === country ? null : country)}
+                className={`shrink-0 rounded-full px-3 py-1 text-[12px] font-medium transition-colors ${
+                  countryFilter === country
+                    ? "bg-primary-600 text-white"
+                    : "bg-[var(--theme-hover-bg)] text-[var(--theme-text-secondary)] hover:bg-[var(--theme-pill-bg)]"
+                }`}
+              >
+                {country}
+              </button>
+            ))}
+          </div>
+
           <div className="max-h-[50vh] overflow-y-auto">
-            {filtered ? (
-              // Search results
+            {isSearching ? (
+              // Search / filter results
               filtered.length > 0 ? (
                 <div className="space-y-0.5">
                   {filtered.map((r) => (
@@ -99,7 +161,9 @@ export function ReciterModal({ open, onClose, onSelect }: ReciterModalProps) {
                       key={`${r.id}-${r.style}`}
                       reciter={r}
                       isActive={r.id === reciterId}
+                      isFeatured={featuredSet.has(r.id)}
                       onSelect={handleSelect}
+                      onToggleStar={handleToggleStar}
                     />
                   ))}
                 </div>
@@ -111,22 +175,25 @@ export function ReciterModal({ open, onClose, onSelect }: ReciterModalProps) {
             ) : (
               // Default view: Featured + All
               <>
-                <div className="mb-3">
-                  <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-tertiary)]">
-                    {t.audio.featured}
-                  </p>
-                  <div className="space-y-0.5">
-                    {FEATURED_RECITERS.map((r) => (
-                      <ReciterRow
-                        key={`${r.id}-${r.style}`}
-                        reciter={r}
-                        isActive={r.id === reciterId}
-                        isFeatured
-                        onSelect={handleSelect}
-                      />
-                    ))}
+                {featuredReciters.length > 0 && (
+                  <div className="mb-3">
+                    <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-tertiary)]">
+                      {t.audio.featured}
+                    </p>
+                    <div className="space-y-0.5">
+                      {featuredReciters.map((r) => (
+                        <ReciterRow
+                          key={`${r.id}-${r.style}`}
+                          reciter={r}
+                          isActive={r.id === reciterId}
+                          isFeatured
+                          onSelect={handleSelect}
+                          onToggleStar={handleToggleStar}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
                 <div>
                   <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-tertiary)]">
                     {t.audio.allReciters}
@@ -137,7 +204,9 @@ export function ReciterModal({ open, onClose, onSelect }: ReciterModalProps) {
                         key={`${r.id}-${r.style}`}
                         reciter={r}
                         isActive={r.id === reciterId}
+                        isFeatured={false}
                         onSelect={handleSelect}
+                        onToggleStar={handleToggleStar}
                       />
                     ))}
                   </div>
@@ -156,11 +225,13 @@ function ReciterRow({
   isActive,
   isFeatured,
   onSelect,
+  onToggleStar,
 }: {
   reciter: CuratedReciter;
   isActive: boolean;
-  isFeatured?: boolean;
+  isFeatured: boolean;
   onSelect: (id: number) => void;
+  onToggleStar: (e: React.MouseEvent, id: number) => void;
 }) {
   return (
     <button
@@ -173,7 +244,7 @@ function ReciterRow({
             : "text-[var(--theme-text)] hover:bg-[var(--theme-hover-bg)]"
       }`}
     >
-      <span className="flex-1">
+      <span className="min-w-0 flex-1">
         <span className="block text-[14px] font-medium">
           {reciter.name}
         </span>
@@ -181,7 +252,7 @@ function ReciterRow({
           {reciter.country} · {STYLE_LABELS[reciter.style] ?? reciter.style}
         </span>
       </span>
-      {isActive ? (
+      {isActive && (
         <svg
           className="h-4 w-4 flex-shrink-0 text-primary-600"
           fill="none"
@@ -195,15 +266,22 @@ function ReciterRow({
             d="M5 13l4 4L19 7"
           />
         </svg>
-      ) : isFeatured ? (
+      )}
+      <button
+        onClick={(e) => onToggleStar(e, reciter.id)}
+        className="flex-shrink-0 rounded-full p-1 transition-colors hover:bg-[var(--theme-hover-bg)]"
+        aria-label={isFeatured ? "Remove from featured" : "Add to featured"}
+      >
         <svg
-          className="h-4 w-4 flex-shrink-0 text-amber-400"
+          className={`h-4 w-4 ${isFeatured ? "text-amber-400" : "text-[var(--theme-text-quaternary)]"}`}
           viewBox="0 0 24 24"
-          fill="currentColor"
+          fill={isFeatured ? "currentColor" : "none"}
+          stroke="currentColor"
+          strokeWidth={isFeatured ? 0 : 1.5}
         >
           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
         </svg>
-      ) : null}
+      </button>
     </button>
   );
 }

@@ -10,6 +10,7 @@ export const media = {
     searchReciter: "Search reciter...",
     featured: "Featured",
     allReciters: "All Reciters",
+    countryAll: "All",
     prevVerse: "Previous verse",
     nextVerse: "Next verse",
     play: "Play",

@@ -10,6 +10,7 @@ export const media = {
     searchReciter: "Buscar recitador...",
     featured: "Destacados",
     allReciters: "Todos los recitadores",
+    countryAll: "Todos",
     prevVerse: "Aleya anterior",
     nextVerse: "Aleya siguiente",
     play: "Reproducir",
