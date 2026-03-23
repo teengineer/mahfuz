@@ -12,7 +12,7 @@ import { LetterHunt } from "~/components/kids/LetterHunt";
 import { LetterQuiz } from "~/components/kids/LetterQuiz";
 import { CelebrationOverlay } from "~/components/kids/CelebrationOverlay";
 
-export const Route = createFileRoute("/_kids/letters/$letterId")({
+export const Route = createFileRoute("/kids/letters/$letterId")({
   component: LetterDetail,
 });
 

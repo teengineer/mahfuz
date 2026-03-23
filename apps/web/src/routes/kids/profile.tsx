@@ -7,7 +7,7 @@ import { AvatarDisplay } from "~/components/kids/AvatarDisplay";
 import { BASE_AVATARS, KIDS_LEVELS } from "~/lib/kids-constants";
 import type { KidsProfile } from "~/stores/useKidsStore";
 
-export const Route = createFileRoute("/_kids/profile")({
+export const Route = createFileRoute("/kids/profile")({
   component: KidsProfile,
 });
 

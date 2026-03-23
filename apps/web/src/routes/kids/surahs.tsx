@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import type { Chapter } from "@mahfuz/shared/types";
 
-export const Route = createFileRoute("/_kids/surahs")({
+export const Route = createFileRoute("/kids/surahs")({
   component: KidsSurahs,
 });
 

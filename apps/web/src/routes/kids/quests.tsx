@@ -3,7 +3,7 @@ import { useTranslation } from "~/hooks/useTranslation";
 import { useKidsQuestStore } from "~/stores/useKidsQuestStore";
 import type { KidsQuestType } from "~/lib/kids-constants";
 
-export const Route = createFileRoute("/_kids/quests")({
+export const Route = createFileRoute("/kids/quests")({
   component: KidsQuests,
 });
 

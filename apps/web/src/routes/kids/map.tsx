@@ -4,7 +4,7 @@ import { useActiveKidsProfile, useKidsStore } from "~/stores/useKidsStore";
 import { useKidsProgressStore } from "~/stores/useKidsProgressStore";
 import { ARABIC_LETTERS, KIDS_SURAHS, KIDS_LEVELS, getLevelForStars } from "~/lib/kids-constants";
 
-export const Route = createFileRoute("/_kids/map")({
+export const Route = createFileRoute("/kids/map")({
   component: KidsMap,
 });
 

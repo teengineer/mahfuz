@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "~/hooks/useTranslation";
 
-export const Route = createFileRoute("/_kids/quizzes")({
+export const Route = createFileRoute("/kids/quizzes")({
   component: KidsQuizzes,
 });
 

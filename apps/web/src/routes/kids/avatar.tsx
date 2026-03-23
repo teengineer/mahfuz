@@ -6,7 +6,7 @@ import { AvatarDisplay } from "~/components/kids/AvatarDisplay";
 import { BASE_AVATARS, AVATAR_ITEMS, KIDS_LEVELS } from "~/lib/kids-constants";
 import type { AvatarItemCategory } from "~/lib/kids-constants";
 
-export const Route = createFileRoute("/_kids/avatar")({
+export const Route = createFileRoute("/kids/avatar")({
   component: KidsAvatar,
 });
 

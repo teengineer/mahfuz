@@ -3,7 +3,7 @@ import { useTranslation } from "~/hooks/useTranslation";
 import { useKidsProgressStore } from "~/stores/useKidsProgressStore";
 import { ARABIC_LETTERS } from "~/lib/kids-constants";
 
-export const Route = createFileRoute("/_kids/letters")({
+export const Route = createFileRoute("/kids/letters")({
   component: KidsLetters,
 });
 

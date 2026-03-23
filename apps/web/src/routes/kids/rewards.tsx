@@ -6,7 +6,7 @@ import { useKidsAvatarStore } from "~/stores/useKidsAvatarStore";
 import { KIDS_BADGES, AVATAR_ITEMS, KIDS_LEVELS } from "~/lib/kids-constants";
 import type { AvatarItemCategory } from "~/lib/kids-constants";
 
-export const Route = createFileRoute("/_kids/rewards")({
+export const Route = createFileRoute("/kids/rewards")({
   component: KidsRewards,
 });
 
