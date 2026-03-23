@@ -15,12 +15,6 @@ interface Question {
   correctIndex: number;
 }
 
-/**
- * Mini Quiz — 3 soru, her biri farklı tip.
- * 1) İsimden harfe: "Elif hangi harf?" → 4 harf seçenek
- * 2) Harften isme: "ب harfinin adı ne?" → 4 isim seçenek
- * 3) Sıra: "Bu harf kaçıncı?" → 4 numara seçenek
- */
 export function LetterQuiz({ letter, onComplete }: LetterQuizProps) {
   const { t } = useTranslation();
   const sound = useKidsSound();
@@ -33,22 +27,22 @@ export function LetterQuiz({ letter, onComplete }: LetterQuizProps) {
     const others = ARABIC_LETTERS.filter((l) => l.id !== letter.id);
     const pick3 = () => [...others].sort(() => Math.random() - 0.5).slice(0, 3);
 
-    // Q1: Name → Letter (show name, pick Arabic)
+    // Q1: Name → Letter
     const q1Distractors = pick3();
     const q1Options = [...q1Distractors.map((l) => l.arabic), letter.arabic].sort(() => Math.random() - 0.5);
     const q1: Question = {
       type: "name-to-letter",
-      prompt: `"${letter.name}" hangi harf?`,
+      prompt: `"${letter.name}" ${t.kids.letters.whichLetter}`,
       options: q1Options,
       correctIndex: q1Options.indexOf(letter.arabic),
     };
 
-    // Q2: Letter → Name (show Arabic, pick name)
+    // Q2: Letter → Name
     const q2Distractors = pick3();
     const q2Options = [...q2Distractors.map((l) => l.name), letter.name].sort(() => Math.random() - 0.5);
     const q2: Question = {
       type: "letter-to-name",
-      prompt: `${letter.arabic} harfinin adı ne?`,
+      prompt: `${letter.arabic} ${t.kids.letters.whatIsTheName}`,
       options: q2Options,
       correctIndex: q2Options.indexOf(letter.name),
     };
@@ -63,7 +57,7 @@ export function LetterQuiz({ letter, onComplete }: LetterQuizProps) {
     const q3Options = [...orderOptions].sort(() => Math.random() - 0.5);
     const q3: Question = {
       type: "order",
-      prompt: `${letter.arabic} harfi kaçıncı sırada?`,
+      prompt: `${letter.arabic} ${t.kids.letters.whichOrder}`,
       options: q3Options,
       correctIndex: q3Options.indexOf(correctOrder),
     };
@@ -108,19 +102,16 @@ export function LetterQuiz({ letter, onComplete }: LetterQuizProps) {
     <div className="flex flex-col items-center gap-5 py-6">
       <h2 className="text-xl font-bold text-amber-700">{t.kids.letters.quiz}</h2>
 
-      {/* Question counter */}
       <p className="text-[13px] font-semibold text-amber-500">
         {t.kids.quizzes.questionOf} {questionIdx + 1}/{TOTAL}
       </p>
 
-      {/* Question prompt */}
       <div className="rounded-2xl bg-amber-50 px-6 py-4 text-center shadow-sm">
         <p className="font-arabic text-lg font-bold text-gray-800" dir="rtl">
           {current.prompt}
         </p>
       </div>
 
-      {/* Options */}
       <div className="flex w-full max-w-xs flex-col gap-3">
         {current.options.map((opt, idx) => {
           const isSelected = selected === idx;
@@ -159,15 +150,13 @@ export function LetterQuiz({ letter, onComplete }: LetterQuizProps) {
         })}
       </div>
 
-      {/* Feedback */}
       {result === "correct" && (
         <p className="animate-bounce text-lg font-bold text-emerald-500">{t.kids.quizzes.correct}</p>
       )}
       {result === "wrong" && (
-        <p className="text-[14px] font-semibold text-orange-400">{t.kids.quizzes.tryAgain}</p>
+        <p className="text-sm font-semibold text-orange-400">{t.kids.quizzes.tryAgain}</p>
       )}
 
-      {/* Progress dots */}
       <div className="flex items-center gap-2">
         {questions.map((_, i) => (
           <div

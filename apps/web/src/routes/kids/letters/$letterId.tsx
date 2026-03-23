@@ -110,7 +110,7 @@ function LetterDetail() {
   if (!letter) {
     return (
       <div className="flex flex-col items-center gap-4 py-20">
-        <p className="text-gray-500">Harf bulunamadi</p>
+        <p className="text-gray-500">{t.kids.letters.notFound}</p>
         <Link to="/kids/letters" className="text-blue-500 underline">
           {t.kids.common.back}
         </Link>

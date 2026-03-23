@@ -30,6 +30,10 @@ export const kidsMessages = {
       wrongPin: "Wrong PIN",
       noProfiles: "No child profiles yet",
       createFirst: "Create the first profile",
+      manageProfiles: "Manage Profiles",
+      switchProfile: "Switch Profile",
+      editName: "Edit Name",
+      confirmDelete: "Are you sure? This action cannot be undone.",
     },
 
     levels: {
@@ -90,6 +94,11 @@ export const kidsMessages = {
       starsEarned: "Stars earned!",
       nextLetter: "Next Letter",
       allCompleted: "All letters learned!",
+      findThisLetter: "Find this letter:",
+      whichLetter: "which letter?",
+      whatIsTheName: "letter's name is?",
+      whichOrder: "letter is in which order?",
+      notFound: "Letter not found",
     },
 
     surahs: {
@@ -144,6 +153,7 @@ export const kidsMessages = {
       score: "Score",
       perfect: "Perfect!",
       questionOf: "Question",
+      comingSoon: "Quiz questions coming soon",
     },
 
     mascot: {

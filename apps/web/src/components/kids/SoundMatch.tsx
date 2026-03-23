@@ -8,10 +8,6 @@ interface SoundMatchProps {
   onComplete: () => void;
 }
 
-/**
- * Ses Eşleştirme — 4 harf göster, birinin sesini oku, çocuk doğrusunu seçsin.
- * 3 tur başarıyla tamamlanırsa onComplete çağrılır.
- */
 export function SoundMatch({ letter, onComplete }: SoundMatchProps) {
   const { t } = useTranslation();
   const sound = useKidsSound();
@@ -21,18 +17,16 @@ export function SoundMatch({ letter, onComplete }: SoundMatchProps) {
 
   const TOTAL_ROUNDS = 3;
 
-  // Generate 4 options per round (target + 3 distractors)
   const options = useMemo(() => {
     const others = ARABIC_LETTERS.filter((l) => l.id !== letter.id);
     const shuffled = [...others].sort(() => Math.random() - 0.5).slice(0, 3);
-    const all = [...shuffled, letter].sort(() => Math.random() - 0.5);
-    return all;
+    return [...shuffled, letter].sort(() => Math.random() - 0.5);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [letter.id, round]);
 
   const handleSelect = useCallback(
     (opt: ArabicLetter) => {
-      if (result) return; // Already answered
+      if (result) return;
       setSelected(opt.id);
 
       if (opt.id === letter.id) {
@@ -43,7 +37,6 @@ export function SoundMatch({ letter, onComplete }: SoundMatchProps) {
         sound.incorrect();
       }
 
-      // Auto-advance after feedback
       setTimeout(() => {
         if (opt.id === letter.id) {
           const next = round + 1;
@@ -55,7 +48,6 @@ export function SoundMatch({ letter, onComplete }: SoundMatchProps) {
             setResult(null);
           }
         } else {
-          // Wrong answer — just reset selection so they can try again
           setSelected(null);
           setResult(null);
         }
@@ -68,27 +60,24 @@ export function SoundMatch({ letter, onComplete }: SoundMatchProps) {
     <div className="flex flex-col items-center gap-5 py-6">
       <h2 className="text-xl font-bold text-purple-700">{t.kids.letters.soundMatch}</h2>
 
-      {/* Prompt: show the target letter name as a hint */}
       <div className="flex flex-col items-center gap-1">
-        <p className="text-[14px] text-gray-500">Bu harfi bul:</p>
+        <p className="text-sm text-gray-500">{t.kids.letters.findThisLetter}</p>
         <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-purple-100 shadow-sm">
           <span className="text-3xl font-bold text-purple-600">{letter.name}</span>
         </div>
       </div>
 
-      {/* Round progress */}
       <div className="flex items-center gap-2">
         {Array.from({ length: TOTAL_ROUNDS }).map((_, i) => (
           <div
             key={i}
             className={`h-3 w-3 rounded-full transition-all ${
-              i < round ? "bg-purple-400 scale-110" : i === round ? "bg-purple-200 scale-100" : "bg-gray-200"
+              i < round ? "scale-110 bg-purple-400" : i === round ? "bg-purple-200" : "bg-gray-200"
             }`}
           />
         ))}
       </div>
 
-      {/* 4 Letter choices (2x2 grid) */}
       <div className="grid grid-cols-2 gap-4">
         {options.map((opt) => {
           const isSelected = selected === opt.id;
@@ -122,12 +111,11 @@ export function SoundMatch({ letter, onComplete }: SoundMatchProps) {
         })}
       </div>
 
-      {/* Feedback */}
       {result === "correct" && (
         <p className="animate-bounce text-lg font-bold text-emerald-500">{t.kids.common.great}</p>
       )}
       {result === "wrong" && (
-        <p className="text-[14px] font-semibold text-orange-400">{t.kids.common.tryAgain}</p>
+        <p className="text-sm font-semibold text-orange-400">{t.kids.common.tryAgain}</p>
       )}
     </div>
   );

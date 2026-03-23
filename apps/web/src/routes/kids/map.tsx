@@ -33,7 +33,7 @@ function KidsMap() {
           </div>
           <div>
             <h1 className="text-xl font-bold text-emerald-800">
-              {t.kids.mascot.welcome.replace("Hafiz", profile?.name ?? "")}
+              {profile?.name ?? ""}
             </h1>
             <p className="text-[14px] text-emerald-600">
               {t.kids.levels[currentLevel.key as keyof typeof t.kids.levels]} — ⭐ {stars}

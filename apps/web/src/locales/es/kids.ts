@@ -28,8 +28,12 @@ export const kidsMessages = {
       enterPin: "Ingrese PIN de 4 digitos",
       setPin: "Establecer PIN",
       wrongPin: "PIN incorrecto",
-      noProfiles: "Aun no hay perfiles infantiles",
+      noProfiles: "Aún no hay perfiles infantiles",
       createFirst: "Crea el primer perfil",
+      manageProfiles: "Gestionar Perfiles",
+      switchProfile: "Cambiar Perfil",
+      editName: "Editar Nombre",
+      confirmDelete: "¿Está seguro? Esta acción no se puede deshacer.",
     },
 
     levels: {
@@ -89,7 +93,12 @@ export const kidsMessages = {
       completed: "Completado",
       starsEarned: "Estrellas ganadas!",
       nextLetter: "Siguiente Letra",
-      allCompleted: "Todas las letras aprendidas!",
+      allCompleted: "¡Todas las letras aprendidas!",
+      findThisLetter: "Encuentra esta letra:",
+      whichLetter: "¿cuál letra es?",
+      whatIsTheName: "¿cómo se llama esta letra?",
+      whichOrder: "¿en qué orden está esta letra?",
+      notFound: "Letra no encontrada",
     },
 
     surahs: {
@@ -144,6 +153,7 @@ export const kidsMessages = {
       score: "Puntaje",
       perfect: "Perfecto!",
       questionOf: "Pregunta",
+      comingSoon: "Preguntas del quiz próximamente",
     },
 
     mascot: {

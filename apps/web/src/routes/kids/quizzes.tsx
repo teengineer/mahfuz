@@ -39,7 +39,7 @@ function KidsQuizzes() {
             {t.kids.quizzes.categories[selectedCategory as keyof typeof t.kids.quizzes.categories]}
           </h2>
           <p className="mt-2 text-[14px] text-gray-400">
-            Quiz soruları yakında eklenecek
+            {t.kids.quizzes.comingSoon}
           </p>
         </div>
       </div>
