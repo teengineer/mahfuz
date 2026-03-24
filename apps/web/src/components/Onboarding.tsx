@@ -159,13 +159,32 @@ export function Onboarding() {
             </div>
 
             {/* Step 3: Preferences */}
-            <div className="w-full shrink-0 overflow-y-auto max-h-[70vh] p-8 text-center">
+            <div className="w-full shrink-0 overflow-y-auto max-h-[60vh] p-8 text-center">
               <h2 className="mb-2 text-[20px] font-semibold text-[var(--theme-text)]">
                 {t.onboarding.prefsTitle}
               </h2>
-              <p className="mb-6 text-[14px] text-[var(--theme-text-secondary)]">
+              <p className="mb-5 text-[14px] text-[var(--theme-text-secondary)]">
                 {t.onboarding.prefsSubtitle}
               </p>
+
+              {/* Reciter Selection */}
+              <div className="mb-5 text-left">
+                <label className="mb-2 block text-[12px] font-medium text-[var(--theme-text-secondary)]">
+                  {t.onboarding.reciter}
+                </label>
+                <button
+                  onClick={() => setReciterModalOpen(true)}
+                  className="flex w-full items-center justify-between rounded-xl border border-[var(--theme-border)] px-3 py-2.5 text-left transition-colors hover:border-[var(--theme-text-tertiary)]"
+                >
+                  <span className="text-[13px] text-[var(--theme-text)]">
+                    {currentReciter?.name ?? "-"}
+                  </span>
+                  <span className="text-[12px] font-medium text-primary-600">
+                    {t.onboarding.changeReciter}
+                  </span>
+                </button>
+              </div>
+
               <div className="mb-5 grid grid-cols-4 justify-items-center gap-x-2 gap-y-3">
                 {THEMES.map((th) => (
                   <button
@@ -205,24 +224,6 @@ export function Onboarding() {
                   </button>
                 ))}
               </div>
-              {/* Reciter Selection — always visible */}
-              <div className="mt-5 text-left">
-                <label className="mb-2 block text-[12px] font-medium text-[var(--theme-text-secondary)]">
-                  {t.onboarding.reciter}
-                </label>
-                <button
-                  onClick={() => setReciterModalOpen(true)}
-                  className="flex w-full items-center justify-between rounded-xl border border-[var(--theme-border)] px-3 py-2.5 text-left transition-colors hover:border-[var(--theme-text-tertiary)]"
-                >
-                  <span className="text-[13px] text-[var(--theme-text)]">
-                    {currentReciter?.name ?? "—"}
-                  </span>
-                  <span className="text-[12px] font-medium text-primary-600">
-                    {t.onboarding.changeReciter}
-                  </span>
-                </button>
-              </div>
-
               {/* Advanced Settings Toggle */}
               <button
                 onClick={() => setShowAdvanced((v) => !v)}
