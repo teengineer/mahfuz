@@ -5,10 +5,10 @@
  * with the correct types for the Keşfet module.
  *
  * Input:  scripts/morphology-source/quran-morphology.txt
- * Output: apps/web/public/discover/morphology/{1-114}.json
- *         apps/web/public/discover/roots-index.json
- *         apps/web/public/discover/frequency-sets.json
- *         apps/web/public/discover/roots-enrichment.json
+ * Output: apps/legacy/public/discover/morphology/{1-114}.json
+ *         apps/legacy/public/discover/roots-index.json
+ *         apps/legacy/public/discover/frequency-sets.json
+ *         apps/legacy/public/discover/roots-enrichment.json
  *
  * Usage: npx tsx scripts/fetch-morphology.ts
  */
@@ -21,7 +21,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT_DIR = join(__dirname, "..");
 const INPUT = join(ROOT_DIR, "scripts/morphology-source/quran-morphology.txt");
-const OUT_DIR = join(ROOT_DIR, "apps/web/public/discover");
+const OUT_DIR = join(ROOT_DIR, "apps/legacy/public/discover");
 const OUT_MORPH = join(OUT_DIR, "morphology");
 const OUT_ROOTS = join(OUT_DIR, "roots-index.json");
 const OUT_FREQ = join(OUT_DIR, "frequency-sets.json");

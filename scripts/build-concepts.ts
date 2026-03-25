@@ -1,7 +1,7 @@
 /**
  * Build concept ontology from topic-index-expanded.ts data.
  *
- * Output: apps/web/public/discover/concepts.json
+ * Output: apps/legacy/public/discover/concepts.json
  *
  * Usage: npx tsx scripts/build-concepts.ts
  */
@@ -13,7 +13,7 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT_DIR = join(__dirname, "..");
-const OUT_DIR = join(ROOT_DIR, "apps/web/public/discover");
+const OUT_DIR = join(ROOT_DIR, "apps/legacy/public/discover");
 const OUT_FILE = join(OUT_DIR, "concepts.json");
 
 // Inline the topic data to avoid TypeScript import issues with .ts source

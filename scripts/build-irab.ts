@@ -4,8 +4,8 @@
  * This generates basic syntactic role annotations derived from the
  * morphological POS tags and case/state features.
  *
- * Input:  apps/web/public/discover/morphology/{1-114}.json
- * Output: apps/web/public/discover/irab/{1-114}.json
+ * Input:  apps/legacy/public/discover/morphology/{1-114}.json
+ * Output: apps/legacy/public/discover/irab/{1-114}.json
  *
  * Usage: npx tsx scripts/build-irab.ts
  */
@@ -17,8 +17,8 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT_DIR = join(__dirname, "..");
-const MORPH_DIR = join(ROOT_DIR, "apps/web/public/discover/morphology");
-const OUT_DIR = join(ROOT_DIR, "apps/web/public/discover/irab");
+const MORPH_DIR = join(ROOT_DIR, "apps/legacy/public/discover/morphology");
+const OUT_DIR = join(ROOT_DIR, "apps/legacy/public/discover/irab");
 
 interface WordMorph {
   p: number;

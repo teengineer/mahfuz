@@ -1,10 +1,22 @@
 import { drizzle } from "drizzle-orm/libsql";
 import { createClient } from "@libsql/client";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import * as authSchema from "./schema";
 import * as quranSchema from "./quran-schema";
 
+function resolveDbUrl(): string {
+  const envUrl = process.env.TURSO_DATABASE_URL;
+  // Remote Turso URL — use as-is
+  if (envUrl && !envUrl.startsWith("file:")) return envUrl;
+  // Local file — resolve relative to this package's root (apps/web/)
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const dbPath = envUrl?.replace("file:", "") || "./local.db";
+  return `file:${resolve(__dirname, "../..", dbPath)}`;
+}
+
 const client = createClient({
-  url: process.env.TURSO_DATABASE_URL || "file:./local.db",
+  url: resolveDbUrl(),
   authToken: process.env.TURSO_AUTH_TOKEN,
 });
 

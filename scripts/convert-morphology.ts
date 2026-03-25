@@ -3,8 +3,8 @@
  * into per-surah JSON files and a root index.
  *
  * Input:  scripts/morphology-source/quran-morphology.txt
- * Output: apps/web/public/quran/morphology/{1-114}.json
- *         apps/web/public/quran/roots.json
+ * Output: apps/legacy/public/quran/morphology/{1-114}.json
+ *         apps/legacy/public/quran/roots.json
  *
  * Usage: npx tsx scripts/convert-morphology.ts
  */
@@ -15,9 +15,9 @@ import { join } from "node:path";
 // ---------- Paths ----------
 const ROOT_DIR = join(import.meta.dirname, "..");
 const INPUT = join(ROOT_DIR, "scripts/morphology-source/quran-morphology.txt");
-const OUT_MORPH = join(ROOT_DIR, "apps/web/public/quran/morphology");
-const OUT_ROOTS = join(ROOT_DIR, "apps/web/public/quran/roots.json");
-const OUT_ENRICHMENT = join(ROOT_DIR, "apps/web/public/quran/enrichment");
+const OUT_MORPH = join(ROOT_DIR, "apps/legacy/public/quran/morphology");
+const OUT_ROOTS = join(ROOT_DIR, "apps/legacy/public/quran/roots.json");
+const OUT_ENRICHMENT = join(ROOT_DIR, "apps/legacy/public/quran/enrichment");
 
 // ---------- Feature parsing ----------
 

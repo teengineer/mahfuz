@@ -4,7 +4,7 @@
 # Exit 1 if any violation found.
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SRC="$ROOT/apps/web/src"
+SRC="$ROOT/apps/legacy/src"
 VIOLATIONS=0
 
 echo "=== Mahfuz Code Audit ==="

@@ -6,7 +6,7 @@
  *
  * Source: Tanzil Quran Text (CC-BY 3.0) — https://tanzil.net
  *
- * Outputs to apps/web/public/quran/:
+ * Outputs to apps/legacy/public/quran/:
  *   meta.json              — chapter metadata + juz/page/hizb boundaries
  *   uthmani/{1..114}.json  — per-surah Uthmani text with per-verse metadata
  *   simple/{1..114}.json   — per-surah Simple text with per-verse metadata
