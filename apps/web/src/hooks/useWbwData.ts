@@ -46,7 +46,7 @@ async function fetchWbwChapter(chapterId: number): Promise<WbwData> {
   let totalPages = 1;
 
   while (page <= totalPages) {
-    const url = `${QDC_API}/verses/by_chapter/${chapterId}?language=tr&words=true&word_fields=text_uthmani,translation,transliteration&per_page=50&page=${page}`;
+    const url = `${QDC_API}/verses/by_chapter/${chapterId}?language=tr&words=true&word_fields=text_uthmani,translation,transliteration&word_translation_language=tr&per_page=50&page=${page}`;
     const res = await fetch(url);
     if (!res.ok) break;
 
