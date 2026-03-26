@@ -50,6 +50,14 @@ export const fr: Messages = {
     noBookmarks: "Pas encore de signets",
   },
 
+  bookmarks: {
+    sortBySurah: "Par sourate",
+    sortByRecent: "Récents",
+    emptyHint: "Appuyez sur un numéro de verset pendant la lecture pour ajouter un signet",
+    nMore: "+{n} de plus",
+    verses: "versets",
+  },
+
   common: {
     loading: "Chargement...",
     noResults: "Aucun résultat trouvé",

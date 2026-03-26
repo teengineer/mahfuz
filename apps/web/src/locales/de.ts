@@ -50,6 +50,14 @@ export const de: Messages = {
     noBookmarks: "Noch keine Lesezeichen",
   },
 
+  bookmarks: {
+    sortBySurah: "Nach Sure",
+    sortByRecent: "Neueste",
+    emptyHint: "Tippe beim Lesen auf eine Versnummer, um ein Lesezeichen hinzuzufügen",
+    nMore: "+{n} weitere",
+    verses: "Verse",
+  },
+
   common: {
     loading: "Wird geladen...",
     noResults: "Keine Ergebnisse gefunden",

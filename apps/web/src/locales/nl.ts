@@ -50,6 +50,14 @@ export const nl: Messages = {
     noBookmarks: "Nog geen bladwijzers",
   },
 
+  bookmarks: {
+    sortBySurah: "Op soera",
+    sortByRecent: "Recent",
+    emptyHint: "Tik op een versnummer tijdens het lezen om een bladwijzer toe te voegen",
+    nMore: "+{n} meer",
+    verses: "verzen",
+  },
+
   common: {
     loading: "Laden...",
     noResults: "Geen resultaten gevonden",

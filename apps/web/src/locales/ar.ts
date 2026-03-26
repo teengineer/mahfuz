@@ -50,6 +50,14 @@ export const ar: Messages = {
     noBookmarks: "لا توجد مفضلات بعد",
   },
 
+  bookmarks: {
+    sortBySurah: "حسب السورة",
+    sortByRecent: "الأحدث",
+    emptyHint: "انقر على رقم الآية أثناء القراءة لإضافة علامة مرجعية",
+    nMore: "+{n} المزيد",
+    verses: "آيات",
+  },
+
   common: {
     loading: "جاري التحميل...",
     noResults: "لم يتم العثور على نتائج",
