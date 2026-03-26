@@ -10,6 +10,7 @@ import { AudioBar } from "~/components/reader/AudioBar";
 import { surahDataQueryOptions, useSurahData } from "~/hooks/useQuranQuery";
 import { useSettingsStore } from "~/stores/settings.store";
 import { ScrollToTop } from "~/components/ScrollToTop";
+import { FontSizeControl } from "~/components/reader/FontSizeControl";
 import { surahIdFromSlug, surahSlug } from "~/lib/surah-slugs";
 
 export const Route = createFileRoute("/surah/$surahSlug")({
@@ -66,6 +67,7 @@ function SurahRoute() {
       </Link>
 
       <SurahView surahId={id} highlightAyah={ayah} />
+      <FontSizeControl />
       <AudioBar />
       <ScrollToTop />
     </div>

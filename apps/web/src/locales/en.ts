@@ -103,5 +103,7 @@ export const en: Messages = {
     searchPlaceholder: "Search surah...",
     verses: "verses",
     goToJuz: "Go to Juz",
+    juzGoSurah: "Goes to the first surah of the juz",
+    juzGoPage: "Goes to the first page of the juz",
   },
 } as const;

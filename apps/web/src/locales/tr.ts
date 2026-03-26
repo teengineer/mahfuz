@@ -101,5 +101,7 @@ export const tr = {
     searchPlaceholder: "Sure ara...",
     verses: "ayet",
     goToJuz: "Cüze Git",
+    juzGoSurah: "Cüzün ilk suresine gider",
+    juzGoPage: "Cüzün ilk sayfasına gider",
   },
 } as const;

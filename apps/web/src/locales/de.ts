@@ -102,5 +102,7 @@ export const de: Messages = {
     searchPlaceholder: "Sure suchen...",
     verses: "Verse",
     goToJuz: "Zum Dschuz",
+    juzGoSurah: "Geht zur ersten Sure des Dschuz",
+    juzGoPage: "Geht zur ersten Seite des Dschuz",
   },
 } as const;

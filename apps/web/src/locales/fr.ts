@@ -102,5 +102,7 @@ export const fr: Messages = {
     searchPlaceholder: "Chercher sourate...",
     verses: "versets",
     goToJuz: "Aller au Juz",
+    juzGoSurah: "Va à la première sourate du juz",
+    juzGoPage: "Va à la première page du juz",
   },
 } as const;

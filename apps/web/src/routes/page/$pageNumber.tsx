@@ -9,6 +9,7 @@ import { AudioBar } from "~/components/reader/AudioBar";
 import { pageDataQueryOptions, usePageData } from "~/hooks/useQuranQuery";
 import { useSettingsStore } from "~/stores/settings.store";
 import { ScrollToTop } from "~/components/ScrollToTop";
+import { FontSizeControl } from "~/components/reader/FontSizeControl";
 
 export const Route = createFileRoute("/page/$pageNumber")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -51,10 +52,8 @@ function PageRoute() {
 
       {/* Mushaf sayfası */}
       <MushafPage pageNumber={page} highlightAyah={ayah} />
-
-      {/* Audio bar */}
+      <FontSizeControl />
       <AudioBar />
-
       <ScrollToTop />
     </div>
   );

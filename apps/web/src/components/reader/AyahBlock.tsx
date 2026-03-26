@@ -107,7 +107,7 @@ export function AyahBlock({
       )}
 
       {/* Arapça metin — tecvid aktifse renkli, değilse kelime hover */}
-      <div className="text-right leading-[2.8]" dir="rtl" style={{ fontFamily: "var(--font-arabic)", fontSize: `${arabicFontSize}rem` }}>
+      <div className="text-justify leading-[2.8]" dir="rtl" style={{ fontFamily: "var(--font-arabic)", fontSize: `${arabicFontSize}rem` }}>
         {showTajweed && textTajweed
           ? parseTajweed(textTajweed, true)
           : textUthmani.split(/\s+/).map((word, i) => (

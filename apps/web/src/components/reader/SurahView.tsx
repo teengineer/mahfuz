@@ -180,6 +180,14 @@ const JUZ_FIRST_SURAH: Record<number, number> = {
   27: 51, 28: 58, 29: 67, 30: 78,
 };
 
+// Cüz → ilk sayfa numarası
+const JUZ_FIRST_PAGE: Record<number, number> = {
+  1: 1, 2: 22, 3: 42, 4: 62, 5: 82, 6: 102, 7: 121, 8: 142, 9: 162, 10: 182,
+  11: 201, 12: 222, 13: 242, 14: 262, 15: 282, 16: 302, 17: 322, 18: 342, 19: 362, 20: 382,
+  21: 402, 22: 422, 23: 442, 24: 462, 25: 482, 26: 502, 27: 522, 28: 542, 29: 562, 30: 582,
+};
+
+
 // Sure → hangi cüzde başlıyor (reverse lookup)
 function getJuzForSurah(surahId: number): number {
   let juz = 1;
@@ -199,7 +207,7 @@ function SurahPicker({ currentSurahId }: { currentSurahId: number }) {
   const listRef = useRef<HTMLDivElement>(null);
   const surahRefs = useRef<Map<number, HTMLElement>>(new Map());
   const navigate = useNavigate();
-  const { locale } = useTranslation();
+  const { t, locale } = useTranslation();
   const { data: surahs } = useSurahs();
 
   // Dışarı tıklayınca kapat
@@ -336,38 +344,51 @@ function SurahPicker({ currentSurahId }: { currentSurahId: number }) {
               </div>
             </>
           ) : (
-            /* Cüz grid */
-            <div className="overflow-y-auto flex-1 p-3">
-              <div className="grid grid-cols-5 gap-1.5">
-                {Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => {
-                  const isActive = getJuzForSurah(currentSurahId) === juz;
-                  return (
-                    <button
-                      key={juz}
-                      onClick={() => {
-                        setOpen(false);
-                        setTab("surah");
-                        const firstSurah = JUZ_FIRST_SURAH[juz];
-                        navigate({
-                          to: "/surah/$surahSlug",
-                          params: { surahSlug: surahSlug(firstSurah) },
-                          search: { ayah: undefined },
-                        });
-                      }}
-                      className={`h-10 rounded-lg text-sm font-medium transition-colors ${
+            /* Cüz listesi — sol: cüz no + sure adı, sağ: sayfa numarası */
+            <div className="overflow-y-auto flex-1">
+              {Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => {
+                const isActive = getJuzForSurah(currentSurahId) === juz;
+                const firstSurahId = JUZ_FIRST_SURAH[juz];
+                const surah = surahs.find((s) => s.id === firstSurahId);
+                const page = JUZ_FIRST_PAGE[juz];
+                return (
+                  <div
+                    key={juz}
+                    className={`flex items-center transition-colors ${
+                      isActive ? "bg-[var(--color-accent)]/10" : "hover:bg-[var(--color-surface)]"
+                    }`}
+                  >
+                    {/* Sol %50 — sure navigasyonu */}
+                    <Link
+                      to="/surah/$surahSlug"
+                      params={{ surahSlug: surahSlug(firstSurahId) }}
+                      search={{ ayah: undefined }}
+                      onClick={() => { setOpen(false); setTab("surah"); }}
+                      className="flex items-center gap-2.5 w-1/2 px-3 py-2.5"
+                    >
+                      <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-semibold shrink-0 ${
                         isActive
                           ? "bg-[var(--color-accent)] text-white"
-                          : "bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:bg-[var(--color-accent)] hover:text-white"
-                      }`}
+                          : "bg-[var(--color-surface)] text-[var(--color-text-secondary)]"
+                      }`}>
+                        {juz}
+                      </span>
+                      <span className={`text-sm truncate ${isActive ? "font-medium text-[var(--color-accent)]" : ""}`}>
+                        {surah?.nameSimple ?? ""}
+                      </span>
+                    </Link>
+                    {/* Sağ %50 — sayfa navigasyonu */}
+                    <Link
+                      to="/page/$pageNumber"
+                      params={{ pageNumber: String(page) }}
+                      onClick={() => { setOpen(false); setTab("surah"); }}
+                      className="flex items-center justify-end w-1/2 px-3 py-2.5 text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors"
                     >
-                      {juz}
-                    </button>
-                  );
-                })}
-              </div>
-              <p className="text-[10px] text-[var(--color-text-secondary)] text-center mt-3">
-                Cüzün ilk suresine gider
-              </p>
+                      {t.common.page} {page}
+                    </Link>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

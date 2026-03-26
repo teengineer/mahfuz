@@ -57,7 +57,8 @@ function HomePageSkeleton() {
 function HomePage() {
   const { session } = Route.useRouteContext();
   const { t, locale } = useTranslation();
-  const lastPosition = useReadingStore((s) => s.lastPosition);
+  const recentPositions = useReadingStore((s) => s.recentPositions);
+  const lastPosition = recentPositions[0] ?? null;
   const readingMode = useSettingsStore((s) => s.readingMode);
   const bookmarks = useBookmarksStore((s) => s.bookmarks);
   const { data: surahs } = useSurahs();
@@ -154,6 +155,28 @@ function HomePage() {
           </Link>
         );
       })()}
+
+      {/* Diğer son okunanlar — pill'ler */}
+      {recentPositions.length > 1 && (
+        <div className="flex items-center gap-1.5 mb-4 -mt-2.5 flex-wrap">
+          {recentPositions.slice(1).map((pos) => {
+            const surah = surahs.find((s) => s.id === pos.surahId);
+            const name = getSurahName(pos.surahId, locale) || surah?.nameSimple || `${pos.surahId}`;
+            const linkProps = readingMode === "list"
+              ? { to: "/surah/$surahSlug" as const, params: { surahSlug: surahSlug(pos.surahId) }, search: { ayah: pos.ayahNumber } }
+              : { to: "/page/$pageNumber" as const, params: { pageNumber: String(pos.pageNumber) }, search: { ayah: undefined } };
+            return (
+              <Link
+                key={pos.surahId}
+                {...linkProps}
+                className="px-2.5 py-1 rounded-md bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] text-xs transition-colors"
+              >
+                {name} <span className="text-[var(--color-text-secondary)]">{pos.ayahNumber}</span>
+              </Link>
+            );
+          })}
+        </div>
+      )}
 
       {/* Yer imleri */}
       {bookmarks.length > 0 && (() => {

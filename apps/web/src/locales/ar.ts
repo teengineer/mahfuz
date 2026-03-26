@@ -102,5 +102,7 @@ export const ar: Messages = {
     searchPlaceholder: "ابحث عن سورة...",
     verses: "آيات",
     goToJuz: "انتقل إلى الجزء",
+    juzGoSurah: "ينتقل إلى أول سورة في الجزء",
+    juzGoPage: "ينتقل إلى أول صفحة في الجزء",
   },
 } as const;

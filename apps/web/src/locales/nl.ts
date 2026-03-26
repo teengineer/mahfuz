@@ -102,5 +102,7 @@ export const nl: Messages = {
     searchPlaceholder: "Zoek soera...",
     verses: "verzen",
     goToJuz: "Ga naar Juz",
+    juzGoSurah: "Gaat naar de eerste soera van de juz",
+    juzGoPage: "Gaat naar de eerste pagina van de juz",
   },
 } as const;

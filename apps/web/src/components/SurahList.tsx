@@ -21,7 +21,15 @@ const JUZ_FIRST_SURAH: Record<number, number> = {
   27: 51, 28: 58, 29: 67, 30: 78,
 };
 
+// Cüz → ilk sayfa numarası
+const JUZ_FIRST_PAGE: Record<number, number> = {
+  1: 1, 2: 22, 3: 42, 4: 62, 5: 82, 6: 102, 7: 121, 8: 142, 9: 162, 10: 182,
+  11: 201, 12: 222, 13: 242, 14: 262, 15: 282, 16: 302, 17: 322, 18: 342, 19: 362, 20: 382,
+  21: 402, 22: 422, 23: 442, 24: 462, 25: 482, 26: 502, 27: 522, 28: 542, 29: 562, 30: 582,
+};
+
 const ALL_JUZ = Array.from({ length: 30 }, (_, i) => i + 1);
+
 
 interface Surah {
   id: number;
@@ -48,17 +56,16 @@ export function SurahList({ surahs }: SurahListProps) {
   const [highlightSurahId, setHighlightSurahId] = useState<number | null>(null);
   const juzPanelRef = useRef<HTMLDivElement>(null);
 
-  // Cüze scroll et + highlight
-  const scrollToJuz = useCallback((juz: number) => {
+  // Cüzün suresine scroll + highlight
+  const handleJuzSurah = useCallback((juz: number) => {
+    setJuzOpen(false);
     const surahId = JUZ_FIRST_SURAH[juz];
     if (!surahId) return;
-    setJuzOpen(false);
     setHighlightSurahId(surahId);
     const el = itemRefs.current.get(surahId);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-    // Flash'ı temizle
     setTimeout(() => setHighlightSurahId(null), 2000);
   }, []);
 
@@ -129,19 +136,31 @@ export function SurahList({ surahs }: SurahListProps) {
       <div ref={juzPanelRef} className="fixed right-4 bottom-20 sm:bottom-6 z-20">
         {/* Genişleyen cüz paneli — butonun üstünde */}
         {juzOpen && (
-          <div className="absolute right-0 bottom-full mb-2 w-[180px] max-h-[60vh] overflow-y-auto rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl p-2">
-            <p className="text-[10px] text-[var(--color-text-secondary)] px-1 pb-1.5 font-medium">{t.surahList.goToJuz}</p>
-            <div className="grid grid-cols-5 gap-1">
-              {ALL_JUZ.map((juz) => (
-                <button
-                  key={juz}
-                  onClick={() => scrollToJuz(juz)}
-                  className="h-8 rounded-lg text-xs font-medium hover:bg-[var(--color-accent)] hover:text-white transition-colors"
-                >
-                  {juz}
-                </button>
-              ))}
-            </div>
+          <div className="absolute right-0 bottom-full mb-2 w-[240px] max-h-[60vh] overflow-y-auto rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl p-1.5">
+            {ALL_JUZ.map((juz) => {
+              const surahId = JUZ_FIRST_SURAH[juz];
+              const surah = surahId ? surahs.find((s) => s.id === surahId) : undefined;
+              const page = JUZ_FIRST_PAGE[juz];
+              return (
+                <div key={juz} className="flex items-center gap-2 rounded-lg hover:bg-[var(--color-bg)] transition-colors">
+                  <button
+                    onClick={() => handleJuzSurah(juz)}
+                    className="flex items-center gap-2 flex-1 min-w-0 px-2 py-1.5 text-left"
+                  >
+                    <span className="w-5 text-[11px] font-semibold text-[var(--color-text-secondary)] text-right shrink-0">{juz}</span>
+                    <span className="text-xs truncate">{surah?.nameSimple ?? ""}</span>
+                  </button>
+                  <Link
+                    to="/page/$pageNumber"
+                    params={{ pageNumber: String(page) }}
+                    onClick={() => setJuzOpen(false)}
+                    className="shrink-0 px-2 py-1 mr-1 rounded-md text-[10px] text-[var(--color-text-secondary)] hover:bg-[var(--color-accent)] hover:text-white transition-colors"
+                  >
+                    s.{page}
+                  </Link>
+                </div>
+              );
+            })}
           </div>
         )}
 

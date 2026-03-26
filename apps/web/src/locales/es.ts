@@ -103,5 +103,7 @@ export const es: Messages = {
     searchPlaceholder: "Buscar sura...",
     verses: "versículos",
     goToJuz: "Ir al Yuz",
+    juzGoSurah: "Va a la primera sura del yuz",
+    juzGoPage: "Va a la primera página del yuz",
   },
 } as const;
