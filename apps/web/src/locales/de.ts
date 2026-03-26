@@ -40,6 +40,14 @@ export const de: Messages = {
     back: "Zurück",
     login: "Anmelden",
     signOut: "Abmelden",
+    profile: "Profil",
+  },
+
+  profile: {
+    title: "Profil",
+    apps: "Apps",
+    appsComingSoon: "Chatma, Auswendiglernen, Alif-Ba und mehr demnächst.",
+    noBookmarks: "Noch keine Lesezeichen",
   },
 
   common: {

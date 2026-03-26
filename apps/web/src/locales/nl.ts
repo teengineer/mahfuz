@@ -40,6 +40,14 @@ export const nl: Messages = {
     back: "Terug",
     login: "Inloggen",
     signOut: "Uitloggen",
+    profile: "Profiel",
+  },
+
+  profile: {
+    title: "Profiel",
+    apps: "Apps",
+    appsComingSoon: "Chatma, memorisatie, Alif-Ba en meer binnenkort.",
+    noBookmarks: "Nog geen bladwijzers",
   },
 
   common: {

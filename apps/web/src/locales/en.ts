@@ -40,6 +40,23 @@ export const en: Messages = {
     back: "Back",
     login: "Login",
     signOut: "Sign out",
+    profile: "Profile",
+  },
+
+  profile: {
+    title: "Profile",
+    apps: "Apps",
+    appsComingSoon: "Khatm tracking, memorization, Alif-Ba and more coming soon.",
+    noBookmarks: "No bookmarks yet",
+    viewBookmarks: "Bookmarks",
+  },
+
+  bookmarks: {
+    sortBySurah: "By surah",
+    sortByRecent: "Recent",
+    emptyHint: "Tap a verse number while reading to add a bookmark",
+    nMore: "+{n} more",
+    verses: "verses",
   },
 
   common: {

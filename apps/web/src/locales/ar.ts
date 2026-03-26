@@ -40,6 +40,14 @@ export const ar: Messages = {
     back: "رجوع",
     login: "تسجيل الدخول",
     signOut: "تسجيل الخروج",
+    profile: "الملف الشخصي",
+  },
+
+  profile: {
+    title: "الملف الشخصي",
+    apps: "التطبيقات",
+    appsComingSoon: "الختمة والحفظ والألف باء والمزيد قريبًا.",
+    noBookmarks: "لا توجد مفضلات بعد",
   },
 
   common: {

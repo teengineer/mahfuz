@@ -2,14 +2,13 @@
  * Ana sayfa — devam et, alışkanlık, yer imleri, sure listesi.
  */
 
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useReadingStore } from "~/stores/reading.store";
 import { useSettingsStore } from "~/stores/settings.store";
 import { useBookmarksStore } from "~/stores/bookmarks.store";
 import { useSurahs, surahsQueryOptions } from "~/hooks/useQuranQuery";
 import { SurahList } from "~/components/SurahList";
 import { BottomNav } from "~/components/BottomNav";
-import { signOut } from "~/lib/auth-client";
 import { MahfuzLogo } from "~/components/icons/MahfuzLogo";
 import { SettingsButton } from "~/components/SettingsButton";
 import { useTranslation } from "~/hooks/useTranslation";
@@ -56,7 +55,6 @@ function HomePageSkeleton() {
 
 function HomePage() {
   const { session } = Route.useRouteContext();
-  const router = useRouter();
   const { t } = useTranslation();
   const lastPosition = useReadingStore((s) => s.lastPosition);
   const readingMode = useSettingsStore((s) => s.readingMode);
@@ -91,18 +89,24 @@ function HomePage() {
 
         {/* Auth */}
         {session ? (
-          <button
-            onClick={async () => {
-              await signOut();
-              await router.invalidate();
-            }}
+          <Link
+            to="/profile"
             className="flex items-center gap-1.5 shrink-0 rounded-lg px-2.5 py-1.5 text-xs hover:bg-[var(--color-surface)] transition-colors"
-            title={t.nav.signOut}
+            title={t.nav.profile}
           >
-            <span className="h-6 w-6 rounded-full bg-[var(--color-accent)] flex items-center justify-center text-[11px] font-medium text-white">
-              {session.user.name?.[0]?.toUpperCase() || "?"}
-            </span>
-          </button>
+            {session.user.image ? (
+              <img
+                src={session.user.image}
+                alt={session.user.name || ""}
+                className="h-6 w-6 rounded-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <span className="h-6 w-6 rounded-full bg-[var(--color-accent)] flex items-center justify-center text-[11px] font-medium text-white">
+                {session.user.name?.[0]?.toUpperCase() || "?"}
+              </span>
+            )}
+          </Link>
         ) : (
           <Link
             to="/auth/login"
@@ -151,28 +155,46 @@ function HomePage() {
       })()}
 
       {/* Yer imleri */}
-      {bookmarks.length > 0 && (
-        <div className="mb-4">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[var(--color-text-secondary)]">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" stroke="currentColor" strokeWidth="0.5">
-                <path d="M4 2h8a1 1 0 011 1v11.5l-4.5-3-4.5 3V3a1 1 0 011-1z" />
-              </svg>
-            </span>
-            {bookmarks.slice(0, 10).map((bm) => (
-              <Link
-                key={`${bm.surahId}:${bm.ayahNumber}`}
-                to="/page/$pageNumber"
-                params={{ pageNumber: String(bm.pageNumber) }}
-                search={{ ayah: undefined }}
-                className="px-3 py-1.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] text-xs transition-colors"
-              >
-                {bm.surahId}:{bm.ayahNumber}
-              </Link>
-            ))}
+      {bookmarks.length > 0 && (() => {
+        const surahMap = new Map(surahs.map((s) => [s.id, s]));
+        const visible = bookmarks.slice(0, 8);
+        const remaining = bookmarks.length - visible.length;
+        return (
+          <div className="mb-4">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[var(--color-text-secondary)]">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" stroke="currentColor" strokeWidth="0.5">
+                  <path d="M4 2h8a1 1 0 011 1v11.5l-4.5-3-4.5 3V3a1 1 0 011-1z" />
+                </svg>
+              </span>
+              {visible.map((bm) => {
+                const surah = surahMap.get(bm.surahId);
+                const label = surah ? `${surah.nameSimple} ${bm.ayahNumber}` : `${bm.surahId}:${bm.ayahNumber}`;
+                const linkProps = readingMode === "list"
+                  ? { to: "/surah/$surahSlug" as const, params: { surahSlug: surahSlug(bm.surahId) }, search: { ayah: bm.ayahNumber } }
+                  : { to: "/page/$pageNumber" as const, params: { pageNumber: String(bm.pageNumber) }, search: { ayah: undefined } };
+                return (
+                  <Link
+                    key={`${bm.surahId}:${bm.ayahNumber}`}
+                    {...linkProps}
+                    className="px-3 py-1.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] text-xs transition-colors"
+                  >
+                    {label}
+                  </Link>
+                );
+              })}
+              {remaining > 0 && (
+                <Link
+                  to="/bookmarks"
+                  className="px-3 py-1.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] text-xs text-[var(--color-text-secondary)] transition-colors"
+                >
+                  +{remaining}
+                </Link>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Sure listesi + yüzen cüz butonu */}
       <SurahList surahs={surahs} />

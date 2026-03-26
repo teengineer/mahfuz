@@ -40,6 +40,14 @@ export const fr: Messages = {
     back: "Retour",
     login: "Connexion",
     signOut: "Déconnexion",
+    profile: "Profil",
+  },
+
+  profile: {
+    title: "Profil",
+    apps: "Applications",
+    appsComingSoon: "Khatm, mémorisation, Alif-Ba et plus bientôt.",
+    noBookmarks: "Pas encore de signets",
   },
 
   common: {

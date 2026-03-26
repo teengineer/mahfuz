@@ -38,6 +38,23 @@ export const tr = {
     back: "Geri",
     login: "Giriş",
     signOut: "Çıkış yap",
+    profile: "Profil",
+  },
+
+  profile: {
+    title: "Profil",
+    apps: "Uygulamalar",
+    appsComingSoon: "Hatim, ezberleme, elif-ba ve daha fazlası yakında burada olacak.",
+    noBookmarks: "Henüz yer imi eklemediniz",
+    viewBookmarks: "Yer İmleri",
+  },
+
+  bookmarks: {
+    sortBySurah: "Sure'ye göre",
+    sortByRecent: "Son eklenen",
+    emptyHint: "Okurken ayet numarasına tıklayıp yer imi ekleyebilirsiniz",
+    nMore: "+{n} daha",
+    verses: "ayet",
   },
 
   common: {
