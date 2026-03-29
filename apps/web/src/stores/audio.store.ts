@@ -32,7 +32,7 @@ interface AudioActions {
   initEngine: (engine: AudioEngine) => void;
   destroyEngine: () => void;
 
-  playSurah: (chapterId: number, chapterName: string, audioData: ChapterAudioData) => void;
+  playSurah: (chapterId: number, chapterName: string, audioData: ChapterAudioData, startVerseKey?: string) => void;
   play: (startIndex?: number) => void;
   pause: () => void;
   togglePlayPause: () => void;
@@ -85,7 +85,7 @@ export const useAudioStore = create<AudioState & AudioActions>()((set, get) => (
 
   // ── Playback ────────────────────────────────────────────
 
-  playSurah: (chapterId, chapterName, audioData) => {
+  playSurah: (chapterId, chapterName, audioData, startVerseKey) => {
     const { engine, speed, volume, isMuted, repeatMode } = get();
     if (!engine) return;
 
@@ -95,14 +95,18 @@ export const useAudioStore = create<AudioState & AudioActions>()((set, get) => (
     engine.setMuted(isMuted);
     engine.setRepeatMode(repeatMode);
 
+    const verseKeys = audioData.verseTimings.map((t) => t.verseKey);
     set({
       chapterId,
       chapterName,
-      verseKeys: audioData.verseTimings.map((t) => t.verseKey),
+      verseKeys,
       isVisible: true,
     });
 
-    engine.play(0);
+    const startIndex = startVerseKey
+      ? Math.max(0, verseKeys.indexOf(startVerseKey))
+      : 0;
+    engine.play(startIndex);
   },
 
   play: (startIndex) => {

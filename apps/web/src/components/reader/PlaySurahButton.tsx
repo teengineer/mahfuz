@@ -5,25 +5,7 @@
 import { useState, useCallback } from "react";
 import { useAudioStore } from "~/stores/audio.store";
 import { useSettingsStore } from "~/stores/settings.store";
-import { fetchChapterAudio } from "~/lib/audio-service";
-
-// Slug → QDC reciter ID mapping
-const SLUG_TO_QDC_ID: Record<string, number> = {
-  "mishary-rashid-alafasy": 7,
-  "mahmoud-khalil-al-husary": 6,
-  "mahmood-ali-al-banna": 129,
-  "mahmoud-khalil-al-husary-muallim": 12,
-  "khalid-al-jalil": 170,
-  "fatih-seferagic": 134,
-  "abdulbasit-abdulsamad-mujawwad": 1,
-  "abdulbasit-abdulsamad-murattal": 2,
-  "abdur-rahman-as-sudais": 3,
-  "maher-al-muaiqly": 52,
-  "saad-al-ghamdi": 13,
-  "saud-ash-shuraim": 10,
-  "minshawi-murattal": 9,
-  "minshawi-mujawwad": 8,
-};
+import { fetchChapterAudio, SLUG_TO_QDC_ID } from "~/lib/audio-service";
 
 interface PlaySurahButtonProps {
   surahId: number;

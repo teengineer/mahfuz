@@ -11,6 +11,24 @@ const QDC_API = "https://api.qurancdn.com/api/qdc";
 const AUDIO_CDN = "https://audio.qurancdn.com/";
 const FALLBACK_RECITER_ID = 7; // Mishari Rashid al-Afasy
 
+/** Slug → QDC reciter ID mapping */
+export const SLUG_TO_QDC_ID: Record<string, number> = {
+  "mishary-rashid-alafasy": 7,
+  "mahmoud-khalil-al-husary": 6,
+  "mahmood-ali-al-banna": 129,
+  "mahmoud-khalil-al-husary-muallim": 12,
+  "khalid-al-jalil": 170,
+  "fatih-seferagic": 134,
+  "abdulbasit-abdulsamad-mujawwad": 1,
+  "abdulbasit-abdulsamad-murattal": 2,
+  "abdur-rahman-as-sudais": 3,
+  "maher-al-muaiqly": 52,
+  "saad-al-ghamdi": 13,
+  "saud-ash-shuraim": 10,
+  "minshawi-murattal": 9,
+  "minshawi-mujawwad": 8,
+};
+
 interface QDCVerseTiming {
   verse_key: string;
   timestamp_from: number;
