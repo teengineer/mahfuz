@@ -86,6 +86,15 @@ export const en: Messages = {
       totalCommits: "total contributions",
       viewOnGithub: "View on GitHub",
     },
+    credits: {
+      title: "Credits & Acknowledgments",
+      subtitle: "Projects that make Mahfuz possible",
+      data: "Data Sources",
+      fonts: "Fonts",
+      tech: "Technologies",
+      inspiration: "Inspiration",
+      footer: "Mahfuz is an open source project. We gratefully acknowledge all sources.",
+    },
   },
 
   profile: {

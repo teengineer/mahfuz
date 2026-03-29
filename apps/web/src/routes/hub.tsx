@@ -8,6 +8,7 @@ import { useBookmarksStore } from "~/stores/bookmarks.store";
 import { useTranslation } from "~/hooks/useTranslation";
 import { FeatureGuide } from "~/components/hub/FeatureGuide";
 import { GitHubContributors } from "~/components/hub/GitHubContributors";
+import { Credits } from "~/components/hub/Credits";
 
 export const Route = createFileRoute("/hub")({
   component: HubPage,
@@ -125,6 +126,7 @@ function HubPage() {
       </div>
 
       <GitHubContributors />
+      <Credits />
     </div>
   );
 }

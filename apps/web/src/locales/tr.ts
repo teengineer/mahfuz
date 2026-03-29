@@ -84,6 +84,15 @@ export const tr = {
       totalCommits: "toplam katkı",
       viewOnGithub: "GitHub'da Görüntüle",
     },
+    credits: {
+      title: "Kaynaklar ve Teşekkürler",
+      subtitle: "Mahfuz'u mümkün kılan projeler",
+      data: "Veri Kaynakları",
+      fonts: "Yazı Tipleri",
+      tech: "Teknolojiler",
+      inspiration: "İlham Kaynakları",
+      footer: "Mahfuz, açık kaynak bir projedir. Tüm kaynaklara teşekkür ederiz.",
+    },
   },
 
   profile: {
