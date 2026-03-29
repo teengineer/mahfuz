@@ -138,7 +138,7 @@ export function AyahBlock({
                   : "hover:bg-[var(--color-word-hover)]"
               }`}
             >
-              <span style={{ fontFamily: "var(--font-arabic)", fontSize: `${arabicFontSize}rem`, lineHeight: 1.8 }}>
+              <span className="pb-2" style={{ fontFamily: "var(--font-arabic)", fontSize: `${arabicFontSize}rem`, lineHeight: 2 }}>
                 {w.textUthmani}
               </span>
               {w.transliteration && wbwTranslit !== "off" && (
