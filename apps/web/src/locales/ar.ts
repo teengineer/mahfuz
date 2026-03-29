@@ -49,6 +49,23 @@ export const ar: Messages = {
     profile: "الملف الشخصي",
   },
 
+  auth: {
+    login: "تسجيل الدخول",
+    createAccount: "إنشاء حساب",
+    continueWithGoogle: "المتابعة مع Google",
+    or: "أو",
+    namePlaceholder: "الاسم",
+    emailPlaceholder: "البريد الإلكتروني",
+    passwordPlaceholder: "كلمة المرور (8 أحرف على الأقل)",
+    register: "إنشاء حساب",
+    noAccount: "ليس لديك حساب؟",
+    hasAccount: "لديك حساب بالفعل؟",
+    registerFailed: "فشل التسجيل",
+    loginFailed: "فشل تسجيل الدخول",
+    googleFailed: "فشل تسجيل الدخول عبر Google",
+    genericError: "حدث خطأ",
+  },
+
   profile: {
     title: "الملف الشخصي",
     apps: "التطبيقات",

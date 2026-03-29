@@ -49,6 +49,23 @@ export const de: Messages = {
     profile: "Profil",
   },
 
+  auth: {
+    login: "Anmelden",
+    createAccount: "Konto erstellen",
+    continueWithGoogle: "Weiter mit Google",
+    or: "oder",
+    namePlaceholder: "Name",
+    emailPlaceholder: "E-Mail",
+    passwordPlaceholder: "Passwort (min. 8 Zeichen)",
+    register: "Registrieren",
+    noAccount: "Noch kein Konto?",
+    hasAccount: "Bereits ein Konto?",
+    registerFailed: "Registrierung fehlgeschlagen",
+    loginFailed: "Anmeldung fehlgeschlagen",
+    googleFailed: "Google-Anmeldung fehlgeschlagen",
+    genericError: "Ein Fehler ist aufgetreten",
+  },
+
   profile: {
     title: "Profil",
     apps: "Apps",

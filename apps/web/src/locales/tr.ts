@@ -48,6 +48,23 @@ export const tr = {
     profile: "Profil",
   },
 
+  auth: {
+    login: "Giriş Yap",
+    createAccount: "Hesap Oluştur",
+    continueWithGoogle: "Google ile devam et",
+    or: "veya",
+    namePlaceholder: "İsim",
+    emailPlaceholder: "E-posta",
+    passwordPlaceholder: "Şifre (min 8 karakter)",
+    register: "Kayıt Ol",
+    noAccount: "Hesabın yok mu?",
+    hasAccount: "Zaten hesabın var mı?",
+    registerFailed: "Kayıt başarısız",
+    loginFailed: "Giriş başarısız",
+    googleFailed: "Google ile giriş başarısız",
+    genericError: "Bir hata oluştu",
+  },
+
   hub: {
     title: "Keşfet",
     bookmarks: "Yer İmleri",

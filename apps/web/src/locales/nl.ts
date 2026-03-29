@@ -49,6 +49,23 @@ export const nl: Messages = {
     profile: "Profiel",
   },
 
+  auth: {
+    login: "Inloggen",
+    createAccount: "Account aanmaken",
+    continueWithGoogle: "Doorgaan met Google",
+    or: "of",
+    namePlaceholder: "Naam",
+    emailPlaceholder: "E-mail",
+    passwordPlaceholder: "Wachtwoord (min. 8 tekens)",
+    register: "Registreren",
+    noAccount: "Geen account?",
+    hasAccount: "Al een account?",
+    registerFailed: "Registratie mislukt",
+    loginFailed: "Inloggen mislukt",
+    googleFailed: "Google-aanmelding mislukt",
+    genericError: "Er is een fout opgetreden",
+  },
+
   profile: {
     title: "Profiel",
     apps: "Apps",

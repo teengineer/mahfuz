@@ -50,6 +50,23 @@ export const es: Messages = {
     profile: "Perfil",
   },
 
+  auth: {
+    login: "Iniciar sesión",
+    createAccount: "Crear cuenta",
+    continueWithGoogle: "Continuar con Google",
+    or: "o",
+    namePlaceholder: "Nombre",
+    emailPlaceholder: "Correo electrónico",
+    passwordPlaceholder: "Contraseña (mín. 8 caracteres)",
+    register: "Registrarse",
+    noAccount: "¿No tienes cuenta?",
+    hasAccount: "¿Ya tienes cuenta?",
+    registerFailed: "Error en el registro",
+    loginFailed: "Error al iniciar sesión",
+    googleFailed: "Error al iniciar sesión con Google",
+    genericError: "Ocurrió un error",
+  },
+
   hub: {
     title: "Explorar",
     bookmarks: "Marcadores",

@@ -50,6 +50,23 @@ export const en: Messages = {
     profile: "Profile",
   },
 
+  auth: {
+    login: "Sign In",
+    createAccount: "Create Account",
+    continueWithGoogle: "Continue with Google",
+    or: "or",
+    namePlaceholder: "Name",
+    emailPlaceholder: "Email",
+    passwordPlaceholder: "Password (min 8 characters)",
+    register: "Sign Up",
+    noAccount: "Don't have an account?",
+    hasAccount: "Already have an account?",
+    registerFailed: "Registration failed",
+    loginFailed: "Login failed",
+    googleFailed: "Google sign-in failed",
+    genericError: "An error occurred",
+  },
+
   hub: {
     title: "Explore",
     bookmarks: "Bookmarks",

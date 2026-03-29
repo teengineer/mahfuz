@@ -2,6 +2,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { signIn, signUp } from "~/lib/auth-client";
 import { MahfuzLogo } from "~/components/icons/MahfuzLogo";
+import { useTranslation } from "~/hooks/useTranslation";
 
 export const Route = createFileRoute("/auth/login")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/auth/login")({
 function LoginPage() {
   const { redirect } = Route.useSearch();
   const router = useRouter();
+  const { t } = useTranslation();
   const [mode, setMode] = useState<"login" | "register">("login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -28,20 +30,20 @@ function LoginPage() {
       if (mode === "register") {
         const result = await signUp.email({ name, email, password });
         if (result.error) {
-          setError(result.error.message || "Kayıt başarısız");
+          setError(result.error.message || t.auth.registerFailed);
           return;
         }
       } else {
         const result = await signIn.email({ email, password });
         if (result.error) {
-          setError(result.error.message || "Giriş başarısız");
+          setError(result.error.message || t.auth.loginFailed);
           return;
         }
       }
       await router.invalidate();
       router.navigate({ to: redirect || "/" });
     } catch {
-      setError("Bir hata oluştu");
+      setError(t.auth.genericError);
     } finally {
       setLoading(false);
     }
@@ -55,10 +57,10 @@ function LoginPage() {
         callbackURL: redirect || "/",
       });
       if (result?.error) {
-        setError(result.error.message || "Google ile giriş başarısız");
+        setError(result.error.message || t.auth.googleFailed);
       }
     } catch {
-      setError("Google ile giriş başarısız");
+      setError(t.auth.googleFailed);
     }
   };
 
@@ -71,7 +73,7 @@ function LoginPage() {
             <MahfuzLogo size={48} />
           </Link>
           <h1 className="mt-3 text-xl font-semibold">
-            {mode === "login" ? "Giriş Yap" : "Hesap Oluştur"}
+            {mode === "login" ? t.auth.login : t.auth.createAccount}
           </h1>
         </div>
 
@@ -89,13 +91,13 @@ function LoginPage() {
             className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-[var(--color-border)] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--color-bg)]"
           >
             <GoogleIcon />
-            Google ile devam et
+            {t.auth.continueWithGoogle}
           </button>
 
           {/* Divider */}
           <div className="my-5 flex items-center gap-3">
             <div className="h-px flex-1 bg-[var(--color-border)]" />
-            <span className="text-[11px] text-[var(--color-text-secondary)]">veya</span>
+            <span className="text-[11px] text-[var(--color-text-secondary)]">{t.auth.or}</span>
             <div className="h-px flex-1 bg-[var(--color-border)]" />
           </div>
 
@@ -107,7 +109,7 @@ function LoginPage() {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="İsim"
+                placeholder={t.auth.namePlaceholder}
                 className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-accent)]"
               />
             )}
@@ -116,7 +118,7 @@ function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="E-posta"
+              placeholder={t.auth.emailPlaceholder}
               className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-accent)]"
             />
             <input
@@ -125,7 +127,7 @@ function LoginPage() {
               minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Şifre (min 8 karakter)"
+              placeholder={t.auth.passwordPlaceholder}
               className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-accent)]"
             />
             <button
@@ -136,14 +138,14 @@ function LoginPage() {
               {loading
                 ? "..."
                 : mode === "login"
-                  ? "Giriş Yap"
-                  : "Kayıt Ol"}
+                  ? t.auth.login
+                  : t.auth.register}
             </button>
           </form>
         </div>
 
         <p className="mt-4 text-center text-[12px] text-[var(--color-text-secondary)]">
-          {mode === "login" ? "Hesabın yok mu? " : "Zaten hesabın var mı? "}
+          {mode === "login" ? `${t.auth.noAccount} ` : `${t.auth.hasAccount} `}
           <button
             onClick={() => {
               setMode(mode === "login" ? "register" : "login");
@@ -151,7 +153,7 @@ function LoginPage() {
             }}
             className="font-medium text-[var(--color-accent)]"
           >
-            {mode === "login" ? "Kayıt Ol" : "Giriş Yap"}
+            {mode === "login" ? t.auth.register : t.auth.login}
           </button>
         </p>
       </div>
