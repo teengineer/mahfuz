@@ -66,6 +66,7 @@ export const tr = {
       from: "Başl.",
       to: "Bitiş",
       addRange: "Ekle",
+      notStarted: "sure başlanmadı",
       hint: "Surelere dokunarak ayet detayını açın. Tek ayet, aralık veya tamamını seçebilirsiniz.",
     },
   },

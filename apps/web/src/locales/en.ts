@@ -68,6 +68,7 @@ export const en: Messages = {
       from: "From",
       to: "To",
       addRange: "Add",
+      notStarted: "surahs not started",
       hint: "Tap a surah to open verse details. You can select individual verses, ranges, or all.",
     },
   },
